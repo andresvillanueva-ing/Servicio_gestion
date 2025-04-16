@@ -26,7 +26,7 @@ class Registro_Screen(MDScreen):
             spacing=20,
             padding=50,
         )
-
+        
         # Botón de Usuario
         self.user_button = MDRaisedButton(
             text="Usuario", 

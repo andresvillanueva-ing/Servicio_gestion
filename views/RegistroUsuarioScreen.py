@@ -1,3 +1,4 @@
+import re
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -28,10 +29,11 @@ class registro_usuario_screen(MDScreen):
         
         
         self.nombre_usuario = MDTextField(hint_text = "Nombre Completo")
-        self.correo_usuario = MDTextField(hint_text = "Correo Electronico")
-        self.telefono_usuario = MDTextField(hint_text = "Telefono")
-        self.contraseña_usuario = MDTextField(hint_text = "Contraseña", password = True)
-        self.v_contraseña_usuario = MDTextField(hint_text = "verificar contraseña", password = True)
+        self.correo_usuario = MDTextField(hint_text = "Correo Electronico", helper_text = "", helper_text_mode = "on_error")
+        self.telefono_usuario = MDTextField(hint_text = "Telefono", input_filter = "int")
+        self.telefono_usuario.bind(text=self.validar_longitud_telefono)
+        self.contraseña_usuario = MDTextField(hint_text = "Contraseña", password = True, helper_text = "", helper_text_mode = "on_error")
+        self.v_contraseña_usuario = MDTextField(hint_text = "verificar contraseña", password = True, helper_text = "", helper_text_mode = "on_error")
         
         self.button_registro_usuario = MDRaisedButton(text = "Registrarse", pos_hint = {"center_x": 0.5})
         self.button_registro_usuario.bind(on_press=self.registrar_usuario)
@@ -51,6 +53,16 @@ class registro_usuario_screen(MDScreen):
         layout.add_widget(Widget())
         
         self.add_widget(layout)
+
+    def validar_correo(self, correo_usuario):
+        patron = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if re.match(patron, correo_usuario):
+            return True
+        return False
+    
+    def validar_longitud_telefono(self, instance, value):
+        if len(value) > 10:
+            instance.text = value[:10] 
     
     def registrar_usuario(self, instance):
         nombre = self.nombre_usuario.text
@@ -59,9 +71,22 @@ class registro_usuario_screen(MDScreen):
         contraseña = self.contraseña_usuario.text
         verificacion_contraseña = self.v_contraseña_usuario.text
         
-        if contraseña != verificacion_contraseña:
-            self.show_error("las contraseñas no coinciden")
+        if not self.validar_correo(self.correo_usuario.text):
+            self.correo_usuario.error = True
+            self.correo_usuario.helper_text = "¡¡Correo invalido!!"
             return
+        
+        if contraseña != verificacion_contraseña:
+            self.contraseña_usuario.error = True
+            self.v_contraseña_usuario.error = True
+            self.contraseña_usuario.helper_text = "!!Las contraseñas no coiciden¡¡"
+            self.v_contraseña_usuario.helper_text = "!!Las contraseñas no coiciden¡¡"
+        else:
+            self.contraseña_usuario.error = False
+            self.v_contraseña_usuario.error = False
+            self.contraseña_usuario.helper_text = ""
+            self.v_contraseña_usuario.helper_text = ""
+            print('contraseñas correctas, puede continuar')
         
     def google_sign_in(self, instance):
         print("Iniciar sesion con google")
