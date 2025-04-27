@@ -26,7 +26,7 @@ class login_screen(Screen):
 
         # Título
         title = MDLabel(
-            text="[b][i]Log in[/i][/b]",
+            text="[b][i]Iniciar sesión[/i][/b]",
             markup=True,
             font_style="H4",
             halign="center",
@@ -53,7 +53,7 @@ class login_screen(Screen):
 
         # Botón de inicio de sesión
         login_button = MDRaisedButton(
-            text="Log in",
+            text="Iniciar sesión",
             pos_hint={"center_x": 0.5},
             md_bg_color=(0.4, 0, 1, 1),  # Color morado
             size_hint_x=1,
