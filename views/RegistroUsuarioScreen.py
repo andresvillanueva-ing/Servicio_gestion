@@ -1,4 +1,6 @@
 import re
+import bcrypt 
+from cryptography.fernet import Fernet
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -8,6 +10,20 @@ from kivymd.uix.label import MDLabel
 from kivy.uix.widget import Widget
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.anchorlayout import MDAnchorLayout
+from Database.Data_usuario import agregar_usuario
+
+# Genera la clave encriptada 
+clave_encriptacion = Fernet.generate_key()
+f = Fernet(clave_encriptacion)
+
+#Funcion para encriptar datos 
+def encriptar_dato(dato):
+    return f.encrypt(dato.encode('utf_8')).decode('utf_8')
+
+# Función para desencriptar datos
+def desencriptar_dato(dato_encriptado):
+    return f.decrypt(dato_encriptado.encode('utf-8')).decode('UTF-8')
+
 
 class registro_usuario_screen(MDScreen):
     def __init__(self, **kwargs):
@@ -87,6 +103,23 @@ class registro_usuario_screen(MDScreen):
             self.contraseña_usuario.helper_text = ""
             self.v_contraseña_usuario.helper_text = ""
             print('contraseñas correctas, puede continuar')
+
+            # Encriptar todos los datos
+            hashed_password = bcrypt.hashpw(contraseña.encode("utf-8"), bcrypt.gensalt())
+            nombre_encriptado = encriptar_dato(nombre)
+            correo_encriptado = encriptar_dato(correo)
+            telefono_encriptado = encriptar_dato(telefono)
+
+            # Guarda los datos en la base de datos encriptados.
+            agregar_usuario(nombre_encriptado, correo_encriptado, telefono_encriptado, hashed_password.decode('utf_8'))
+            print("Usuario registado con exito")
+
+            # Limpia los campos despues de enviar los datos
+            self.nombre_usuario.text = ""
+            self.correo_usuario.text = ""
+            self.telefono_usuario.text = ""
+            self.contraseña_usuario.text = ""
+            self.v_contraseña_usuario.text = ""
         
     def google_sign_in(self, instance):
         print("Iniciar sesion con google")

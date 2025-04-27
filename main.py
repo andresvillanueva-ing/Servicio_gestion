@@ -14,7 +14,6 @@ class ServicioGestion(MDApp):
         manager.add_widget(Registro_Screen(name="registroscreen"))
         manager.add_widget(registro_usuario_screen(name="registrousuarioscreen"))
         manager.add_widget(registro_p_servicio_screen(name="registropservicioscreen"))
-        agregar_prestador_servicio("andres@gmail.com", "andres villanueva", 123456 , "parqueadero la inquebrantable", 32198770141, "1234567")
         return manager
     
 
