@@ -7,6 +7,8 @@ from kivymd.uix.label import MDLabel
 from kivy.uix.image import Image
 from kivy.uix.relativelayout import RelativeLayout
 from kivymd.uix.gridlayout import MDGridLayout
+from Database.Data_P_Servicio import Verificar_datos
+from kivymd.uix.dialog import MDDialog
 
 class login_screen(Screen):
     def __init__(self, **kwargs):
@@ -58,7 +60,7 @@ class login_screen(Screen):
             md_bg_color=(0.4, 0, 1, 1),  # Color morado
             size_hint_x=1,
         )
-        login_button.bind(on_release=self.verify_credentials)
+        login_button.bind(on_release=self.verificar_credenciales)
 
         # Contenedor de "No estás registrado?" y "Regístrate"
         register_layout = MDGridLayout(cols=2, padding=[10, 0, 10, 0])
@@ -90,16 +92,36 @@ class login_screen(Screen):
         layout.add_widget(form_container)
         self.add_widget(layout)
 
-    def verify_credentials(self, instance):
-        usuario = self.username.text
-        contraseña = self.password.text
+    def verificar_credenciales(self, instance):
+        usuario = self.username.text.strip()
+        contraseña = self.password.text.strip()
 
-        if usuario == "admin" and contraseña == "1234":
-            self.username.helper_text = "Acceso concedido"
-            self.username.helper_text_mode = "on_focus"
+        if not usuario or not contraseña:
+            self.mostrar_dialogo("¡Error!", "Por favor, rellene todos los campos.")
+            return
+
+        resultado = Verificar_datos(usuario, contraseña)
+
+        if resultado:
+            self.mostrar_dialogo("¡Bienvenido!", "Inicio de sesión exitoso.")
         else:
-            self.username.helper_text = "Credenciales incorrectas"
-            self.username.helper_text_mode = "on_error"
-            
+            self.mostrar_dialogo("Error", "Usuario o contraseña incorrectos.")
+
+    def mostrar_dialogo(self, titulo, mensaje):
+        if hasattr(self, 'dialog') and self.dialog:
+            self.dialog.dismiss()
+
+        self.dialog = MDDialog(
+            title=titulo,
+            text=mensaje,
+            buttons=[
+                MDFlatButton(
+                    text="OK",
+                    on_release=lambda x: self.dialog.dismiss()
+                )
+            ]
+        )
+        self.dialog.open()
+
     def screen_registro(self, instance, value):
         self.manager.current = "registroscreen"
