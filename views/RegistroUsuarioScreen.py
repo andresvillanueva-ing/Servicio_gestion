@@ -4,26 +4,27 @@ from cryptography.fernet import Fernet
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDRaisedButton, MDIconButton
+from kivymd.uix.button import MDRaisedButton, MDIconButton, MDFlatButton
+from cryptography.fernet import Fernet
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.label import MDLabel
 from kivy.uix.widget import Widget
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.anchorlayout import MDAnchorLayout
+import os
+from kivymd.uix.dialog import MDDialog
 from Database.Data_usuario import agregar_usuario
 
-# Genera la clave encriptada 
-clave_encriptacion = Fernet.generate_key()
-f = Fernet(clave_encriptacion)
+# Cargar o generar clave de cifrado
+if not os.path.exists("clave.key"):
+    with open("clave.key", "wb") as clave_archivo:
+        clave_archivo.write(Fernet.generate_key())
 
-#Funcion para encriptar datos 
-def encriptar_dato(dato):
-    return f.encrypt(dato.encode('utf_8')).decode('utf_8')
+# Cargar la clave de cifrado
+with open("clave.key", "rb") as clave_archivo:
+    clave = clave_archivo.read()
 
-# Función para desencriptar datos
-def desencriptar_dato(dato_encriptado):
-    return f.decrypt(dato_encriptado.encode('utf-8')).decode('UTF-8')
-
+fernet = Fernet(clave)
 
 class registro_usuario_screen(MDScreen):
     def __init__(self, **kwargs):
@@ -81,38 +82,40 @@ class registro_usuario_screen(MDScreen):
             instance.text = value[:10] 
     
     def registrar_usuario(self, instance):
-        nombre = self.nombre_usuario.text
-        correo = self.correo_usuario.text
-        telefono = self.telefono_usuario.text
-        contraseña = self.contraseña_usuario.text
-        verificacion_contraseña = self.v_contraseña_usuario.text
-        
         if not self.validar_correo(self.correo_usuario.text):
             self.correo_usuario.error = True
             self.correo_usuario.helper_text = "¡¡Correo invalido!!"
             return
         
-        if contraseña != verificacion_contraseña:
+        if self.contraseña_usuario.text != self.v_contraseña_usuario.text:
             self.contraseña_usuario.error = True
             self.v_contraseña_usuario.error = True
             self.contraseña_usuario.helper_text = "!!Las contraseñas no coiciden¡¡"
             self.v_contraseña_usuario.helper_text = "!!Las contraseñas no coiciden¡¡"
-        else:
-            self.contraseña_usuario.error = False
-            self.v_contraseña_usuario.error = False
-            self.contraseña_usuario.helper_text = ""
-            self.v_contraseña_usuario.helper_text = ""
-            print('contraseñas correctas, puede continuar')
+            return
+        
+        try:
+            # No cifrar el correo
+            correo = self.correo_usuario.text
 
-            # Encriptar todos los datos
-            hashed_password = bcrypt.hashpw(contraseña.encode("utf-8"), bcrypt.gensalt())
-            nombre_encriptado = encriptar_dato(nombre)
-            correo_encriptado = encriptar_dato(correo)
-            telefono_encriptado = encriptar_dato(telefono)
+            # Cifrar los demás datos
+            nombre_encriptado = fernet.encrypt(self.nombre_usuario.text.encode())
+            telefono_encriptado = fernet.encrypt(self.telefono_usuario.text.encode())
+            
+            # Hashear la contraseña
+            contraseña_bytes = self.contraseña_usuario.text.encode('utf-8')
+            salt = bcrypt.gensalt()
+            contraseña_hash = bcrypt.hashpw(contraseña_bytes, salt)
 
             # Guarda los datos en la base de datos encriptados.
-            agregar_usuario(nombre_encriptado, correo_encriptado, telefono_encriptado, hashed_password.decode('utf_8'))
-            print("Usuario registado con exito")
+            agregar_usuario(
+                nombre_encriptado, 
+                correo, 
+                telefono_encriptado, 
+                contraseña_usuario=contraseña_hash.decode('utf_8')
+                )
+            
+            print("Registro exitoso para:", self.nombre_usuario.text)
 
             # Limpia los campos despues de enviar los datos
             self.nombre_usuario.text = ""
@@ -121,6 +124,13 @@ class registro_usuario_screen(MDScreen):
             self.contraseña_usuario.text = ""
             self.v_contraseña_usuario.text = ""
         
+        except Exception as e:
+            print("Error al registrar:", e)
+
+        #regresar a la pantalla de inicio de sesión
+        self.manager.current = "loginscreen"
+
+
     def google_sign_in(self, instance):
         print("Iniciar sesion con google")
     

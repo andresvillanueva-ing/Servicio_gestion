@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.app import MDApp
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDRaisedButton, MDFlatButton
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
@@ -8,6 +8,7 @@ from kivy.uix.image import Image
 from kivy.uix.relativelayout import RelativeLayout
 from kivymd.uix.gridlayout import MDGridLayout
 from Database.Data_P_Servicio import Verificar_datos
+from Database.Data_usuario import Verificar_datos_usuario
 from kivymd.uix.dialog import MDDialog
 
 class login_screen(Screen):
@@ -101,11 +102,17 @@ class login_screen(Screen):
             return
 
         resultado = Verificar_datos(usuario, contraseña)
+        result = Verificar_datos_usuario(usuario, contraseña)
 
-        if resultado:
+        if result:
             self.mostrar_dialogo("¡Bienvenido!", "Inicio de sesión exitoso.")
+            self.manager.current = "pantallaUsuario"
+        elif resultado:
+            self.mostrar_dialogo("¡Bienvenido!", "Inicio de sesión exitoso.")
+            self.manager.current = "pamtallaPServicio"
         else:
-            self.mostrar_dialogo("Error", "Usuario o contraseña incorrectos.")
+            self.mostrar_dialogo("¡Error!", "Credenciales incorrectas.")
+
 
     def mostrar_dialogo(self, titulo, mensaje):
         if hasattr(self, 'dialog') and self.dialog:
