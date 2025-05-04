@@ -9,6 +9,8 @@ from views.LoginScreen import login_screen
 from views.RegistroPServicioScreen import registro_p_servicio_screen
 from views.RegistroUsuarioScreen import registro_usuario_screen
 from views.RegistroScreen import Registro_Screen
+from views.PantallaPServicio import Pantalla_P_Servicio
+from views.RegistrarServicio import registrar_servicio_screen
 
 class ServicioGestion(MDApp):
     def build(self):
@@ -17,6 +19,8 @@ class ServicioGestion(MDApp):
         manager.add_widget(Registro_Screen(name="registroscreen"))
         manager.add_widget(registro_usuario_screen(name="registrousuarioscreen"))
         manager.add_widget(registro_p_servicio_screen(name="registropservicioscreen"))
+        manager.add_widget(Pantalla_P_Servicio(name="pantallaPServicio"))
+        manager.add_widget(registrar_servicio_screen(name="registrarservicios"))
         return manager
     
 if __name__ == "__main__":

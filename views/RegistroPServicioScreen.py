@@ -29,7 +29,7 @@ class registro_p_servicio_screen(MDScreen):
         layout = MDBoxLayout(orientation='vertical')
 
         top_bar = MDTopAppBar(
-            title="Registro de Servicio",
+            title="Registro de P.S",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
             elevation=5,
             size_hint_y=None,

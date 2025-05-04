@@ -108,8 +108,7 @@ class login_screen(Screen):
             self.mostrar_dialogo("¡Bienvenido!", "Inicio de sesión exitoso.")
             self.manager.current = "pantallaUsuario"
         elif resultado:
-            self.mostrar_dialogo("¡Bienvenido!", "Inicio de sesión exitoso.")
-            self.manager.current = "pamtallaPServicio"
+            self.manager.current = "pantallaPServicio"
         else:
             self.mostrar_dialogo("¡Error!", "Credenciales incorrectas.")
 
