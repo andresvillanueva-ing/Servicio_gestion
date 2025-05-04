@@ -2,10 +2,6 @@ from kivy.config import Config
 Config.set('graphics', 'width', '360')
 Config.set('graphics', 'height', '640')
 
-from kivy.core.text import LabelBase
-
-LabelBase.register(name="Yellowtail", fn_regular="Yellowtail-Regular.ttf")
-
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.app import MDApp
 from kivy.lang import Builder

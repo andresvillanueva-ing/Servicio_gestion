@@ -1,3 +1,6 @@
+from kivy.core.text import LabelBase
+LabelBase.register(name="Yellowtail", fn_regular="fonts/fuente.ttf")
+
 from kivy.uix.screenmanager import Screen
 from kivymd.uix.button import MDRaisedButton, MDFlatButton
 from kivymd.uix.textfield import MDTextField
@@ -34,7 +37,7 @@ class login_screen(Screen):
             halign="center",
             theme_text_color="Custom",
             text_color=(1, 1, 1, 1),
-            font_name="Yellowtail",  # Fuente en cursiva
+            font_name="Yellowtail", 
             font_style="H3"
         )
 
