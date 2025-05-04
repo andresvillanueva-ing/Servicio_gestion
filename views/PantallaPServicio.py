@@ -116,3 +116,10 @@ class Pantalla_P_Servicio(MDScreen):
         layout.add_widget(tabs)
 
         self.add_widget(layout)
+
+
+    def volver_atras(self):
+        self.manager.current = "loginscreen"
+
+    def abrir_usuario(self):
+        self.manager.current = "pantalla_usuario"

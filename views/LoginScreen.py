@@ -10,6 +10,7 @@ from kivymd.uix.gridlayout import MDGridLayout
 from Database.Data_P_Servicio import Verificar_datos
 from Database.Data_usuario import Verificar_datos_usuario
 from kivymd.uix.dialog import MDDialog
+from kivy.app import App
 
 class login_screen(Screen):
     def __init__(self, **kwargs):
@@ -105,9 +106,10 @@ class login_screen(Screen):
         result = Verificar_datos_usuario(usuario, contraseña)
 
         if result:
-            self.mostrar_dialogo("¡Bienvenido!", "Inicio de sesión exitoso.")
+            App.get_running_app().usuario_actual = result
             self.manager.current = "pantallaUsuario"
         elif resultado:
+            App.get_running_app().usuario_actual = resultado
             self.manager.current = "pantallaPServicio"
         else:
             self.mostrar_dialogo("¡Error!", "Credenciales incorrectas.")
