@@ -111,10 +111,10 @@ class registrar_servicio_screen(MDScreen):
         try:
             # Cifrar los datos
             razon_social_cifrado = fernet.encrypt(self.razon_social.text.encode())
-            nit_cifrado = fernet.encrypt(self.nit.text.encode())
+            nit_cifrado = fernet.encrypt(str(self.nit.text).encode())
             tipo_servicio_cifrado = fernet.encrypt(self.tipo_servicios_button.text.encode())
             administrador_cifrado = fernet.encrypt(self.Administrador.text.encode())
-            puestos_cifrado = fernet.encrypt(self.Puestos.text.encode())
+            puestos_cifrado = fernet.encrypt(str(self.Puestos.text).encode())
             ubicacion_cifrado = fernet.encrypt(self.Ubicacion.text.encode())
             imagen_cifrado = fernet.encrypt(self.imagen.text.encode())
 

@@ -11,6 +11,19 @@ def obtener_clave():
 clave = obtener_clave()
 fernet = Fernet(clave)
 
+def descifrar_campos_usuario(usuario_dict, campos_a_descifrar):
+    """Descifra los campos especificados de un diccionario de usuario"""
+    usuario_descifrado = usuario_dict.copy()
+    for campo in campos_a_descifrar:
+        if campo in usuario_descifrado:
+            try:
+                usuario_descifrado[campo] = fernet.decrypt(usuario_descifrado[campo].encode()).decode()
+            except Exception as e:
+                print(f"Error al descifrar el campo '{campo}': {e}")
+                usuario_descifrado[campo] = "Dato inválido"
+    return usuario_descifrado
+
+
 def agregar_prestador_servicio(correo_servicio, nombre_propietario, nit, razon_social, telefono_servicio, contraseña_servicio):
     conexion = crear_conexion()
     cursor = conexion.cursor()
@@ -25,21 +38,15 @@ def agregar_prestador_servicio(correo_servicio, nombre_propietario, nit, razon_s
     cursor.close()
     conexion.close()
 
-def listar_usuario():
-    conexion = crear_conexion()
-    cursor = conexion.cursor()
-    cursor.execute("SELECT * FROM data_base_servicio")
-    for prestador in cursor.fetchall():
-        print(prestador)
-    cursor.close()
-    conexion.close()
-
 def Verificar_datos(usuario, contraseña):
     conexion = crear_conexion()
     cursor = conexion.cursor()
 
-    # Buscar en la base de datos el correo en texto plano
-    sql = "SELECT contraseña_servicio FROM data_base_servicio WHERE correo_servicio = %s"
+    sql = """
+        SELECT correo_servicio, nombre_propietario, nit, razon_social, telefono_servicio, contraseña_servicio 
+        FROM data_base_servicio 
+        WHERE correo_servicio = %s
+    """
     cursor.execute(sql, (usuario,))
     resultado = cursor.fetchone()
 
@@ -47,15 +54,22 @@ def Verificar_datos(usuario, contraseña):
     conexion.close()
 
     if resultado:
-        contraseña_hash = resultado[0]
+        correo, nombre, nit, razon, telefono, contraseña_hash = resultado
         try:
-            # Comparar la contraseña introducida con el hash almacenado
             if bcrypt.checkpw(contraseña.encode('utf-8'), contraseña_hash.encode('utf-8')):
-                return True
-            else:
-                return False
+                # Creamos el diccionario con los datos cifrados
+                usuario_dict = {
+                    "correo": correo,
+                    "nombre": nombre,
+                    "nit": nit,
+                    "razon_social": razon,
+                    "telefono": telefono
+                }
+                # Desciframos los campos antes de retornarlos
+                usuario_descifrado = descifrar_campos_usuario(usuario_dict, ['nombre', 'nit', 'razon_social', 'telefono'])
+                return usuario_descifrado
         except Exception as e:
             print("Error al verificar contraseña:", e)
-            return False
-    else:
-        return False
+            return None
+    return None
+

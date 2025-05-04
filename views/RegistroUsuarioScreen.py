@@ -98,7 +98,7 @@ class registro_usuario_screen(MDScreen):
 
             # Cifrar los demás datos
             nombre_encriptado = fernet.encrypt(self.nombre_usuario.text.encode())
-            telefono_encriptado = fernet.encrypt(self.telefono_usuario.text.encode())
+            telefono_encriptado = fernet.encrypt(str(self.telefono_usuario.text).encode())
             
             # Hashear la contraseña
             contraseña_bytes = self.contraseña_usuario.text.encode('utf-8')

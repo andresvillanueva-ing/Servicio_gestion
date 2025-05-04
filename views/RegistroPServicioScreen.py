@@ -5,6 +5,7 @@ from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.anchorlayout import MDAnchorLayout
+from kivy.uix.scrollview import ScrollView
 from Database.Data_P_Servicio import agregar_prestador_servicio
 from cryptography.fernet import Fernet
 import bcrypt
@@ -26,7 +27,7 @@ class registro_p_servicio_screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "registropservicioscreen"
-        layout = MDBoxLayout(orientation='vertical')
+        main_layout = MDBoxLayout(orientation='vertical')
 
         top_bar = MDTopAppBar(
             title="Registro de P.S",
@@ -35,6 +36,10 @@ class registro_p_servicio_screen(MDScreen):
             size_hint_y=None,
             height="56dp"
         )
+
+        scroll_view = ScrollView()
+        scroll_layout = MDBoxLayout(orientation='vertical', size_hint_y=None)
+        scroll_layout.bind(minimum_height=scroll_layout.setter('height'))
 
         self.correo = MDTextField(hint_text="Correo electrónico", helper_text="", helper_text_mode="on_error")
         self.nombre = MDTextField(hint_text="Nombre")
@@ -48,17 +53,24 @@ class registro_p_servicio_screen(MDScreen):
         button_container = MDAnchorLayout(anchor_x="center")
         self.registro_button = MDRaisedButton(text="Registrar", pos_hint={"center_x": 0.5}, on_release=self.registrar)
 
-        layout.add_widget(top_bar)
-        layout.add_widget(self.correo)
-        layout.add_widget(self.nombre)
-        layout.add_widget(self.nit)
-        layout.add_widget(self.razon)
-        layout.add_widget(self.telefono)
-        layout.add_widget(self.contraseña)
-        layout.add_widget(self.vcontraseña)
-        layout.add_widget(self.registro_button)
+        # Add widgets to the scrollable layout
+        scroll_layout.add_widget(self.correo)
+        scroll_layout.add_widget(self.nombre)
+        scroll_layout.add_widget(self.nit)
+        scroll_layout.add_widget(self.razon)
+        scroll_layout.add_widget(self.telefono)
+        scroll_layout.add_widget(self.contraseña)
+        scroll_layout.add_widget(self.vcontraseña)
+        scroll_layout.add_widget(self.registro_button)
 
-        self.add_widget(layout)
+        # Add the scrollable layout to the ScrollView
+        scroll_view.add_widget(scroll_layout)
+
+        # Add the top bar and ScrollView to the main layout
+        main_layout.add_widget(top_bar)
+        main_layout.add_widget(scroll_view)
+
+        self.add_widget(main_layout)
 
     def validar_correo(self, correo):
         patron = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -87,9 +99,9 @@ class registro_p_servicio_screen(MDScreen):
 
             # Cifrar los demás datos
             nombre_cifrado = fernet.encrypt(self.nombre.text.encode())
-            nit_cifrado = fernet.encrypt(self.nit.text.encode())
+            nit_cifrado = fernet.encrypt(str(self.nit.text).encode())
             razon_cifrado = fernet.encrypt(self.razon.text.encode())
-            telefono_cifrado = fernet.encrypt(self.telefono.text.encode())
+            telefono_cifrado = fernet.encrypt(str(self.telefono.text).encode())
 
             # Hashear la contraseña
             contraseña_bytes = self.contraseña.text.encode('utf-8')
@@ -119,7 +131,7 @@ class registro_p_servicio_screen(MDScreen):
         except Exception as e:
             print("Error al registrar:", e)
 
-        #regresar a la pantalla de inicio de sesión
+        # Regresar a la pantalla de inicio de sesión
         self.manager.current = "loginscreen"
 
     def volver_atras(self):
