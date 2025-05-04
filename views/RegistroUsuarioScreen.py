@@ -32,9 +32,7 @@ class registro_usuario_screen(MDScreen):
         self.name="registrousuarioscreen"
         
         layout = MDBoxLayout(
-            orientation =  "vertical",
-            padding = 20,
-            spacing = 10)
+            orientation =  "vertical",)
     
         top_bar = MDTopAppBar(
             title="Registro de Usuario",

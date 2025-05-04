@@ -21,7 +21,7 @@ class login_screen(Screen):
 
         form_container = MDBoxLayout(
             orientation="vertical",
-            padding=[40, 40, 40, 40],
+            padding=[20, 20, 20, 20],
             spacing=20,
             pos_hint={"center_x": 0.5, "center_y": 0.5},
             size_hint=(0.8, 0.6),

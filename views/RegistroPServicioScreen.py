@@ -26,12 +26,14 @@ class registro_p_servicio_screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "registropservicioscreen"
-        layout = MDBoxLayout(orientation='vertical', padding=20, spacing=10)
+        layout = MDBoxLayout(orientation='vertical')
 
         top_bar = MDTopAppBar(
             title="Registro de Servicio",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
-            elevation=5
+            elevation=5,
+            size_hint_y=None,
+            height="56dp"
         )
 
         self.correo = MDTextField(hint_text="Correo electrónico", helper_text="", helper_text_mode="on_error")
