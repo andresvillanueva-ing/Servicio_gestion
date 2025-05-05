@@ -23,11 +23,21 @@ def agregar_servicio(razon_social, nit,tipo_servicio, administrador, puestos, ub
     conexion.close()
 
 # Función para listar todos los servicios en la base de datos
-def mostrar_servicios():
+def obtener_servicios_por_tipo(tipo_servicio):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    cursor.execute("SELECT * FROM data_servicios")
-    for servicio in cursor.fetchall():
-        print(servicio) 
+    sql = "SELECT razon_social, administrador, ubicacion, imagen FROM data_servicios WHERE tipo_servicio = %s"
+    cursor.execute(sql, (tipo_servicio,))
+    servicios = cursor.fetchall()
     cursor.close()
     conexion.close()
+
+    return [
+        {
+            "razon_social": fernet.decrypt(row[0]).decode(),
+            "administrador": fernet.decrypt(row[1]).decode(),
+            "ubicacion": fernet.decrypt(row[2]).decode(),
+            "imagen": fernet.decrypt(row[3]) if row[3] else None,
+        }
+        for row in servicios
+    ]

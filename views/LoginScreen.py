@@ -131,7 +131,7 @@ class login_screen(Screen):
 
         if result:
             App.get_running_app().usuario_actual = result
-            self.manager.current = "pantallaUsuario"
+            self.manager.current = "pantalla_usuario"
             self.username.text = ""
             self.password.text = ""
         elif resultado:
@@ -163,3 +163,5 @@ class login_screen(Screen):
 
     def screen_registro(self, instance, value):
         self.manager.current = "registroscreen"
+
+    

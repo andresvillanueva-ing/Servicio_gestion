@@ -93,7 +93,7 @@ class registrar_servicio_screen(MDScreen):
         # Agregar widgets al layout de contenido
         content_layout.add_widget(self.razon_social)
         content_layout.add_widget(self.nit)
-        content_layout.add_widget(MDLabel(text="Seleccionar Tipo de servicio", halign="center"), self.tipo_servicios_button)
+        content_layout.add_widget(MDLabel(text="Seleccionar Tipo de servicio", halign="center"))
         content_layout.add_widget(self.tipo_servicios_button)
         content_layout.add_widget(self.Administrador)
         content_layout.add_widget(self.Puestos)
@@ -172,6 +172,7 @@ class registrar_servicio_screen(MDScreen):
 
     def abrir_mapa_dialog(self, instance):
         self.mapa = MapView(zoom=10, lat=4.710989, lon=-74.072090, size_hint=(1, 1), height="300dp")
+
     #-- Método para seleccionar la imagen
     def seleccionar_imagen(self, instance):
         filechooser.open_file(
