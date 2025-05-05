@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivymd.uix.floatlayout import FloatLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.card import MDCard
@@ -12,74 +12,62 @@ from kivy.uix.scrollview import ScrollView
 from kivy.app import App
 from kivymd.uix.fitimage import FitImage
 from Database.Data_sercivios import obtener_servicios_por_tipo
+import os
+
+# Crear carpeta temporal si no existe
+if not os.path.exists("temp"):
+    os.makedirs("temp")
+
+def guardar_imagen_temp(imagen_bytes, nombre_archivo):
+    ruta = os.path.join("temp", nombre_archivo)
+    with open(ruta, "wb") as archivo:
+        archivo.write(imagen_bytes)
+    return ruta
 
 class TabParqueadero(FloatLayout, MDTabsBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.app = App.get_running_app()
+
         servicios = obtener_servicios_por_tipo("parqueadero")
-
         if servicios:
-            layout = MDBoxLayout(
-                orientation="vertical",
-                spacing=dp(10),
-                padding=dp(10),
-                size_hint_y=None,
-            )
-            layout.bind(minimum_height=layout.setter('height'))
-
             for servicio in servicios:
+                ruta_imagen = guardar_imagen_temp(servicio["imagen"], f"{servicio['razon_social']}.png") if servicio["imagen"] else ""
+
                 card = MDCard(
                     orientation="horizontal",
-                    size_hint=(1, None),
-                    height=dp(150),
+                    size_hint=(None, None),
+                    size=(dp(350), dp(150)),
                     padding=dp(10),
-                    spacing=dp(10),
                     ripple_behavior=True,
                     elevation=4,
+                    pos_hint={"center_x": 0.5}
                 )
 
-                # Imagen
-                imagen = FitImage(
-                    source=servicio["imagen"],
-                    size_hint=(None, 1),
-                    width=dp(100),
-                    radius=[10, 0, 0, 10]
-                )
-                card.add_widget(imagen)
+                # Imagen a la izquierda
+                if ruta_imagen:
+                    imagen = FitImage(
+                        source=ruta_imagen,
+                        size_hint=(None, None),
+                        size=(dp(100), dp(100))
+                    )
+                    card.add_widget(imagen)
 
-                # Información
-                info_layout = MDBoxLayout(
-                    orientation="vertical",
-                    spacing=dp(5),
-                    padding=(dp(10), 0),
-                    size_hint=(0.6, 1),
-                )
-                info_layout.add_widget(MDLabel(text=f"Empresa: {servicio['razon_social']}", theme_text_color="Primary"))
-                info_layout.add_widget(MDLabel(text=f"Administrador: {servicio['administrador']}", theme_text_color="Secondary"))
-                info_layout.add_widget(MDLabel(text=f"Ubicación: {servicio['ubicacion']}", theme_text_color="Secondary"))
+                # Info en el centro
+                info_layout = MDBoxLayout(orientation="vertical", padding=dp(10), spacing=dp(5))
+                info_layout.add_widget(MDLabel(text=servicio["razon_social"], font_style="H6", halign="left"))
+                info_layout.add_widget(MDLabel(text=f"Administrador: {servicio['administrador']}", halign="left"))
+                info_layout.add_widget(MDLabel(text=f"Ubicación: {servicio['ubicacion']}", halign="left"))
                 card.add_widget(info_layout)
 
-                # Botón Reservar
-                boton = MDRaisedButton(
-                    text="Reservar",
-                    size_hint=(None, None),
-                    size=(dp(100), dp(40)),
+                # Botón a la derecha
+                boton_reservar = MDIconButton(
+                    icon="calendar-check",
                     pos_hint={"center_y": 0.5},
-                    on_release=lambda btn, s=servicio: self.reservar(s)
+                    on_release=lambda x, nombre=servicio["razon_social"]: self.reservar(nombre)
                 )
-                button_layout = MDBoxLayout(
-                    size_hint=(None, 1),
-                    width=dp(120),
-                    padding=(dp(10), 0),
-                    orientation='vertical'
-                )
-                button_layout.add_widget(boton)
-                card.add_widget(button_layout)
+                card.add_widget(boton_reservar)
 
-                layout.add_widget(card)
-
-            self.add_widget(layout)
+                self.add_widget(card)
         else:
             self.add_widget(MDLabel(text="No hay parqueaderos disponibles", halign="center"))
 

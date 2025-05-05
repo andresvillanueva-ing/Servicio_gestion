@@ -32,7 +32,7 @@ class registrar_servicio_screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "registrarservicios"
-        
+        mapa = MapView(zoom=15, lat=4.7110, lon=-74.0721) 
         self.imagen = "" 
         self.ver_imagen = Image(size_hint=(1, None), height="200")
         # Layout principal
@@ -128,7 +128,7 @@ class registrar_servicio_screen(MDScreen):
             # Cifrar los datos
             razon_social_cifrado = fernet.encrypt(self.razon_social.text.encode())
             nit_cifrado = fernet.encrypt(str(self.nit.text).encode())
-            tipo_servicio_cifrado = fernet.encrypt(self.tipo_servicios_button.text.encode())
+            tipo_servicio_cifrado = self.tipo_servicios_button.text
             administrador_cifrado = fernet.encrypt(self.Administrador.text.encode())
             puestos_cifrado = fernet.encrypt(str(self.Puestos.text).encode())
             
@@ -137,9 +137,9 @@ class registrar_servicio_screen(MDScreen):
                 print("⚠️ No se ha seleccionado una imagen.")
                 return
 
-            if not hasattr(self, 'ubicacion_cifrada'):
-                print("⚠️ No se ha seleccionado una ubicación en el mapa.")
-                return
+            #if not hasattr(self, 'ubicacion_cifrada'):
+             #   print("⚠️ No se ha seleccionado una ubicación en el mapa.")
+              #  return
 
             agregar_servicio(
                 razon_social=razon_social_cifrado,
@@ -147,7 +147,7 @@ class registrar_servicio_screen(MDScreen):
                 tipo_servicio=tipo_servicio_cifrado,
                 administrador=administrador_cifrado,
                 puestos=puestos_cifrado,
-                ubicacion=self.ubicacion_cifrada,
+                ubicacion=str(self.mapa),
                 imagen=self.imagen_cifrada 
             )
 
