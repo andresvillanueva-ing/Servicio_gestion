@@ -171,7 +171,7 @@ class registrar_servicio_screen(MDScreen):
         self.tipo_servicio_menu.dismiss()
 
     def abrir_mapa_dialog(self, instance):
-        
+        self.mapa = MapView(zoom=10, lat=4.710989, lon=-74.072090, size_hint=(1, 1), height="300dp")
     #-- Método para seleccionar la imagen
     def seleccionar_imagen(self, instance):
         filechooser.open_file(
