@@ -11,7 +11,6 @@ from views.RegistroUsuarioScreen import registro_usuario_screen
 from views.RegistroScreen import Registro_Screen
 from views.PantallaPServicio import Pantalla_P_Servicio
 from views.RegistrarServicio import registrar_servicio_screen
-#from views.PantallaUsuario import PantallaUsuario
 from kivy.app import App
 
 class ServicioGestion(MDApp):

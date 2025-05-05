@@ -33,7 +33,6 @@ class registrar_servicio_screen(MDScreen):
         super().__init__(**kwargs)
         self.name = "registrarservicios"
         
-        self.marcador = None
         self.imagen = "" 
         self.ver_imagen = Image(size_hint=(1, None), height="200")
         # Layout principal
@@ -58,8 +57,11 @@ class registrar_servicio_screen(MDScreen):
         self.nit = MDTextField(hint_text="NIT", input_filter="int")
         self.Administrador = MDTextField(hint_text="Nombre del administrador")
         self.Puestos = MDTextField(hint_text="Puestos disponibles")
-        self.mapa = MapView(zoom=10, lat=4.710989, lon=-74.072090, size_hint=(1, None), height="300dp")
-        self.mapa.bind(on_touch_down=self.seleccionar_ubicacion)
+        self.boton_ubicacion = MDRaisedButton(
+            text="Seleccionar ubicación en el mapa",
+            pos_hint={"center_x": 0.5},
+            on_release=self.abrir_mapa_dialog
+        )
         self.boton_imagen = MDIconButton(
             icon="image",
             icon_size="32sp",
@@ -91,12 +93,12 @@ class registrar_servicio_screen(MDScreen):
         # Agregar widgets al layout de contenido
         content_layout.add_widget(self.razon_social)
         content_layout.add_widget(self.nit)
-        content_layout.add_widget(MDLabel(text="Seleccionar Tipo de servicio", halign="center"))
+        content_layout.add_widget(MDLabel(text="Seleccionar Tipo de servicio", halign="center"), self.tipo_servicios_button)
         content_layout.add_widget(self.tipo_servicios_button)
         content_layout.add_widget(self.Administrador)
         content_layout.add_widget(self.Puestos)
         content_layout.add_widget(MDLabel(text="Seleccionar ubicación en el mapa", halign="center"))
-        content_layout.add_widget(self.mapa)
+        content_layout.add_widget(self.boton_ubicacion)
         content_layout.add_widget(self.boton_imagen)
         content_layout.add_widget(self.ver_imagen)
         content_layout.add_widget(self.registro_button)
@@ -168,22 +170,8 @@ class registrar_servicio_screen(MDScreen):
         self.tipo_servicios_button.text = tipo
         self.tipo_servicio_menu.dismiss()
 
-    #-- Método para seleccionar la ubicación en el mapa
-    def seleccionar_ubicacion(self, instance, touch):
-        if not self.mapa.collide_point(*touch.pos):
-            return
+    def abrir_mapa_dialog(self, instance):
         
-        lat, lon = self.mapa.get_latlon_at(*touch.pos)
-
-        if self.marcador:
-            self.mapa.remove_widget(self.marcador)
-
-        self.marcador = MapMarker(lat=lat, lon=lon)
-        self.mapa.add_marker(self.marcador)
-
-        ubicacion_str = f"{lat}, {lon}"
-        self.ubicacion_cifrada = fernet.encrypt(ubicacion_str.encode())
-
     #-- Método para seleccionar la imagen
     def seleccionar_imagen(self, instance):
         filechooser.open_file(
