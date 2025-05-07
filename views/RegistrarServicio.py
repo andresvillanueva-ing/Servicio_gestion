@@ -6,6 +6,7 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.boxlayout import BoxLayout
 from Database.Data_sercivios import agregar_servicio
 from cryptography.fernet import Fernet
 import bcrypt
@@ -198,14 +199,18 @@ class registrar_servicio_screen(MDScreen):
             on_selection=self.imagen_seleccionada
         )
 
-    #-- Método para mostrar la imagen seleccionada
+    # Método para mostrar la imagen seleccionada
     def imagen_seleccionada(self, seleccion):
         if seleccion:
             ruta = seleccion[0]
-            imagen_previa = Image(source=ruta, size_hint=(1, 1))
 
-            content = MDBoxLayout(orientation='vertical', spacing=10)
-            content.add_widget(imagen_previa)
+            # Crear un layout para contener la imagen
+            class ImagenDialogLayout(BoxLayout):
+                def __init__(self, ruta_img, **kwargs):
+                    super().__init__(orientation='vertical', **kwargs)
+                    self.add_widget(Image(source=ruta_img, size_hint=(1, 1)))
+
+            content = ImagenDialogLayout(ruta)
 
             self.dialog_imagen = MDDialog(
                 title="¿Esta es la imagen que deseas usar?",
