@@ -1,3 +1,6 @@
+# Importaciones necesarias de KivyMD y Kivy
+from kivymd.app import MDApp
+from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -8,134 +11,184 @@ from kivymd.uix.card import MDCard
 from kivy.uix.image import Image
 from kivymd.uix.tab import MDTabsBase, MDTabs
 from kivy.metrics import dp
-from kivy.uix.scrollview import ScrollView
-from kivy.app import App
+from kivy.uix.scrollview import ScrollView 
 from kivymd.uix.fitimage import FitImage
-from Database.Data_sercivios import obtener_servicios_por_tipo
-import os
+from kivymd.uix.button import MDRectangleFlatButton
 
-# Crear carpeta temporal si no existe
-if not os.path.exists("temp"):
-    os.makedirs("temp")
+# Función que simula la obtención de datos de servicios por tipo
+def obtener_servicios_por_tipo(tipo):
+    return [
+        {
+            "razon_social": f"{tipo.capitalize()} Ejemplo {i+1}",
+            "administrador": f"Admin {i+1}",
+            "ubicacion": f"Ubicación {i+1}",
+            "imagen": None
+        } for i in range(1)
+    ]
 
-def guardar_imagen_temp(imagen_bytes, nombre_archivo):
-    ruta = os.path.join("temp", nombre_archivo)
-    with open(ruta, "wb") as archivo:
-        archivo.write(imagen_bytes)
-    return ruta
-
-class TabParqueadero(FloatLayout, MDTabsBase):
-    def __init__(self, **kwargs):
+# Clase base reutilizable para representar cada tab con servicios
+class BaseTab(FloatLayout, MDTabsBase):
+    def __init__(self, tipo, reservar_callback, **kwargs):
         super().__init__(**kwargs)
+        self.title = tipo.capitalize()  # Título del tab
 
-        servicios = obtener_servicios_por_tipo("parqueadero")
-        if servicios:
-            for servicio in servicios:
-                ruta_imagen = guardar_imagen_temp(servicio["imagen"], f"{servicio['razon_social']}.png") if servicio["imagen"] else ""
+        servicios = obtener_servicios_por_tipo(tipo)  # Obtener servicios simulados
 
-                card = MDCard(
-                    orientation="horizontal",
-                    size_hint=(None, None),
-                    size=(dp(350), dp(150)),
-                    padding=dp(10),
-                    ripple_behavior=True,
-                    elevation=4,
-                    pos_hint={"center_x": 0.5}
-                )
+        layout_scroll = ScrollView(size_hint=(1, 1))  # Área scrollable
+        content = MDBoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10), size_hint_y=None)
+        content.bind(minimum_height=content.setter('height'))
 
-                # Imagen a la izquierda
-                if ruta_imagen:
-                    imagen = FitImage(
-                        source=ruta_imagen,
-                        size_hint=(None, None),
-                        size=(dp(100), dp(100))
-                    )
-                    card.add_widget(imagen)
+        for servicio in servicios:
+            # Crear una tarjeta para cada servicio
+            card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
+                          padding=dp(10), ripple_behavior=True, elevation=4)
 
-                # Info en el centro
-                info_layout = MDBoxLayout(orientation="vertical", padding=dp(10), spacing=dp(5))
-                info_layout.add_widget(MDLabel(text=servicio["razon_social"], font_style="H6", halign="left"))
-                info_layout.add_widget(MDLabel(text=f"Administrador: {servicio['administrador']}", halign="left"))
-                info_layout.add_widget(MDLabel(text=f"Ubicación: {servicio['ubicacion']}", halign="left"))
-                card.add_widget(info_layout)
+            # Imagen del servicio
+            img = Image(source="paisaje.png", size_hint=(None, None), size=(dp(80), dp(80)))
+            card.add_widget(img)
 
-                # Botón a la derecha
-                boton_reservar = MDIconButton(
-                    icon="calendar-check",
-                    pos_hint={"center_y": 0.5},
-                    on_release=lambda x, nombre=servicio["razon_social"]: self.reservar(nombre)
-                )
-                card.add_widget(boton_reservar)
+            # Datos del servicio
+            datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
+            datos.add_widget(MDLabel(text=servicio["razon_social"], bold=True))
+            datos.add_widget(MDLabel(text="Administrador"))
+            datos.add_widget(MDLabel(text="Ubicación"))
+            card.add_widget(datos)
 
-                self.add_widget(card)
-        else:
-            self.add_widget(MDLabel(text="No hay parqueaderos disponibles", halign="center"))
+            # Botón para reservar el servicio
+            boton = MDRaisedButton(text="Reservar", md_bg_color=(0.3, 0.3, 1, 1),
+                                   pos_hint={"center_y": 0.5},
+                                   on_release=lambda x, s=servicio: reservar_callback(s))
+            card.add_widget(boton)
 
+            content.add_widget(card)
 
-class TabRestaurante(FloatLayout, MDTabsBase):
-    def __init__(self, **kwargs):
+        layout_scroll.add_widget(content)
+        self.add_widget(layout_scroll)
+
+# Clases para cada tipo de servicio, heredando de la clase base
+class TabHotel(BaseTab):
+    def __init__(self, reservar_callback, **kwargs):
+        super().__init__('hotel', reservar_callback, **kwargs)
+
+class TabParqueadero(BaseTab):
+    def __init__(self, reservar_callback, **kwargs):
+        super().__init__('parqueadero', reservar_callback, **kwargs)
+
+class TabRestaurante(BaseTab):
+    def __init__(self, reservar_callback, **kwargs):
+        super().__init__('restaurante', reservar_callback, **kwargs)
+
+# Pantalla principal donde se muestran los tabs de servicios
+class PantallaServicios(MDScreen):
+    def __init__(self, cambiar_pantalla, **kwargs):
         super().__init__(**kwargs)
-        self.add_widget(MDLabel(text="No hay restaurantes disponibles", halign="center"))
-    
-class TabHotel(FloatLayout, MDTabsBase):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.add_widget(MDLabel(text="No hay hoteles disponibles", halign="center"))
-
-class PantallaUsuario(MDScreen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.name = "pantalla_usuario"
-        self.app = App.get_running_app()
+        self.name = "pantalla_servicios"
+        self.reservas = []  # Lista para guardar los servicios reservados
 
         layout = MDBoxLayout(orientation="vertical")
 
-        top_bar = MDTopAppBar(
-            title="SmartBooking",
-            elevation=4,
-            md_bg_color=(0.2, 0.2, 0.8, 1),
-            left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
-            right_action_items=[["account", lambda x: self.abrir_perfil()]]
-        )
+        # Barra superior con título y botones
+        self.toolbar = MDTopAppBar(title="SmartBooking", elevation=4,
+                                   md_bg_color=(0.2, 0.2, 0.8, 1),
+                                   left_action_items=[["arrow-left", lambda x: cambiar_pantalla("login")]],
+                                   right_action_items=[["account", lambda x: print("Perfil")]])
 
-        tabs = MDTabs()
-        tab1 = TabHotel()
-        tab1.title = "Hoteles"
-        tabs.add_widget(tab1)
-        tab2 = TabParqueadero() 
-        tab2.title = "Parqueaderos"
-        tabs.add_widget(tab2)
-        tab3 = TabRestaurante()
-        tab3.title = "Restaurantes"
-        tabs.add_widget(tab3)
+        # Tabs para cada categoría de servicio
+        self.tabs = MDTabs()
+        self.tabs.add_widget(TabHotel(self.reservar_servicio))
+        self.tabs.add_widget(TabParqueadero(self.reservar_servicio))
+        self.tabs.add_widget(TabRestaurante(self.reservar_servicio))
 
-        content_scroll = ScrollView()
-        self.content_box = MDBoxLayout(
-            orientation="vertical",
-            spacing=dp(10),
-            size_hint_y=None
-        )
-        self.content_box.bind(minimum_height=self.content_box.setter('height'))
-        content_scroll.add_widget(self.content_box)
+        # Botones inferiores de navegación
+        botones = MDBoxLayout(size_hint_y=None, height=dp(60), padding=dp(10), spacing=dp(10))
+        botones.add_widget(MDRectangleFlatButton(text="Servicios", on_release=lambda x: None))
+        botones.add_widget(MDRectangleFlatButton(text="Reserva", on_release=lambda x: cambiar_pantalla("reservas")))
 
-        layout.add_widget(top_bar)
-        layout.add_widget(tabs)
+        # Agregar componentes a la pantalla
+        layout.add_widget(self.toolbar)
+        layout.add_widget(self.tabs)
+        layout.add_widget(botones)
+        self.add_widget(layout)
+
+    # Método para agregar un servicio a las reservas
+    def reservar_servicio(self, servicio):
+        if servicio not in self.reservas:
+            self.reservas.append(servicio)
+            print(f"Servicio reservado: {servicio['razon_social']}")
+
+# Pantalla para mostrar los servicios que el usuario ha reservado
+class PantallaReservas(MDScreen):
+    def __init__(self, cambiar_pantalla, servicios=[], **kwargs):
+        super().__init__(**kwargs)
+        self.name = "reservas"
+        self.servicios = servicios  # Servicios reservados
+
+        layout = MDBoxLayout(orientation="vertical")
+
+        # Barra superior
+        toolbar = MDTopAppBar(title="Servicios reservados", elevation=4,
+                              md_bg_color=(0.2, 0.2, 0.8, 1),
+                              left_action_items=[["arrow-left", lambda x: cambiar_pantalla("pantalla_servicios")]],
+                              right_action_items=[["account", lambda x: print("Perfil")]])
+        layout.add_widget(toolbar)
+
+        # Lista scrollable de servicios reservados
+        self.scroll = ScrollView()
+        self.lista = MDBoxLayout(orientation="vertical", padding=dp(10), spacing=dp(10), size_hint_y=None)
+        self.lista.bind(minimum_height=self.lista.setter('height'))
+        self.scroll.add_widget(self.lista)
+
+        # Botones inferiores
+        botones = MDBoxLayout(size_hint_y=None, height=dp(60), padding=dp(10), spacing=dp(10))
+        botones.add_widget(MDRectangleFlatButton(text="Servicios", on_release=lambda x: cambiar_pantalla("pantalla_servicios")))
+        botones.add_widget(MDRectangleFlatButton(text="Reservas", on_release=lambda x: None))
+
+        layout.add_widget(self.scroll)
+        layout.add_widget(botones)
 
         self.add_widget(layout)
 
-    def reservar_servicio(self, servicio):
-        if servicio not in self.app.reservas_usuario:
-            self.app.reservas_usuario.append(servicio)
-            self.cambiar_vista("reservas")
+    # Método llamado automáticamente al entrar a esta pantalla
+    def on_pre_enter(self):
+        self.lista.clear_widgets()  # Limpia la lista para evitar duplicados
+        for servicio in self.servicios:
+            # Crear tarjeta por cada reserva
+            card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
+                          padding=dp(10), ripple_behavior=True, elevation=4)
 
-    def ver_detalle_reserva(self, reserva):
-        print(f"Ver detalles de la reserva: {reserva['nombre']}")
+            img = Image(source="paisaje.png", size_hint=(None, None), size=(dp(80), dp(80)))
+            card.add_widget(img)
 
-    def volver_atras(self):
-        self.manager.current = "loginscreen"
+            datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
+            datos.add_widget(MDLabel(text=servicio["razon_social"], bold=True))
+            datos.add_widget(MDLabel(text="Administrador"))
+            datos.add_widget(MDLabel(text="Ubicación"))
+            card.add_widget(datos)
 
-    def abrir_perfil(self):
-        if self.manager.has_screen("perfil_usuario"):
-            self.manager.current = "perfil_usuario"
-        else:
-            print("Pantalla de perfil no encontrada")
+            boton = MDRaisedButton(text="Ir", md_bg_color=(0.3, 0.3, 1, 1),
+                                   pos_hint={"center_y": 0.5})
+            card.add_widget(boton)
+
+            self.lista.add_widget(card)
+
+# Clase principal de la aplicación
+class SmartBookingApp(MDApp):
+    def build(self):
+        self.sm = MDScreenManager()
+        # Crear pantallas y compartir las reservas entre ellas
+        self.pantalla_servicios = PantallaServicios(self.cambiar_pantalla)
+        self.pantalla_reservas = PantallaReservas(self.cambiar_pantalla, self.pantalla_servicios.reservas)
+
+        self.sm.add_widget(self.pantalla_servicios)
+        self.sm.add_widget(self.pantalla_reservas)
+        return self.sm
+
+    # Método para cambiar entre pantallas
+    def cambiar_pantalla(self, nombre):
+        if nombre == "reservas":
+            self.pantalla_reservas.servicios = self.pantalla_servicios.reservas
+            self.pantalla_reservas.on_pre_enter()
+        self.sm.current = nombre
+
+# Ejecutar la aplicación
+SmartBookingApp().run()
