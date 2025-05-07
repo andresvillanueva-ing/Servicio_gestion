@@ -34,7 +34,6 @@ class registrar_servicio_screen(MDScreen):
         self.name = "registrarservicios"
         mapa = MapView(zoom=15, lat=4.7110, lon=-74.0721) 
         self.imagen = "" 
-        self.ver_imagen = Image(size_hint=(1, None), height="200")
         # Layout principal
         main_layout = MDBoxLayout(orientation='vertical')
 
@@ -100,7 +99,6 @@ class registrar_servicio_screen(MDScreen):
         content_layout.add_widget(MDLabel(text="Seleccionar ubicación en el mapa", halign="center"))
         content_layout.add_widget(self.boton_ubicacion)
         content_layout.add_widget(self.boton_imagen)
-        content_layout.add_widget(self.ver_imagen)
         content_layout.add_widget(self.registro_button)
 
         # Agregar el layout de contenido al ScrollView
@@ -172,7 +170,26 @@ class registrar_servicio_screen(MDScreen):
 
     def abrir_mapa_dialog(self, instance):
         self.mapa = MapView(zoom=10, lat=4.710989, lon=-74.072090, size_hint=(1, 1), height="300dp")
+        self.marker = MapMarker(lat=4.710989, lon=-74.072090)
+        self.mapa.add_marker(self.marker)
 
+        def guardar_ubicacion(x):
+            lat = self.marker.lat
+            lon = self.marker.lon
+            self.ubicacion_cifrada = fernet.encrypt(f"{lat},{lon}".encode())
+            self.dialog_mapa.dismiss()
+
+        self.dialog_mapa = MDDialog(
+        title="Seleccionar ubicación",
+        type="custom",
+        content_cls=self.mapa,
+        buttons=[
+            MDFlatButton(text="Cancelar", on_release=lambda x: self.dialog_mapa.dismiss()),
+            MDFlatButton(text="Guardar", on_release=guardar_ubicacion),
+        ],
+        )
+        self.dialog_mapa.open()
+        
     #-- Método para seleccionar la imagen
     def seleccionar_imagen(self, instance):
         filechooser.open_file(
@@ -216,8 +233,7 @@ class registrar_servicio_screen(MDScreen):
         self.imagen_cifrada = fernet.encrypt(imagen_bytes)
 
         # Mostrar la imagen en la vista previa
-        self.ver_imagen.source = ruta
-        self.ver_imagen.reload()
+        
 
         self.dialog_imagen.dismiss()
 
