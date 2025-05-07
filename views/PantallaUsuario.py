@@ -117,10 +117,10 @@ class PantallaServicios(MDScreen):
             print(f"Servicio reservado: {servicio['razon_social']}")
 
 # Pantalla para mostrar los servicios que el usuario ha reservado
-class PantallaReservas(MDScreen):
+class PantallaUsuario(MDScreen):
     def __init__(self, cambiar_pantalla, servicios=[], **kwargs):
         super().__init__(**kwargs)
-        self.name = "reservas"
+        self.name = "pantalla_usuario"
         self.servicios = servicios  # Servicios reservados
 
         layout = MDBoxLayout(orientation="vertical")
