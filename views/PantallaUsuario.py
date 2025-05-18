@@ -160,13 +160,3 @@ class Pantalla_Usuario(MDScreen):
         layout.add_widget(tabs)
         tab.add_widget(layout)
         return tab
-
-    def reservas_tab(self):
-        tab = MDBottomNavigationItem(name="servicios", text="reservas", icon="home")
-        layout = MDBoxLayout(
-            orientation="vertical",
-            padding="10dp",
-            spacing="10dp"
-        )
-        tab.add_widget(layout)
-        return tab
