@@ -159,3 +159,15 @@ class Pantalla_Usuario(MDScreen):
         layout.add_widget(tabs)
         tab.add_widget(layout)
         return tab
+    
+    def Reservas_tab(self):
+        tab = MDBottomNavigationItem(name="reservas", text="Reservas", icon="calendar")
+        layout = MDBoxLayout(
+            orientation="vertical",
+            padding="10dp",
+            spacing="10dp"
+        )
+
+        layout.add_widget(MDLabel(text="En el momento no hay reservas", halign="center"))
+        tab.add_widget(layout)
+        return tab
