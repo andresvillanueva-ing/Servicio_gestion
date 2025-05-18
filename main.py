@@ -10,7 +10,7 @@ from views.RegistroUsuarioScreen import registro_usuario_screen
 from views.RegistroScreen import Registro_Screen
 from views.PantallaPServicio import Pantalla_P_Servicio
 from views.RegistrarServicio import registrar_servicio_screen
-#from views.PantallaUsuario import PantallaUsuario
+from views.PantallaUsuario import Pantalla_Usuario
 from views.InformacionServicios import informacion_servicios_screen
 from views.ReservasScreen import reservas_screen
 from kivy.app import App
@@ -25,7 +25,7 @@ class ServicioGestion(MDApp):
         manager.add_widget(registro_p_servicio_screen(name="registropservicioscreen"))
         manager.add_widget(Pantalla_P_Servicio(name="pantallaPServicio"))
         manager.add_widget(registrar_servicio_screen(name="registrarservicios"))
-        #manager.add_widget(PantallaUsuario(name="pantalla_usuario"))
+        manager.add_widget(Pantalla_Usuario(name="pantallaUsuario"))
         manager.add_widget(informacion_servicios_screen(name="informacionservicios"))
         manager.add_widget(reservas_screen(name="reservasscreen"))
         return manager
