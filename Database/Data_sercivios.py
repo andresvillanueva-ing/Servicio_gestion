@@ -12,11 +12,11 @@ clave = obtener_clave()
 fernet = Fernet(clave)
 
 # Función para agreagr un nuevo servicio a la base de datos
-def agregar_servicio(razon_social, nit,tipo_servicio, administrador, puestos, ubicacion, imagen):
+def agregar_servicio(razon_social, nit,tipo_servicio, administrador, id_prestador, puestos, ubicacion, imagen):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "INSERT INTO data_servicios (razon_social, nit, tipo_servicio, administrador, puestos, ubicacion, imagen) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    valores = (razon_social, nit, tipo_servicio, administrador, puestos, ubicacion, imagen)
+    sql = "INSERT INTO data_servicios (razon_social, nit, tipo_servicio, administrador, id_prestador, puestos, ubicacion, imagen) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    valores = (razon_social, nit, tipo_servicio, administrador, id_prestador, puestos, ubicacion, imagen)
     cursor.execute(sql, valores)
     conexion.commit()
     cursor.close()
@@ -38,6 +38,26 @@ def obtener_servicios_por_tipo(tipo_servicio):
             "administrador": fernet.decrypt(row[1]).decode(),
             "ubicacion": row[2],
             "imagen": row[3],
+        }
+        for row in servicios
+    ]
+
+def obtener_servicios(id_prestador):
+    conexion = crear_conexion()
+    cursor = conexion.cursor()
+    sql = "SELECT razon_social, administrador, tipo_servicio, ubicacion, puestos FROM data_servicios WHERE id_prestador = %s"
+    cursor.execute(sql, (id_prestador,))
+    servicios = cursor.fetchall()
+    cursor.close()
+    conexion.close()
+
+    return [
+        {
+            "razon_social": fernet.decrypt(row[0]).decode(),
+            "administrador": fernet.decrypt(row[1]).decode(),
+            "tipo_servicio": row[2],
+            "ubicacion": row[3],
+            "puestos": fernet.decrypt(row[4]).decode(),
         }
         for row in servicios
     ]

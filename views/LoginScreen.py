@@ -11,7 +11,6 @@ from kivymd.uix.gridlayout import MDGridLayout
 from Database.Data_P_Servicio import Verificar_datos
 from Database.Data_usuario import Verificar_datos_usuario
 from kivymd.uix.dialog import MDDialog
-from kivy.app import App
 from views.PerfilUsuario import PerfilUsuario
 from kivy.metrics import dp
 
@@ -100,7 +99,7 @@ class login_screen(Screen):
         )
 
         register_link = MDLabel(
-            text="[ref=register][color=#0000FF]Regístrate[/color][/ref]",
+            text="[ref=register][color=#0000FF] Regístrate[/color][/ref]",
             markup=True,
             font_style="Caption",
             halign="left",
@@ -121,6 +120,7 @@ class login_screen(Screen):
     def verificar_credenciales(self, instance):
         usuario = self.username.text.strip()
         contraseña = self.password.text.strip()
+        
 
         if not usuario or not contraseña:
             self.mostrar_dialogo("¡Error!", "Por favor, rellene todos los campos.")
@@ -130,18 +130,21 @@ class login_screen(Screen):
         result = Verificar_datos_usuario(usuario, contraseña)
 
         if result:
-            App.get_running_app().usuario_actual = result
+            from kivy.app import App
+            App.get_running_app().id_usuario = result["id"]  
             self.manager.current = "pantalla_usuario"
             self.username.text = ""
             self.password.text = ""
         elif resultado:
-            App.get_running_app().usuario_actual = resultado
+            from kivy.app import App
+            App.get_running_app().id_prestador = resultado["id"]
             if not self.manager.has_screen("perfil_usuario"):
                 self.manager.add_widget(PerfilUsuario(usuario=resultado, name="perfil_usuario"))
-
             self.manager.current = "pantallaPServicio"
             self.username.text = ""
             self.password.text = ""
+            from kivy.app import App
+            App.get_running_app().id_prestador = resultado["id"]  
         else:
             self.mostrar_dialogo("¡Error!", "Credenciales incorrectas.")
 

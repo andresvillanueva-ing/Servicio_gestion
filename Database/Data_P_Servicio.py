@@ -43,7 +43,7 @@ def Verificar_datos(usuario, contraseña):
     cursor = conexion.cursor()
 
     sql = """
-        SELECT correo_servicio, nombre_propietario, nit, razon_social, telefono_servicio, contraseña_servicio 
+        SELECT id, correo_servicio, nombre_propietario, nit, razon_social, telefono_servicio, contraseña_servicio 
         FROM data_base_servicio 
         WHERE correo_servicio = %s
     """
@@ -54,11 +54,12 @@ def Verificar_datos(usuario, contraseña):
     conexion.close()
 
     if resultado:
-        correo, nombre, nit, razon, telefono, contraseña_hash = resultado
+        id, correo, nombre, nit, razon, telefono, hast_contraseña = resultado
         try:
-            if bcrypt.checkpw(contraseña.encode('utf-8'), contraseña_hash.encode('utf-8')):
+            if bcrypt.checkpw(contraseña.encode('utf-8'), hast_contraseña.encode('utf-8')):
                 # Creamos el diccionario con los datos cifrados
                 usuario_dict = {
+                    "id": id,
                     "correo": correo,
                     "nombre": nombre,
                     "nit": nit,

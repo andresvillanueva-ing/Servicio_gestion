@@ -16,6 +16,7 @@ from plyer import filechooser
 from kivy.uix.image import Image
 from kivymd.uix.dialog import MDDialog
 from kivy_garden.mapview import MapView, MapMarker
+from kivy.app import App
 
 
 # Cargar o generar clave de cifrado
@@ -145,6 +146,7 @@ class registrar_servicio_screen(MDScreen):
                 nit=nit_cifrado,
                 tipo_servicio=tipo_servicio_cifrado,
                 administrador=administrador_cifrado,
+                id_prestador = App.get_running_app().id_prestador,
                 puestos=puestos_cifrado,
                 ubicacion=str(self.mapa),
                 imagen=self.imagen_cifrada 
