@@ -20,7 +20,7 @@ class TabHotel(FloatLayout, MDTabsBase):
         self.build_ui()
 
     def build_ui(self, ):
-        servicios = obtener_servicios_por_tipo("hotel")
+        servicios = obtener_servicios_por_tipo("Hotel")
 
         layout_scroll = ScrollView(size_hint=(1, 1))
         content = MDBoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10), size_hint_y=None)
@@ -52,7 +52,7 @@ class TabParqueadero(FloatLayout, MDTabsBase):
         self.build_ui()
 
     def build_ui(self):
-        servicios = obtener_servicios_por_tipo("parqueadero")
+        servicios = obtener_servicios_por_tipo("Parqueadero")
 
         layout_scroll = ScrollView(size_hint=(1, 1))
         content = MDBoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10), size_hint_y=None)
@@ -83,7 +83,7 @@ class TabRestaurante(FloatLayout, MDTabsBase):
         self.build_ui()
 
     def build_ui(self):
-        servicios = obtener_servicios_por_tipo("restaurante")
+        servicios = obtener_servicios_por_tipo("Restaurante")
 
         layout_scroll = ScrollView(size_hint=(1, 1))
         content = MDBoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10), size_hint_y=None)
@@ -124,6 +124,7 @@ class Pantalla_Usuario(MDScreen):
 
         # Navegación inferior
         bottom_nav = MDBottomNavigation(panel_color=(1, 1, 1, 1))
+
         bottom_nav.add_widget(self.Servicios_tab())
         bottom_nav.add_widget(self.Reservas_tab())
 
@@ -157,5 +158,15 @@ class Pantalla_Usuario(MDScreen):
         tabs.add_widget(TabRestaurante())
 
         layout.add_widget(tabs)
+        tab.add_widget(layout)
+        return tab
+
+    def reservas_tab(self):
+        tab = MDBottomNavigationItem(name="servicios", text="reservas", icon="home")
+        layout = MDBoxLayout(
+            orientation="vertical",
+            padding="10dp",
+            spacing="10dp"
+        )
         tab.add_widget(layout)
         return tab
