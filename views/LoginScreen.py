@@ -132,7 +132,7 @@ class login_screen(Screen):
         if result:
             from kivy.app import App
             App.get_running_app().id_usuario = result["id"]  
-            self.manager.current = "pantalla_usuario"
+            self.manager.current = "pantallaUsuario"
             self.username.text = ""
             self.password.text = ""
         elif resultado:
