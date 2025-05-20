@@ -18,7 +18,6 @@ from kivymd.uix.fitimage import FitImage
 import os
 
 
-
 class TabHotel(FloatLayout, MDTabsBase):
     def __init__(self, parent_screen=None,**kwargs):
         super().__init__(**kwargs)
@@ -95,7 +94,13 @@ class TabParqueadero(FloatLayout, MDTabsBase):
         for servicio in servicios:
             card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
                           padding=dp(10), ripple_behavior=True, elevation=4)
-            imagen = Image(source=servicio["imagen"], size_hint_y=0.6)
+            imagen=FitImage(
+                source=servicio["imagen"],
+                radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
+                size_hint=(None, None),
+                size=(dp(100), dp(100)),
+                pos_hint={"center_x": 0.5}
+            )
             card.add_widget(imagen)
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
             datos.add_widget(MDLabel(text=f"{servicio["razon_social"]}", bold=True, font_style="H6", halign="center"))
@@ -152,7 +157,13 @@ class TabRestaurante(FloatLayout, MDTabsBase):
                           padding=dp(10), ripple_behavior=True, elevation=4)
 
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
-            imagen = Image(source=servicio["imagen"], size_hint_y=0.6)
+            imagen=FitImage(
+                source=servicio["imagen"],
+                radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
+                size_hint=(None, None),
+                size=(dp(100), dp(100)),
+                pos_hint={"center_x": 0.5}
+            )
             card.add_widget(imagen)
             datos.add_widget(MDLabel(text=f"{servicio["razon_social"]}", bold=True, font_style="H6", halign="center"))
             datos.add_widget(MDLabel(text=f"Administrador: {servicio["administrador"]}"))

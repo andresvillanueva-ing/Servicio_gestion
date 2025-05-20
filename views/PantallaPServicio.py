@@ -7,6 +7,7 @@ from kivymd.uix.bottomnavigation import MDBottomNavigation, MDBottomNavigationIt
 from kivymd.uix.card import MDCard
 from kivy.app import App
 from Database.Data_sercivios import obtener_servicios
+from kivymd.uix.scrollview import ScrollView
 
 
 class Pantalla_P_Servicio(MDScreen):
@@ -59,19 +60,26 @@ class Pantalla_P_Servicio(MDScreen):
         layout = MDBoxLayout(orientation="vertical", padding="10dp", spacing="10dp")
 
         layout.add_widget(MDLabel(
-            text="Tu Servicio", halign="center", font_style="H5",
+            text="Tu Servicio \n _____________________", halign="center", font_style="H5",
             size_hint=(1, None), height="50dp"
         ))
-
+        
+        # Layout para la información del servicio con ScrollView
         self.info_layout = MDBoxLayout(
             orientation="vertical",
             spacing="10dp",
             padding="20dp",
-            size_hint=(1, None),
-            pos_hint={"center_x": 0.5, "top": 0.8}
+            size_hint_y=None,
         )
-        layout.add_widget(self.info_layout)
+        self.info_layout.bind(minimum_height=self.info_layout.setter('height'))
 
+        scroll_view = ScrollView(
+            size_hint=(1, 1),
+            bar_width="8dp"
+        )
+        scroll_view.add_widget(self.info_layout)
+
+        layout.add_widget(scroll_view)
         # Botones
         button_layout = MDBoxLayout(
             orientation="horizontal",
@@ -104,8 +112,6 @@ class Pantalla_P_Servicio(MDScreen):
         self.info_layout.clear_widgets()
         from kivy.app import App
         app = App.get_running_app()
-        print("Tiene id_prestador?", hasattr(app, "id_prestador"))
-        print("id_prestador =", getattr(app, "id_prestador", None))
         
         app = App.get_running_app()
         if not hasattr(app, "id_prestador") or not app.id_prestador:
@@ -114,15 +120,12 @@ class Pantalla_P_Servicio(MDScreen):
         
         try:
             servicios = obtener_servicios(App.get_running_app().id_prestador)
-            print("Servicios encontrados:", servicios)
         except Exception as e:
             print("Error al obtener servicios:", e)
             self.info_layout.add_widget(MDLabel(text="Error al cargar servicios", halign="center"))
             return
 
         if servicios:
-            self.info_layout.add_widget(MDLabel(text="Servicios Registrados", halign="center", font_style="H5"))
-            self.info_layout.add_widget(MDLabel(text="____________________", halign="center"))
             for servicio in servicios:
                 self.info_layout.add_widget(self.crear_card_servicio(servicio))
         else:

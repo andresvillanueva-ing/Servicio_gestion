@@ -36,7 +36,7 @@ def obtener_servicios_por_tipo(tipo_servicio):
         {
             "razon_social": fernet.decrypt(row[0]).decode(),
             "administrador": fernet.decrypt(row[1]).decode(),
-            "ubicacion": row[2],
+            "ubicacion": fernet.decrypt(row[2]).decode(),
             "imagen": row[3],
             "puestos": fernet.decrypt(row[4]).decode()
         }
@@ -57,7 +57,7 @@ def obtener_servicios(id_prestador):
             "razon_social": fernet.decrypt(row[0]).decode(),
             "administrador": fernet.decrypt(row[1]).decode(),
             "tipo_servicio": row[2],
-            "ubicacion": row[3],
+            "ubicacion": fernet.decrypt(row[3]).decode(),
             "puestos": fernet.decrypt(row[4]).decode(),
         }
         for row in servicios
