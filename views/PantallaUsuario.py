@@ -12,13 +12,18 @@ from kivy.metrics import dp
 from Database.Data_sercivios import obtener_servicios_por_tipo
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.tab import MDTabs
+from kivymd.uix.dialog import MDDialog
+from kivy.uix.image import Image
+from kivymd.uix.fitimage import FitImage
+import os
 
 
 
 class TabHotel(FloatLayout, MDTabsBase):
-    def __init__(self, **kwargs):
+    def __init__(self, parent_screen=None,**kwargs):
         super().__init__(**kwargs)
         self.title = "Hotel"
+        self.parent_screen = parent_screen
         self.build_ui()
 
     def build_ui(self, ):
@@ -31,29 +36,53 @@ class TabHotel(FloatLayout, MDTabsBase):
         for servicio in servicios:
             card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
                           padding=dp(10), ripple_behavior=True, elevation=4)
-
+            imagen=FitImage(
+                source=servicio["imagen"],
+                radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
+                size_hint=(None, None),
+                size=(dp(100), dp(100)),
+                pos_hint={"center_x": 0.5}
+            )
+            card.add_widget(imagen)
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
             datos.add_widget(MDLabel(text=f"{servicio["razon_social"]}", bold=True, font_style="H6", halign="center"))
             datos.add_widget(MDLabel(text=f"Administrador: {servicio["administrador"]}"))
             datos.add_widget(MDLabel(text=f"Puestos disponibles: {servicio["puestos"]}"))
             card.add_widget(datos)
-            boton_reserva = MDRaisedButton(text="Info", md_bg_color=(0.3, 0.3, 1, 1),
-                                   pos_hint={"center_y": 0.5}, 
-                                   on_release=lambda x, servicio=servicio: self.mostrar_info(servicio)
-                                   )
-            card.add_widget(boton_reserva)
-
+            card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
             content.add_widget(card)
 
         layout_scroll.add_widget(content)
         self.add_widget(layout_scroll)
-        
+
+    def mostrar_dialogo(self, servicio):
+        self.dialog = MDDialog(
+            title="¿Ver información del servicio?",
+            text=f"{servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
+            buttons=[
+                MDFlatButton(
+                     text="CANCELAR", 
+                    on_release=lambda x: self.dialog.dismiss()
+                ),
+                MDFlatButton(
+                    text="VER",
+                    on_release=lambda x: self.ir_a_informacion(servicio)
+                ),
+            ],
+        )
+        self.dialog.open()
+
+    def ir_a_informacion(self, servicio):
+        self.dialog.dismiss()
+        if self.parent_screen and self.parent_screen.manager:
+            self.parent_screen.mostrar_info(servicio)
+
 
 class TabParqueadero(FloatLayout, MDTabsBase):
-    def __init__(self, on_info_callback=None,**kwargs):
+    def __init__(self, parent_screen=None,**kwargs):
         super().__init__(**kwargs)
         self.title = "Parqueadero"
-        self.on_info_callback = on_info_callback
+        self.parent_screen = parent_screen
         self.build_ui()
 
     def build_ui(self):
@@ -65,30 +94,50 @@ class TabParqueadero(FloatLayout, MDTabsBase):
 
         for servicio in servicios:
             card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
-                          padding=dp(10), ripple_behavior=False, elevation=4)
-
+                          padding=dp(10), ripple_behavior=True, elevation=4)
+            imagen = Image(source=servicio["imagen"], size_hint_y=0.6)
+            card.add_widget(imagen)
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
             datos.add_widget(MDLabel(text=f"{servicio["razon_social"]}", bold=True, font_style="H6", halign="center"))
             datos.add_widget(MDLabel(text=f"Administrador: {servicio["administrador"]}"))
             datos.add_widget(MDLabel(text=f"Puestos disponibles: {servicio["puestos"]}"))
+            
             card.add_widget(datos)
-            boton_reserva = MDRaisedButton(text="Info", md_bg_color=(0.3, 0.3, 1, 1),
-                                   pos_hint={"center_y": 0.5}, 
-                                   
-                                   )
-            boton_reserva.bind(on_release=lambda x, servicio=servicio: self.on_info_callback(servicio))
-            card.add_widget(boton_reserva)
 
+            card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
             content.add_widget(card)
 
         layout_scroll.add_widget(content)
         self.add_widget(layout_scroll)
 
+    def mostrar_dialogo(self, servicio):
+        self.dialog = MDDialog(
+            title="¿Ver información del servicio?",
+            text=f"{servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
+            buttons=[
+                MDFlatButton(
+                     text="CANCELAR", 
+                    on_release=lambda x: self.dialog.dismiss()
+                ),
+                MDFlatButton(
+                    text="VER",
+                    on_release=lambda x: self.ir_a_informacion(servicio)
+                ),
+            ],
+        )
+        self.dialog.open()
+
+    def ir_a_informacion(self, servicio):
+        self.dialog.dismiss()
+        if self.parent_screen and self.parent_screen.manager:
+            self.parent_screen.mostrar_info(servicio)
+
+
 class TabRestaurante(FloatLayout, MDTabsBase):
-    def __init__(self,on_info_callback=None, **kwargs):
+    def __init__(self, parent_screen=None, **kwargs):
         super().__init__(**kwargs)
         self.title = "Restaurante"
-        self.on_info_callback = on_info_callback
+        self.parent_screen = parent_screen
         self.build_ui()
 
     def build_ui(self):
@@ -103,20 +152,40 @@ class TabRestaurante(FloatLayout, MDTabsBase):
                           padding=dp(10), ripple_behavior=True, elevation=4)
 
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
+            imagen = Image(source=servicio["imagen"], size_hint_y=0.6)
+            card.add_widget(imagen)
             datos.add_widget(MDLabel(text=f"{servicio["razon_social"]}", bold=True, font_style="H6", halign="center"))
             datos.add_widget(MDLabel(text=f"Administrador: {servicio["administrador"]}"))
             datos.add_widget(MDLabel(text=f"Puestos disponibles: {servicio["puestos"]}"))
             card.add_widget(datos)
-            boton_reserva = MDRaisedButton(text="Info", md_bg_color=(0.3, 0.3, 1, 1),
-                                   pos_hint={"center_y": 0.5}, 
-                                   on_release=lambda x, servicio=servicio: self.on_info_callback(servicio)
-                                   )
-            card.add_widget(boton_reserva)
+            card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
+            
             content.add_widget(card)
 
         layout_scroll.add_widget(content)
         self.add_widget(layout_scroll)
 
+    def mostrar_dialogo(self, servicio):
+        self.dialog = MDDialog(
+            title="¿Ver información del servicio?",
+            text=f"{servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
+            buttons=[
+                MDFlatButton(
+                     text="CANCELAR", 
+                    on_release=lambda x: self.dialog.dismiss()
+                ),
+                MDFlatButton(
+                    text="VER",
+                    on_release=lambda x: self.ir_a_informacion(servicio)
+                ),
+            ],
+        )
+        self.dialog.open()
+
+    def ir_a_informacion(self, servicio):
+        self.dialog.dismiss()
+        if self.parent_screen and self.parent_screen.manager:
+            self.parent_screen.mostrar_info(servicio)
         
 class Pantalla_Usuario(MDScreen):
     def __init__(self, **kwargs):
@@ -161,9 +230,9 @@ class Pantalla_Usuario(MDScreen):
          # Crear tabs y añadirlos
         tabs = MDTabs()
 
-        tabs.add_widget(TabHotel())
-        tabs.add_widget(TabParqueadero(on_info_callback=self.mostrar_info))
-        tabs.add_widget(TabRestaurante())
+        tabs.add_widget(TabHotel(parent_screen=self))
+        tabs.add_widget(TabParqueadero(parent_screen=self))
+        tabs.add_widget(TabRestaurante(parent_screen=self))
 
         layout.add_widget(tabs)
         tab.add_widget(layout)
@@ -181,16 +250,11 @@ class Pantalla_Usuario(MDScreen):
         tab.add_widget(layout)
         return tab
 
-    def mostrar_info(self, servicio):
-        print("Manager:", self.manager)
-        print("Servicio:", servicio)
-        if self.manager:
-            self.manager.current = "informacionservicios"
-        else:
-            print("No se pudo cambiar de pantalla porque self.manager es None")
+    
 
     def volver_atras(self):
         self.manager.current = "loginscreen"
 
     def abrir_usuario(self):
         self.manager.current = "pantalla_usuario"
+

@@ -7,17 +7,15 @@ from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.boxlayout import BoxLayout
-from Database.Data_sercivios import agregar_servicio
-from cryptography.fernet import Fernet
-import bcrypt
-import re
-import os
-from plyer import filechooser
 from kivy.uix.image import Image
 from kivymd.uix.dialog import MDDialog
 from kivy_garden.mapview import MapView, MapMarker
 from kivy.app import App
+from plyer import filechooser
+from cryptography.fernet import Fernet
+import os
 
+from Database.Data_sercivios import agregar_servicio
 
 # Cargar o generar clave de cifrado
 if not os.path.exists("clave.key"):
@@ -34,8 +32,8 @@ class registrar_servicio_screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "registrarservicios"
-        mapa = MapView(zoom=15, lat=4.7110, lon=-74.0721) 
-        self.imagen = "" 
+        self.ruta_imagen = ""  # Ahora será una ruta string
+
         # Layout principal
         main_layout = MDBoxLayout(orientation='vertical')
 
@@ -71,7 +69,6 @@ class registrar_servicio_screen(MDScreen):
         )
         self.boton_imagen.tooltip_text = "Seleccionar imagen"
 
-        # ComboBox opciones para tipo de servicios
         self.tipo_servicios_button = MDFlatButton(
             text="Tipo de servicio", pos_hint={"center_x": 0.5}
         )
@@ -103,17 +100,11 @@ class registrar_servicio_screen(MDScreen):
         content_layout.add_widget(self.boton_imagen)
         content_layout.add_widget(self.registro_button)
 
-        # Agregar el layout de contenido al ScrollView
         scroll_view.add_widget(content_layout)
-
-        # Agregar el ScrollView al layout principal
         main_layout.add_widget(scroll_view)
-
-        # Agregar el layout principal a la pantalla
         self.add_widget(main_layout)
 
     def registrar(self, instance):
-        # Validar que todos los campos estén llenos
         if not all([
             self.razon_social.text.strip(),
             self.nit.text.strip(),
@@ -121,35 +112,30 @@ class registrar_servicio_screen(MDScreen):
             self.Puestos.text.strip(),
             self.tipo_servicios_button.text != "Tipo de servicio"
         ]):
-            print("⚠️ Todos los campos son obligatorios, incluyendo el tipo de servicio.")
+            print("⚠️ Todos los campos son obligatorios.")
+            return
+
+        if not self.ruta_imagen:
+            print("⚠️ No se ha seleccionado una imagen.")
             return
 
         try:
-            # Cifrar los datos
             razon_social_cifrado = fernet.encrypt(self.razon_social.text.encode())
-            nit_cifrado = fernet.encrypt(str(self.nit.text).encode())
+            nit_cifrado = fernet.encrypt(self.nit.text.encode())
             tipo_servicio_cifrado = self.tipo_servicios_button.text
             administrador_cifrado = fernet.encrypt(self.Administrador.text.encode())
-            puestos_cifrado = fernet.encrypt(str(self.Puestos.text).encode())
-            
-            # Verificar si la imagen está disponible
-            if not hasattr(self, 'imagen_cifrada'):
-                print("⚠️ No se ha seleccionado una imagen.")
-                return
-
-            #if not hasattr(self, 'ubicacion_cifrada'):
-             #   print("⚠️ No se ha seleccionado una ubicación en el mapa.")
-              #  return
+            puestos_cifrado = fernet.encrypt(self.Puestos.text.encode())
+            ubicacion_cifrada = getattr(self, 'ubicacion_cifrada', fernet.encrypt(b"0.0,0.0"))
 
             agregar_servicio(
                 razon_social=razon_social_cifrado,
                 nit=nit_cifrado,
                 tipo_servicio=tipo_servicio_cifrado,
                 administrador=administrador_cifrado,
-                id_prestador = App.get_running_app().id_prestador,
+                id_prestador=App.get_running_app().id_prestador,
                 puestos=puestos_cifrado,
-                ubicacion=str(self.mapa),
-                imagen=self.imagen_cifrada 
+                ubicacion=ubicacion_cifrada,
+                imagen=self.ruta_imagen  # ahora se guarda como string
             )
 
             print("✅ Registro exitoso para:", self.razon_social.text)
@@ -160,7 +146,7 @@ class registrar_servicio_screen(MDScreen):
             self.Administrador.text = ""
             self.Puestos.text = ""
             self.tipo_servicios_button.text = "Tipo de servicio"
-            self.imagen_cifrada = None
+            self.ruta_imagen = ""
 
             self.manager.current = "pantallaPServicio"
 
@@ -183,17 +169,16 @@ class registrar_servicio_screen(MDScreen):
             self.dialog_mapa.dismiss()
 
         self.dialog_mapa = MDDialog(
-        title="Seleccionar ubicación",
-        type="custom",
-        content_cls=self.mapa,
-        buttons=[
-            MDFlatButton(text="Cancelar", on_release=lambda x: self.dialog_mapa.dismiss()),
-            MDFlatButton(text="Guardar", on_release=guardar_ubicacion),
-        ],
+            title="Seleccionar ubicación",
+            type="custom",
+            content_cls=self.mapa,
+            buttons=[
+                MDFlatButton(text="Cancelar", on_release=lambda x: self.dialog_mapa.dismiss()),
+                MDFlatButton(text="Guardar", on_release=guardar_ubicacion),
+            ],
         )
         self.dialog_mapa.open()
-        
-    #-- Método para seleccionar la imagen
+
     def seleccionar_imagen(self, instance):
         filechooser.open_file(
             title="Seleccionar imagen",
@@ -201,12 +186,10 @@ class registrar_servicio_screen(MDScreen):
             on_selection=self.imagen_seleccionada
         )
 
-    # Método para mostrar la imagen seleccionada
     def imagen_seleccionada(self, seleccion):
         if seleccion:
             ruta = seleccion[0]
 
-            # Crear un layout para contener la imagen
             class ImagenDialogLayout(BoxLayout):
                 def __init__(self, ruta_img, **kwargs):
                     super().__init__(orientation='vertical', **kwargs)
@@ -231,17 +214,8 @@ class registrar_servicio_screen(MDScreen):
             )
             self.dialog_imagen.open()
 
-    #-- Método para confirmar la imagen seleccionada
     def confirmar_imagen(self, ruta):
-        # Leer la imagen como binario
-        with open(ruta, "rb") as file:
-            imagen_bytes = file.read()
-
-        self.imagen_cifrada = fernet.encrypt(imagen_bytes)
-
-        # Mostrar la imagen en la vista previa
-        
-
+        self.ruta_imagen = ruta  # guardar la ruta como string
         self.dialog_imagen.dismiss()
 
     def volver_atras(self):
