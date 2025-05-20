@@ -50,9 +50,10 @@ class TabHotel(FloatLayout, MDTabsBase):
         
 
 class TabParqueadero(FloatLayout, MDTabsBase):
-    def __init__(self, **kwargs):
+    def __init__(self, on_info_callback=None,**kwargs):
         super().__init__(**kwargs)
         self.title = "Parqueadero"
+        self.on_info_callback = on_info_callback
         self.build_ui()
 
     def build_ui(self):
@@ -75,7 +76,7 @@ class TabParqueadero(FloatLayout, MDTabsBase):
                                    pos_hint={"center_y": 0.5}, 
                                    
                                    )
-            boton_reserva.bind(on_release=self.mostrar_info(servicio))
+            boton_reserva.bind(on_release=lambda x, servicio=servicio: self.on_info_callback(servicio))
             card.add_widget(boton_reserva)
 
             content.add_widget(card)
@@ -161,7 +162,7 @@ class Pantalla_Usuario(MDScreen):
         tabs = MDTabs()
 
         tabs.add_widget(TabHotel())
-        tabs.add_widget(TabParqueadero())
+        tabs.add_widget(TabParqueadero(on_info_callback=self.mostrar_info))
         tabs.add_widget(TabRestaurante())
 
         layout.add_widget(tabs)
