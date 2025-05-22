@@ -1,5 +1,4 @@
 from kivy.core.text import LabelBase
-LabelBase.register(name="Yellowtail", fn_regular="fonts/fuente.ttf")
 
 from kivy.uix.screenmanager import Screen
 from kivymd.uix.button import MDRaisedButton, MDFlatButton
@@ -11,8 +10,10 @@ from kivymd.uix.gridlayout import MDGridLayout
 from Database.Data_P_Servicio import Verificar_datos
 from Database.Data_usuario import Verificar_datos_usuario
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.fitimage import FitImage
 from views.PerfilUsuario import PerfilUsuario
 from kivy.metrics import dp
+
 
 class login_screen(Screen):
     def __init__(self, **kwargs):
@@ -20,23 +21,26 @@ class login_screen(Screen):
         self.name = "loginscreen"
 
         layout = RelativeLayout()
+        # Color de fondo
+        layout.md_bg_color = ("#FDFBEE")
 
         # TopAppBar
         top_bar = MDBoxLayout(
             orientation="horizontal",
             pos_hint={"top": 1},
             size_hint_y=None,
-            height=dp(100),  # Aquí puedes cambiar el alto como quieras
-            md_bg_color=(0, 0.4, 0.8, 1),
+            height=dp(120), 
+            md_bg_color=("#015551"),  
             padding=[dp(10), dp(30), dp(10), dp(10)],  # Ajusta para más espacio interno
-            spacing=dp(10)
+            spacing=dp(10),
+            radius=[0, 0, dp(25), dp(25)]
         )
+
         titulo = MDLabel(
             text="Smartbooking",
             halign="center",
             theme_text_color="Custom",
             text_color=(1, 1, 1, 1),
-            font_name="Yellowtail", 
             font_style="H3"
         )
 
@@ -58,12 +62,12 @@ class login_screen(Screen):
             font_style="H4",
             halign="center",
             theme_text_color="Custom",
-            text_color=(27, 27, 27, 27),
+            text_color=("#000000"),
         )
 
         # Campo de correo con icono
         self.username = MDTextField(
-            hint_text="Email",
+            hint_text="Correo Electronico",
             icon_right="email",
             size_hint_x=1,
             mode="rectangle",
@@ -71,7 +75,7 @@ class login_screen(Screen):
 
         # Campo de contraseña con icono
         self.password = MDTextField(
-            hint_text="Password",
+            hint_text="Contraseña",
             password=True,
             icon_right="lock",
             size_hint_x=1,
@@ -82,27 +86,27 @@ class login_screen(Screen):
         login_button = MDRaisedButton(
             text="Iniciar sesión",
             pos_hint={"center_x": 0.5},
-            md_bg_color=(0.4, 0, 1, 1),  # Color morado
+            md_bg_color=("#FE4F2D"),  
             size_hint_x=1,
+            font_style="Button"
         )
         login_button.bind(on_release=self.verificar_credenciales)
 
         # Contenedor de "No estás registrado?" y "Regístrate"
-        register_layout = MDGridLayout(cols=2, padding=[10, 0, 10, 0])
+        register_layout = MDGridLayout(cols=2)
 
         register_text = MDLabel(
             text="[i]No estás registrado? [/i]",
             markup=True,
             font_style="Caption",
-            theme_text_color="Hint",
-            halign="right",
+            halign="left",
         )
 
         register_link = MDLabel(
-            text="[ref=register][color=#0000FF] Regístrate[/color][/ref]",
+            text="[ref=register][color=#FE4F2D] Regístrate[/color][/ref]",
             markup=True,
-            font_style="Caption",
-            halign="left",
+            font_size="20sp",
+            halign="center",
         )
         register_link.bind(on_ref_press=self.screen_registro)
 

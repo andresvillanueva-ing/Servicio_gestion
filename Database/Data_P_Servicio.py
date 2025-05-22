@@ -24,15 +24,15 @@ def descifrar_campos_usuario(usuario_dict, campos_a_descifrar):
     return usuario_descifrado
 
 
-def agregar_prestador_servicio(correo_servicio, nombre_propietario, nit, razon_social, telefono_servicio, contraseña_servicio):
+def agregar_prestador_servicio(correo_servicio, nombre_propietario, telefono_servicio, contraseña_servicio):
     conexion = crear_conexion()
     cursor = conexion.cursor()
     sql = """
         INSERT INTO data_base_servicio 
-        (correo_servicio, nombre_propietario, nit, razon_social, telefono_servicio, contraseña_servicio) 
+        (correo_servicio, nombre_propietario, telefono_servicio, contraseña_servicio) 
         VALUES (%s, %s, %s, %s, %s, %s)
     """
-    valores = (correo_servicio, nombre_propietario, nit, razon_social, telefono_servicio, contraseña_servicio)
+    valores = (correo_servicio, nombre_propietario, telefono_servicio, contraseña_servicio)
     cursor.execute(sql, valores)
     conexion.commit()
     cursor.close()
@@ -43,7 +43,7 @@ def Verificar_datos(usuario, contraseña):
     cursor = conexion.cursor()
 
     sql = """
-        SELECT id, correo_servicio, nombre_propietario, nit, razon_social, telefono_servicio, contraseña_servicio 
+        SELECT id, correo_servicio, nombre_propietario,  telefono_servicio, contraseña_servicio 
         FROM data_base_servicio 
         WHERE correo_servicio = %s
     """
@@ -62,12 +62,10 @@ def Verificar_datos(usuario, contraseña):
                     "id": id,
                     "correo": correo,
                     "nombre": nombre,
-                    "nit": nit,
-                    "razon_social": razon,
                     "telefono": telefono
                 }
                 # Desciframos los campos antes de retornarlos
-                usuario_descifrado = descifrar_campos_usuario(usuario_dict, ['nombre', 'nit', 'razon_social', 'telefono'])
+                usuario_descifrado = descifrar_campos_usuario(usuario_dict, ['nombre', 'telefono'])
                 return usuario_descifrado
         except Exception as e:
             print("Error al verificar contraseña:", e)

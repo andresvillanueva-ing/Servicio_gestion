@@ -28,7 +28,7 @@ class ServicioGestion(MDApp):
         self.manager.add_widget(SplashScreen(name="splashscreen"))
         self.manager.current = "splashscreen"  # <- Aquí se establece la pantalla inicial
 
-        Clock.schedule_once(self.cargar_datos, 10)
+        Clock.schedule_once(self.cargar_datos, 5)
 
         self.manager.add_widget(login_screen(name="loginscreen"))
         self.manager.add_widget(Registro_Screen(name="registroscreen"))

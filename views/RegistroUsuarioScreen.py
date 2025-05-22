@@ -10,7 +10,9 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.label import MDLabel
 from kivy.uix.widget import Widget
 from kivymd.uix.toolbar import MDTopAppBar
-from kivymd.uix.anchorlayout import MDAnchorLayout
+from kivymd.uix.fitimage import FitImage
+from kivy.uix.scrollview import ScrollView
+from kivy.metrics import dp
 import os
 from kivymd.uix.dialog import MDDialog
 from Database.Data_usuario import agregar_usuario
@@ -31,6 +33,9 @@ class registro_usuario_screen(MDScreen):
         super().__init__(**kwargs)
         self.name="registrousuarioscreen"
         
+        #color de fondo
+        self.md_bg_color = ("#FDFBEE")
+        # Layout principal
         layout = MDBoxLayout(
             orientation =  "vertical",)
     
@@ -39,33 +44,52 @@ class registro_usuario_screen(MDScreen):
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],  
             elevation=5,
             size_hint_y=None,  
-            height="56dp"  
+            height="56dp",
+            md_bg_color=("#015551"),  # Color morado
         )
+
+        imagen=FitImage(
+                source="image/usuario.png",
+                radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
+                size_hint=(None, None),
+                size=(dp(150), dp(150)),
+                pos_hint={"center_x": 0.5}
+            )
         
-        
-        self.nombre_usuario = MDTextField(hint_text = "Nombre Completo")
-        self.correo_usuario = MDTextField(hint_text = "Correo Electronico", helper_text = "", helper_text_mode = "on_error")
-        self.telefono_usuario = MDTextField(hint_text = "Telefono", input_filter = "int")
+        scrollView = ScrollView()
+        scroll_layout = MDBoxLayout(orientation='vertical', size_hint_y=None, spacing=dp(10), padding=dp(10))
+        scroll_layout.bind(minimum_height=scroll_layout.setter('height'))
+
+        # Campos de texto
+        self.nombre_usuario = MDTextField(hint_text = "Nombre Completo", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="account")
+        self.correo_usuario = MDTextField(hint_text = "Correo Electronico", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="email")
+        self.telefono_usuario = MDTextField(hint_text = "Telefono", input_filter = "int", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="phone")
         self.telefono_usuario.bind(text=self.validar_longitud_telefono)
-        self.contraseña_usuario = MDTextField(hint_text = "Contraseña", password = True, helper_text = "", helper_text_mode = "on_error")
-        self.v_contraseña_usuario = MDTextField(hint_text = "verificar contraseña", password = True, helper_text = "", helper_text_mode = "on_error")
+        self.contraseña_usuario = MDTextField(hint_text = "Contraseña", password = True, helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="lock")
+        self.v_contraseña_usuario = MDTextField(hint_text = "verificar contraseña", password = True, helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="lock")
         
-        self.button_registro_usuario = MDRaisedButton(text = "Registrarse", pos_hint = {"center_x": 0.5})
+        self.button_registro_usuario = MDRaisedButton(text = "Registrarse", md_bg_color="#FE4F2D", font_style="Button", pos_hint = {"center_x": 0.5})
         self.button_registro_usuario.bind(on_press=self.registrar_usuario)
         
         google_button = MDIconButton(icon="google", pos_hint={"center_x": 0.5})
         google_button.bind(on_press= self.google_sign_in)
         
+        
+        # Agregar widgets al scroll layout
+        scroll_layout.add_widget(self.nombre_usuario)
+        scroll_layout.add_widget(self.correo_usuario)
+        scroll_layout.add_widget(self.telefono_usuario)
+        scroll_layout.add_widget(self.contraseña_usuario)
+        scroll_layout.add_widget(self.v_contraseña_usuario)
+        scroll_layout.add_widget(self.button_registro_usuario)
+        scroll_layout.add_widget(MDLabel(text="0", halign="center"))
+        scroll_layout.add_widget(google_button)
+        scrollView.add_widget(scroll_layout)
+
+        # Agregar widgets al layout principal
         layout.add_widget(top_bar)
-        layout.add_widget(self.nombre_usuario)
-        layout.add_widget(self.correo_usuario)
-        layout.add_widget(self.telefono_usuario)
-        layout.add_widget(self.contraseña_usuario)
-        layout.add_widget(self.v_contraseña_usuario)
-        layout.add_widget(self.button_registro_usuario)
-        layout.add_widget(MDLabel(text="0", halign="center"))
-        layout.add_widget(google_button)
-        layout.add_widget(Widget())
+        layout.add_widget(imagen)
+        layout.add_widget(scrollView)
         
         self.add_widget(layout)
 

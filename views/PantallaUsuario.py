@@ -33,7 +33,7 @@ class TabHotel(FloatLayout, MDTabsBase):
         content.bind(minimum_height=content.setter('height'))
 
         for servicio in servicios:
-            card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
+            card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(130),
                           padding=dp(10), ripple_behavior=True, elevation=4)
             imagen=FitImage(
                 source=servicio["imagen"],
@@ -44,9 +44,10 @@ class TabHotel(FloatLayout, MDTabsBase):
             )
             card.add_widget(imagen)
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
-            datos.add_widget(MDLabel(text=f"{servicio["razon_social"]}", bold=True, font_style="H6", halign="center"))
-            datos.add_widget(MDLabel(text=f"Administrador: {servicio["administrador"]}"))
-            datos.add_widget(MDLabel(text=f"Puestos disponibles: {servicio["puestos"]}"))
+            datos.add_widget(MDLabel(text=servicio["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
+            datos.add_widget(MDLabel(text="[b]Admin:[/b] " + servicio['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicio["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
             card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
             content.add_widget(card)
@@ -103,10 +104,10 @@ class TabParqueadero(FloatLayout, MDTabsBase):
             )
             card.add_widget(imagen)
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
-            datos.add_widget(MDLabel(text=f"{servicio["razon_social"]}", bold=True, font_style="H6", halign="center"))
-            datos.add_widget(MDLabel(text=f"Administrador: {servicio["administrador"]}"))
-            datos.add_widget(MDLabel(text=f"Puestos disponibles: {servicio["puestos"]}"))
-            
+            datos.add_widget(MDLabel(text=servicio["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
+            datos.add_widget(MDLabel(text="[b]Admin:[/b] " + servicio['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicio["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
 
             card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
@@ -156,7 +157,6 @@ class TabRestaurante(FloatLayout, MDTabsBase):
             card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
                           padding=dp(10), ripple_behavior=True, elevation=4)
 
-            datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
             imagen=FitImage(
                 source=servicio["imagen"],
                 radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
@@ -165,9 +165,11 @@ class TabRestaurante(FloatLayout, MDTabsBase):
                 pos_hint={"center_x": 0.5}
             )
             card.add_widget(imagen)
-            datos.add_widget(MDLabel(text=f"{servicio["razon_social"]}", bold=True, font_style="H6", halign="center"))
-            datos.add_widget(MDLabel(text=f"Administrador: {servicio["administrador"]}"))
-            datos.add_widget(MDLabel(text=f"Puestos disponibles: {servicio["puestos"]}"))
+            datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
+            datos.add_widget(MDLabel(text=servicio["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
+            datos.add_widget(MDLabel(text="[b]Admin:[/b] " + servicio['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicio["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
             card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
             

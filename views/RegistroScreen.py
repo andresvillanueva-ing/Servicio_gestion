@@ -12,14 +12,17 @@ class Registro_Screen(MDScreen):
 
         # Layout principal vertical
         root_layout = MDBoxLayout(orientation="vertical")
-
+        # Color de fondo
+        root_layout.md_bg_color = ("#FDFBEE")
         # Barra superior
         top_bar = MDTopAppBar(
             title="Registro",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]], 
             elevation=5,
             size_hint_y=None,  
-            height="56dp"
+            height="56dp",
+            md_bg_color=("#015551"),  # Color morado
+
         )
 
         # Layout flotante para centrar botones
@@ -30,7 +33,11 @@ class Registro_Screen(MDScreen):
             text="Usuario", 
             size_hint=(None, None),
             size=(250, 50),
-            pos_hint={"center_x": 0.5, "center_y": 0.6}
+            font_style="Button",
+            theme_text_color="Custom",
+            text_color=(1, 1, 1, 1),
+            pos_hint={"center_x": 0.5, "center_y": 0.6},
+            md_bg_color=("#FE4F2D") 
         )
         self.user_button.bind(on_press=self.registro_usuario)
 
@@ -39,7 +46,11 @@ class Registro_Screen(MDScreen):
             text="Prestador de Servicios",
             size_hint=(None, None),
             size=(250, 50),
-            pos_hint={"center_x": 0.5, "center_y": 0.45}
+            font_style="Button",
+            theme_text_color="Custom",
+            text_color=(1, 1, 1, 1),
+            pos_hint={"center_x": 0.5, "center_y": 0.45},
+            md_bg_color=("#FE4F2D")  
         )
         self.service_button.bind(on_press=self.registro_servicio)
 
