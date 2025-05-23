@@ -34,6 +34,13 @@ class reservas_screen(MDScreen):
             on_release=self.show_date_picker
         )
 
+        # Botón para agregar la reserva
+        self.boton_reservar = MDRaisedButton(
+            text="Reservar",
+            pos_hint={"center_x": 0.5},
+            on_release=self.reservar
+        )
+
         
         # Agregar widgets al contenido
         content.add_widget(MDLabel(text="Datos de la reserva", halign="center"))
