@@ -31,17 +31,16 @@ class login_screen(Screen):
             size_hint_y=None,
             height=dp(120), 
             md_bg_color=("#015551"),  
-            padding=[dp(10), dp(30), dp(10), dp(10)],  # Ajusta para más espacio interno
-            spacing=dp(10),
-            radius=[0, 0, dp(25), dp(25)]
+            radius=[0, 0, dp(25), dp(25)],
         )
 
         titulo = MDLabel(
-            text="Smartbooking",
+            text="ReservaFacil®",
             halign="center",
             theme_text_color="Custom",
             text_color=(1, 1, 1, 1),
-            font_style="H3"
+            font_style="H3",
+            
         )
 
         top_bar.add_widget(titulo)

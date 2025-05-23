@@ -75,7 +75,10 @@ class TabHotel(FloatLayout, MDTabsBase):
     def ir_a_informacion(self, servicio):
         self.dialog.dismiss()
         if self.parent_screen and self.parent_screen.manager:
-            self.parent_screen.mostrar_info(servicio)
+            sm = self.parent_screen.manager
+            pantalla_info = sm.get_screen("informacionservicios")
+            pantalla_info.servicio_actual = servicio  # asignar el servicio
+            sm.current = "informacionservicios"
 
 
 class TabParqueadero(FloatLayout, MDTabsBase):
@@ -136,7 +139,10 @@ class TabParqueadero(FloatLayout, MDTabsBase):
     def ir_a_informacion(self, servicio):
         self.dialog.dismiss()
         if self.parent_screen and self.parent_screen.manager:
-            self.parent_screen.mostrar_info(servicio)
+            sm = self.parent_screen.manager
+            pantalla_info = sm.get_screen("informacionservicios")
+            pantalla_info.servicio_actual = servicio  # asignar el servicio
+            sm.current = "informacionservicios"
 
 
 class TabRestaurante(FloatLayout, MDTabsBase):
@@ -181,7 +187,7 @@ class TabRestaurante(FloatLayout, MDTabsBase):
     def mostrar_dialogo(self, servicio):
         self.dialog = MDDialog(
             title="¿Ver información del servicio?",
-            text=f"{servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
+            text=f"Nombre del servicio: {servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
             buttons=[
                 MDFlatButton(
                      text="CANCELAR", 
@@ -198,7 +204,10 @@ class TabRestaurante(FloatLayout, MDTabsBase):
     def ir_a_informacion(self, servicio):
         self.dialog.dismiss()
         if self.parent_screen and self.parent_screen.manager:
-            self.parent_screen.mostrar_info(servicio)
+            sm = self.parent_screen.manager
+            pantalla_info = sm.get_screen("informacionservicios")
+            pantalla_info.servicio_actual = servicio  # asignar el servicio
+            sm.current = "informacionservicios"
         
 class Pantalla_Usuario(MDScreen):
     def __init__(self, **kwargs):
@@ -262,7 +271,6 @@ class Pantalla_Usuario(MDScreen):
         layout.add_widget(MDLabel(text="En el momento no hay reservas", halign="center"))
         tab.add_widget(layout)
         return tab
-
     
 
     def volver_atras(self):

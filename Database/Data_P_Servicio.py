@@ -30,7 +30,7 @@ def agregar_prestador_servicio(correo_servicio, nombre_propietario, telefono_ser
     sql = """
         INSERT INTO data_base_servicio 
         (correo_servicio, nombre_propietario, telefono_servicio, contraseña_servicio) 
-        VALUES (%s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s)
     """
     valores = (correo_servicio, nombre_propietario, telefono_servicio, contraseña_servicio)
     cursor.execute(sql, valores)
@@ -54,7 +54,7 @@ def Verificar_datos(usuario, contraseña):
     conexion.close()
 
     if resultado:
-        id, correo, nombre, nit, razon, telefono, hast_contraseña = resultado
+        id, correo, nombre, telefono, hast_contraseña = resultado
         try:
             if bcrypt.checkpw(contraseña.encode('utf-8'), hast_contraseña.encode('utf-8')):
                 # Creamos el diccionario con los datos cifrados

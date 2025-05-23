@@ -13,7 +13,7 @@ from views.RegistrarServicio import registrar_servicio_screen
 from views.PantallaUsuario import Pantalla_Usuario
 from views.InformacionServicios import informacion_servicios_screen
 from views.ReservasScreen import reservas_screen
-from kivy.app import App
+
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
 Builder.load_file('views/SplashScreen.kv')
@@ -26,9 +26,9 @@ class ServicioGestion(MDApp):
         self.manager = MDScreenManager()
     
         self.manager.add_widget(SplashScreen(name="splashscreen"))
-        self.manager.current = "splashscreen"  # <- Aquí se establece la pantalla inicial
+        self.manager.current = "splashscreen"
 
-        Clock.schedule_once(self.cargar_datos, 5)
+        Clock.schedule_once(self.cargar_datos, 10)
 
         self.manager.add_widget(login_screen(name="loginscreen"))
         self.manager.add_widget(Registro_Screen(name="registroscreen"))

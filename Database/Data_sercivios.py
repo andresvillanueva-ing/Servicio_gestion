@@ -12,11 +12,11 @@ clave = obtener_clave()
 fernet = Fernet(clave)
 
 # Función para agreagr un nuevo servicio a la base de datos
-def agregar_servicio(razon_social, nit,tipo_servicio, administrador, id_prestador, puestos, ubicacion, imagen):
+def agregar_servicio(razon_social, nit,tipo_servicio, administrador, id_prestador,descripcion, horario, puestos, ubicacion, imagen):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "INSERT INTO data_servicios (razon_social, nit, tipo_servicio, administrador, id_prestador, puestos, ubicacion, imagen) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    valores = (razon_social, nit, tipo_servicio, administrador, id_prestador, puestos, ubicacion, imagen)
+    sql = "INSERT INTO data_servicios (razon_social, nit, tipo_servicio, administrador, id_prestador,descripcion, horario, puestos, ubicacion, imagen) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    valores = (razon_social, nit, tipo_servicio, administrador, id_prestador, descripcion, horario,puestos, ubicacion, imagen)
     cursor.execute(sql, valores)
     conexion.commit()
     cursor.close()
@@ -26,7 +26,7 @@ def agregar_servicio(razon_social, nit,tipo_servicio, administrador, id_prestado
 def obtener_servicios_por_tipo(tipo_servicio):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "SELECT razon_social, administrador, ubicacion, imagen, puestos FROM data_servicios WHERE tipo_servicio = %s"
+    sql = "SELECT razon_social, administrador, ubicacion, imagen, descripcion, horario, puestos FROM data_servicios WHERE tipo_servicio = %s"
     cursor.execute(sql, (tipo_servicio,))
     servicios = cursor.fetchall()
     cursor.close()
@@ -38,7 +38,9 @@ def obtener_servicios_por_tipo(tipo_servicio):
             "administrador": fernet.decrypt(row[1]).decode(),
             "ubicacion": fernet.decrypt(row[2]).decode(),
             "imagen": row[3],
-            "puestos": fernet.decrypt(row[4]).decode()
+            "descripcion": fernet.decrypt(row[4]).decode(),
+            "horario":fernet.decrypt(row[5]).decode(),
+            "puestos": fernet.decrypt(row[6]).decode()
         }
         for row in servicios
     ]

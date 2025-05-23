@@ -55,6 +55,8 @@ class registrar_servicio_screen(MDScreen):
         self.razon_social = MDTextField(hint_text="Razón social")
         self.nit = MDTextField(hint_text="NIT", input_filter="int")
         self.Administrador = MDTextField(hint_text="Nombre del administrador")
+        self.Descripcion = MDTextField(hint_text="Descripcion del servicio")
+        self.horario = MDTextField(hint_text="Horario de atencion. ej: 00:00 a 00:00")
         self.Puestos = MDTextField(hint_text="Puestos disponibles")
         self.boton_ubicacion = MDRaisedButton(
             text="Seleccionar ubicación en el mapa",
@@ -94,6 +96,8 @@ class registrar_servicio_screen(MDScreen):
         content_layout.add_widget(MDLabel(text="Seleccionar Tipo de servicio", halign="center"))
         content_layout.add_widget(self.tipo_servicios_button)
         content_layout.add_widget(self.Administrador)
+        content_layout.add_widget(self.Descripcion)
+        content_layout.add_widget(self.horario)
         content_layout.add_widget(self.Puestos)
         content_layout.add_widget(MDLabel(text="Seleccionar ubicación en el mapa", halign="center"))
         content_layout.add_widget(self.boton_ubicacion)
@@ -109,6 +113,8 @@ class registrar_servicio_screen(MDScreen):
             self.razon_social.text.strip(),
             self.nit.text.strip(),
             self.Administrador.text.strip(),
+            self.Descripcion.text.strip(),
+            self.horario.text.strip(),
             self.Puestos.text.strip(),
             self.tipo_servicios_button.text != "Tipo de servicio"
         ]):
@@ -124,6 +130,8 @@ class registrar_servicio_screen(MDScreen):
             nit_cifrado = fernet.encrypt(self.nit.text.encode())
             tipo_servicio_cifrado = self.tipo_servicios_button.text
             administrador_cifrado = fernet.encrypt(self.Administrador.text.encode())
+            descripcion_cifrado = fernet.encrypt(self.Descripcion.text.encode())
+            horario_cifrado = fernet.encrypt(self.horario.text.encode())
             puestos_cifrado = fernet.encrypt(self.Puestos.text.encode())
             ubicacion_cifrada = getattr(self, 'ubicacion_cifrada', fernet.encrypt(b"0.0,0.0"))
 
@@ -133,9 +141,11 @@ class registrar_servicio_screen(MDScreen):
                 tipo_servicio=tipo_servicio_cifrado,
                 administrador=administrador_cifrado,
                 id_prestador=App.get_running_app().id_prestador,
+                descripcion=descripcion_cifrado,
+                horario=horario_cifrado,
                 puestos=puestos_cifrado,
                 ubicacion=ubicacion_cifrada,
-                imagen=self.ruta_imagen  # ahora se guarda como string
+                imagen=self.ruta_imagen 
             )
 
             print("✅ Registro exitoso para:", self.razon_social.text)
@@ -144,6 +154,8 @@ class registrar_servicio_screen(MDScreen):
             self.razon_social.text = ""
             self.nit.text = ""
             self.Administrador.text = ""
+            self.Descripcion.text = ""
+            self.horario.text = ""
             self.Puestos.text = ""
             self.tipo_servicios_button.text = "Tipo de servicio"
             self.ruta_imagen = ""
