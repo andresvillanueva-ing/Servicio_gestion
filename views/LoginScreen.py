@@ -22,7 +22,7 @@ class login_screen(Screen):
 
         layout = RelativeLayout()
         # Color de fondo
-        layout.md_bg_color = ("#FDFBEE")
+        layout.md_bg_color = ("#FFF2F2")
 
         # TopAppBar
         top_bar = MDBoxLayout(

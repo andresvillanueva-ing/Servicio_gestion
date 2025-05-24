@@ -34,6 +34,9 @@ class registrar_servicio_screen(MDScreen):
         self.name = "registrarservicios"
         self.ruta_imagen = ""  # Ahora será una ruta string
 
+        # Color de fondo 
+        md_bg_color = "#FFF2F2"
+
         # Layout principal
         main_layout = MDBoxLayout(orientation='vertical')
 
@@ -43,7 +46,8 @@ class registrar_servicio_screen(MDScreen):
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
             elevation=5,
             size_hint_y=None,
-            height="56dp"
+            height="56dp",
+            md_bg_color="#015551"
         )
         main_layout.add_widget(top_bar)
 
@@ -52,12 +56,12 @@ class registrar_servicio_screen(MDScreen):
         content_layout = MDBoxLayout(orientation='vertical', padding=10, spacing=10, size_hint_y=None)
         content_layout.bind(minimum_height=content_layout.setter('height'))
 
-        self.razon_social = MDTextField(hint_text="Razón social")
-        self.nit = MDTextField(hint_text="NIT", input_filter="int")
-        self.Administrador = MDTextField(hint_text="Nombre del administrador")
-        self.Descripcion = MDTextField(hint_text="Descripcion del servicio")
-        self.horario = MDTextField(hint_text="Horario de atencion. ej: 00:00 a 00:00")
-        self.Puestos = MDTextField(hint_text="Puestos disponibles")
+        self.razon_social = MDTextField(hint_text="Razón social", helper_text="", helper_text_mode="on_error", mode="rectangle", icon_right="home-city")
+        self.nit = MDTextField(hint_text="NIT", input_filter="int", helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="numeric")
+        self.Administrador = MDTextField(hint_text="Nombre del administrador", helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="account-cog")
+        self.Descripcion = MDTextField(hint_text="Descripcion del servicio",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="sort-alphabetical-descending")
+        self.horario = MDTextField(hint_text="Horario de atencion. ej: 00:00 a 00:00",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="alarm-check")
+        self.Puestos = MDTextField(hint_text="Puestos disponibles",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="arrow-all")
         self.boton_ubicacion = MDRaisedButton(
             text="Seleccionar ubicación en el mapa",
             pos_hint={"center_x": 0.5},
@@ -67,9 +71,11 @@ class registrar_servicio_screen(MDScreen):
             icon="image",
             icon_size="32sp",
             pos_hint={"center_x": 0.5},
+            md_bg_color= "#F17259",
             on_release=self.seleccionar_imagen
         )
         self.boton_imagen.tooltip_text = "Seleccionar imagen"
+
 
         self.tipo_servicios_button = MDFlatButton(
             text="Tipo de servicio", pos_hint={"center_x": 0.5}
@@ -88,7 +94,7 @@ class registrar_servicio_screen(MDScreen):
         )
 
         self.tipo_servicios_button.bind(on_release=lambda *args: self.tipo_servicio_menu.open())
-        self.registro_button = MDRaisedButton(text="Registrar", pos_hint={"center_x": 0.5}, on_release=self.registrar)
+        self.registro_button = MDRaisedButton(text="Registrar", pos_hint={"center_x": 0.5},md_bg_color= "#FE4F2D", on_release=self.registrar)
 
         # Agregar widgets al layout de contenido
         content_layout.add_widget(self.razon_social)

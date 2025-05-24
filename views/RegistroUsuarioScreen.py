@@ -34,7 +34,8 @@ class registro_usuario_screen(MDScreen):
         self.name="registrousuarioscreen"
         
         #color de fondo
-        self.md_bg_color = ("#FDFBEE")
+        self.md_bg_color = ("#FFF2F2")
+        
         # Layout principal
         layout = MDBoxLayout(
             orientation =  "vertical",)

@@ -32,7 +32,7 @@ class registro_p_servicio_screen(MDScreen):
         main_layout = MDBoxLayout(orientation='vertical')
 
         # Color de fondo
-        main_layout.md_bg_color = ("#FDFBEE")
+        main_layout.md_bg_color = ("#FFF2F2")
         top_bar = MDTopAppBar(
             title="Registro de P.S",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
@@ -52,7 +52,7 @@ class registro_p_servicio_screen(MDScreen):
                 size=(dp(150), dp(150)),
                 pos_hint={"center_x": 0.5}
             )
-        self.correo = MDTextField(hint_text="Correo electrónico", helper_text="", helper_text_mode="on_error", mode="rectangle", icon_right="email",)
+        self.correo = MDTextField(hint_text="Correo electrónico", helper_text="", helper_text_mode="on_error", mode="rectangle", icon_right="email")
         self.nombre = MDTextField(hint_text="Nombre", mode="rectangle", icon_right="account")
         self.telefono = MDTextField(hint_text="Teléfono", input_filter="int", mode="rectangle", icon_right="phone")
         self.telefono.bind(text=self.validar_longitud_telefono)

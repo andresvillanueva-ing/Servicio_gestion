@@ -24,6 +24,8 @@ class TabHotel(FloatLayout, MDTabsBase):
         self.title = "Hotel"
         self.parent_screen = parent_screen
         self.build_ui()
+        #color de fondo
+        md_bg_color="#FFF2F2"
 
     def build_ui(self, ):
         servicios = obtener_servicios_por_tipo("Hotel")
@@ -87,6 +89,8 @@ class TabParqueadero(FloatLayout, MDTabsBase):
         self.title = "Parqueadero"
         self.parent_screen = parent_screen
         self.build_ui()
+        #color de fondo
+        md_bg_color="#FFF2F2"
 
     def build_ui(self):
         servicios = obtener_servicios_por_tipo("Parqueadero")
@@ -151,6 +155,8 @@ class TabRestaurante(FloatLayout, MDTabsBase):
         self.title = "Restaurante"
         self.parent_screen = parent_screen
         self.build_ui()
+        #color de fondo
+        md_bg_color="#FFF2F2"
 
     def build_ui(self):
         servicios = obtener_servicios_por_tipo("Restaurante")
@@ -214,6 +220,8 @@ class Pantalla_Usuario(MDScreen):
         super().__init__(**kwargs)
         self.name = "pantallaUsuario"
         self.build_ui()
+        #color de fondo
+        md_bg_color="#FFF2F2"
 
     def build_ui(self):
         # Layout principal
@@ -223,7 +231,7 @@ class Pantalla_Usuario(MDScreen):
         main_layout.add_widget(self.create_top_bar())
 
         # Navegación inferior
-        bottom_nav = MDBottomNavigation(panel_color=(1, 1, 1, 1))
+        bottom_nav = MDBottomNavigation(panel_color=("#02020262"))
 
         bottom_nav.add_widget(self.Servicios_tab())
         bottom_nav.add_widget(self.Reservas_tab())
@@ -233,12 +241,13 @@ class Pantalla_Usuario(MDScreen):
 
     def create_top_bar(self):
         return MDTopAppBar(
-            title="Usuario",
+            title="ReservaFacil",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
             right_action_items=[["account", lambda x: self.abrir_usuario()]],
             elevation=5,
             size_hint_y=None,
-            height="56dp"
+            height="56dp",
+            md_bg_color="#015551"
         )
     
     def Servicios_tab(self):
@@ -250,7 +259,7 @@ class Pantalla_Usuario(MDScreen):
         )
 
          # Crear tabs y añadirlos
-        tabs = MDTabs()
+        tabs = MDTabs(md_bg_color="#FFF2F2")
 
         tabs.add_widget(TabHotel(parent_screen=self))
         tabs.add_widget(TabParqueadero(parent_screen=self))
