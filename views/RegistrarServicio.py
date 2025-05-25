@@ -237,4 +237,4 @@ class registrar_servicio_screen(MDScreen):
         self.dialog_imagen.dismiss()
 
     def volver_atras(self):
-        self.manager.current = "registroscreen"
+        self.manager.current = "pantallaPServicio"

@@ -23,6 +23,10 @@ class SplashScreen(Screen):
 
 class ServicioGestion(MDApp):
     def build(self):
+        self.theme_cls.primary_palette = "Teal" 
+        self.theme_cls.theme_style = "Light"   # Define si el tema es claro u oscuro
+        self.theme_cls.accent_palette = "Orange" 
+        
         self.manager = MDScreenManager()
     
         self.manager.add_widget(SplashScreen(name="splashscreen"))

@@ -22,10 +22,10 @@ class TabHotel(FloatLayout, MDTabsBase):
     def __init__(self, parent_screen=None,**kwargs):
         super().__init__(**kwargs)
         self.title = "Hotel"
+        self.icon = "city-variant"
         self.parent_screen = parent_screen
         self.build_ui()
         #color de fondo
-        md_bg_color="#FFF2F2"
 
     def build_ui(self, ):
         servicios = obtener_servicios_por_tipo("Hotel")
@@ -36,7 +36,7 @@ class TabHotel(FloatLayout, MDTabsBase):
 
         for servicio in servicios:
             card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(130),
-                          padding=dp(10), ripple_behavior=True, elevation=4)
+                          padding=dp(10), ripple_behavior=True, elevation=4, md_bg_color="#FFF2F26C")
             imagen=FitImage(
                 source=servicio["imagen"],
                 radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
@@ -87,10 +87,11 @@ class TabParqueadero(FloatLayout, MDTabsBase):
     def __init__(self, parent_screen=None,**kwargs):
         super().__init__(**kwargs)
         self.title = "Parqueadero"
+        self.icon= "car"
         self.parent_screen = parent_screen
         self.build_ui()
         #color de fondo
-        md_bg_color="#FFF2F2"
+        
 
     def build_ui(self):
         servicios = obtener_servicios_por_tipo("Parqueadero")
@@ -101,7 +102,7 @@ class TabParqueadero(FloatLayout, MDTabsBase):
 
         for servicio in servicios:
             card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
-                          padding=dp(10), ripple_behavior=True, elevation=4)
+                          padding=dp(10), ripple_behavior=True, elevation=4, md_bg_color="#FFF2F26C")
             imagen=FitImage(
                 source=servicio["imagen"],
                 radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
@@ -153,6 +154,7 @@ class TabRestaurante(FloatLayout, MDTabsBase):
     def __init__(self, parent_screen=None, **kwargs):
         super().__init__(**kwargs)
         self.title = "Restaurante"
+        self.icon="chef-hat"
         self.parent_screen = parent_screen
         self.build_ui()
         #color de fondo
@@ -167,7 +169,7 @@ class TabRestaurante(FloatLayout, MDTabsBase):
 
         for servicio in servicios:
             card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(120),
-                          padding=dp(10), ripple_behavior=True, elevation=4)
+                          padding=dp(10), ripple_behavior=True, elevation=4, md_bg_color="#FFF2F26C")
 
             imagen=FitImage(
                 source=servicio["imagen"],
@@ -259,7 +261,12 @@ class Pantalla_Usuario(MDScreen):
         )
 
          # Crear tabs y añadirlos
-        tabs = MDTabs(md_bg_color="#FFF2F2")
+        tabs = MDTabs(
+            md_bg_color="#FFF2F2",# Color de fondo de la barra de pestañas (Ejemplo: el mismo de la TopAppBar)
+            indicator_color="#FF0000", # Color del indicador de la pestaña activa (Ejemplo: rojo vibrante)
+            text_color_normal="#FFFFFF", # Color del texto/ícono de las pestañas inactivas (Ejemplo: blanco)
+            text_color_active="#015551", # Color del texto/ícono de la pestaña activa (Ejemplo: amarillo)
+            )
 
         tabs.add_widget(TabHotel(parent_screen=self))
         tabs.add_widget(TabParqueadero(parent_screen=self))
