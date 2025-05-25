@@ -1,5 +1,4 @@
 # views/ReservasScreen.py
-
 from kivymd.uix.screen import MDScreen
 from Database.Data_Reservas import agregar_reserva # Asegúrate de que esta importación sea correcta
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -9,6 +8,7 @@ from kivymd.uix.button import MDRaisedButton
 from kivy.uix.scrollview import ScrollView
 from kivymd.app import MDApp
 from kivymd.uix.pickers import MDDatePicker
+from kivy.app import App
 from kivy.lang import Builder
 from datetime import datetime
 from kivymd.uix.dialog import MDDialog # Importar MDDialog para mensajes al usuario
@@ -61,7 +61,8 @@ class reservas_screen(MDScreen):
             on_release=self.reservar
         )
 
-        content.add_widget(MDLabel(text="Datos de la reserva", halign="center"))
+        content.add_widget(MDLabel(text="Datos de la reserva", halign="center", theme_text_color="primary", font_style="H5"))
+        
         content.add_widget(self.nombre_usuario)
         content.add_widget(self.telefono)
         content.add_widget(self.correo)
@@ -99,6 +100,7 @@ class reservas_screen(MDScreen):
             fecha_reserva = self.selected_date
             hora_actual = datetime.now().strftime('%H:%M:%S')
             
+            
 
             # Validar que todos los campos necesarios estén llenos
             if not all([nombre, telefono, correo, hora_actual, fecha_reserva, servicio, ]):
@@ -107,12 +109,6 @@ class reservas_screen(MDScreen):
 
             # Aquí podrías llamar a tu función para agregar la reserva a la base de datos
             try:
-                # Datos no cifrados
-                correo_cliente = correo
-                id_servicio = servicio.get("id_servicio", "")
-                id_usuario= servicio.get("id_usuario", "")
-                hora_reserva=hora_actual,
-                fecha_reserva=fecha_reserva.strftime('%Y-%m-%d'),
 
                 # Datos cifrados
                 nombre_cifrado = fernet.encrypt(nombre.encode())
@@ -120,25 +116,28 @@ class reservas_screen(MDScreen):
                 razon_social_cifrado = fernet.encrypt(servicio.get("razon_social", "").encode())
                 nit_cifrado = fernet.encrypt(servicio.get("nit", "").encode())
                 administrador_cifrado = fernet.encrypt(servicio.get("administrador", "").encode())
+
+                agregar_reserva(
+                    id_prestador = servicio.get("id_prestador",""),
+                    razon_social=razon_social_cifrado,
+                    nit=nit_cifrado,
+                    administrador=administrador_cifrado,
+                    ubicacion=servicio.get("ubicacion", ""),
+                    tipo_servicio=servicio.get("tipo_servicio", ""),
+                    imagen=servicio.get("imagen", ""),
+                    id_usuario= App.get_running_app().id_usuario,
+                    nombre_cliente=nombre_cifrado,
+                    telefono_cliente=telefono_cifrado,
+                    correo_cliente=correo,
+                    hora_reserva=hora_actual,
+                    fecha_reserva=fecha_reserva.strftime('%Y-%m-%d')
+                )
                 
- 
-                id_prestador = servicio.get("id","")
-                razon_social=servicio.get("razon_social", ""),
-                nit=servicio.get("nit", ""),
-                administrador=servicio.get("administrador", ""),
-                ubicacion=servicio.get("ubicacion", ""),
-                tipo_servicio=servicio.get("tipo_servicio", ""),
-                imagen=servicio.get("imagen", ""),
-                id_usuario=servicio.get("id_usuario", ""),
-                telefono_cliente=telefono,
-                correo_cliente=correo,
-                hora_reserva=hora_actual,
-                fecha_reserva=fecha_reserva.strftime('%Y-%m-%d')
 
 
                 # Ejemplo de cómo podrías llamar a agregar_reserva
                 # agregar_reserva(id_servicio, razon_social, nombre, telefono, correo, fecha_reserva.strftime('%Y-%m-%d'))
-                self.show_message_dialog("Reserva Exitosa", f"Has reservado en {razon_social} para el {fecha_reserva.strftime('%d/%m/%Y')}.")
+                self.show_message_dialog("Reserva Exitosa", f"Has reservado en {servicio['razon_social']} para el {fecha_reserva.strftime('%d/%m/%Y')}.")
 
                 # Limpiar campos después de la reserva
                 self.nombre_usuario.text = ""
@@ -160,8 +159,6 @@ class reservas_screen(MDScreen):
 
     def recibir_servicio(self, datos_servicio):
         self.datos_servicio = datos_servicio
-        # Opcional: Actualizar algún label en la pantalla de reservas con el nombre del servicio
-        # self.ids.nombre_servicio_label.text = f"Reservar en: {datos_servicio.get('razon_social', 'N/A')}"
 
 
     def show_message_dialog(self, title, text):

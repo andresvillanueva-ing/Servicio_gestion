@@ -14,7 +14,7 @@ fernet = Fernet(clave)
 def agregar_reserva(id_prestador, razon_social, nit, administrador, ubicacion, tipo_servicio, imagen, id_usuario, nombre_cliente, telefono_cliente, correo_cliente, hora_reserva, fecha_reserva):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "INSERT INTO data_reservas (id_prestador, razon_social, nit, administrador, ubicacion, tipo_servicio, imagen, id_usuario, nombre_cliente, telefono_cliente, correo_cliente, hora_reserva, fecha_reserva) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO data_reservas (id_prestador, razon_social, nit, administrador, ubicacion, tipo_servicio, imagen, id_usuario, nombre_cliente, telefono_cliente, correo_cliente, hora_reserva, fecha_reserva) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     valores = (id_prestador, razon_social, nit, administrador, ubicacion, tipo_servicio, imagen, id_usuario, nombre_cliente, telefono_cliente, correo_cliente, hora_reserva, fecha_reserva)
     cursor.execute(sql, valores)
     conexion.commit()
