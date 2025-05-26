@@ -61,7 +61,7 @@ class reservas_screen(MDScreen):
             on_release=self.reservar
         )
 
-        content.add_widget(MDLabel(text="Datos de la reserva", halign="center", theme_text_color="primary", font_style="H5"))
+        content.add_widget(MDLabel(text="Datos de la reserva", halign="center", theme_text_color="Primary", font_style="H5"))
         
         content.add_widget(self.nombre_usuario)
         content.add_widget(self.telefono)

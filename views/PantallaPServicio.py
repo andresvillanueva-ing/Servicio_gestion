@@ -145,17 +145,15 @@ class Pantalla_P_Servicio(MDScreen):
         self.info_layout_res.clear_widgets()
         from kivy.app import App
         app = App.get_running_app()
-        
-        app = App.get_running_app()
         if not hasattr(app, "id_prestador") or not app.id_prestador:
             self.info_layout_res.add_widget(MDLabel(text="Por favor, inicie sesión primero.", halign="center"))
             return
         
         try:
-            servicios = obtener_reservas(App.get_running_app().id_prestador)
+            servicios = obtener_reservas(app.id_prestador)
         except Exception as e:
-            print("Error al obtener servicios:", e)
-            self.info_layout_res.add_widget(MDLabel(text="Error al cargar servicios", halign="center"))
+            print("Error al obtener reservas:", e)
+            self.info_layout_res.add_widget(MDLabel(text="Error al cargar reservas", halign="center"))
             return
 
         if servicios:
