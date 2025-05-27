@@ -150,15 +150,15 @@ class Pantalla_P_Servicio(MDScreen):
             return
         
         try:
-            servicios = obtener_reservas(app.id_prestador)
+            reservas = obtener_reservas(app.id_prestador)
         except Exception as e:
             print("Error al obtener reservas:", e)
             self.info_layout_res.add_widget(MDLabel(text="Error al cargar reservas", halign="center"))
             return
 
-        if servicios:
-            for servicio in servicios:
-                self.info_layout_res.add_widget(self.crear_card_reserva(servicio))
+        if reservas:
+            for reserva in reservas:
+                self.info_layout_res.add_widget(self.crear_card_reserva(reserva))
         else:
             self.info_layout_res.add_widget(MDLabel(text="No hay servicios registrados.", halign="center"))
 
@@ -168,13 +168,12 @@ class Pantalla_P_Servicio(MDScreen):
         from kivy.app import App
         app = App.get_running_app()
         
-        app = App.get_running_app()
         if not hasattr(app, "id_prestador") or not app.id_prestador:
             self.info_layout.add_widget(MDLabel(text="Por favor, inicie sesión primero.", halign="center"))
             return
         
         try:
-            servicios = obtener_servicios(App.get_running_app().id_prestador)
+            servicios = obtener_servicios(app.id_prestador)
         except Exception as e:
             print("Error al obtener servicios:", e)
             self.info_layout.add_widget(MDLabel(text="Error al cargar servicios", halign="center"))
@@ -187,12 +186,12 @@ class Pantalla_P_Servicio(MDScreen):
             self.info_layout.add_widget(MDLabel(text="No hay servicios registrados.", halign="center"))
 
     #----------Targeta de reservas realizadas-------------------
-    def crear_card_reserva(self, servicio):
-        for servicios in servicio:
+    def crear_card_reserva(self, reserva):
+        for reservas in reserva:
             card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(130),
                           padding=dp(10), ripple_behavior=True, elevation=4, md_bg_color="#FFF2F26C")
             imagen=FitImage(
-                source=servicios["imagen"],
+                source=reservas["imagen"],
                 radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
                 size_hint=(None, None),
                 size=(dp(100), dp(100)),
@@ -200,12 +199,12 @@ class Pantalla_P_Servicio(MDScreen):
             )
             card.add_widget(imagen)
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
-            datos.add_widget(MDLabel(text=servicios["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
-            datos.add_widget(MDLabel(text="[b]Admin:[/b] " + servicios['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicios["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
-            datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicios["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=reservas["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
+            datos.add_widget(MDLabel(text="[b]Cliente:[/b] " + reservas['nombre_cliente'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=f"[b]Telefono:[/b] {reservas["telefono_cliente"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+            datos.add_widget(MDLabel(text=f"[b]Hora de reserva:[/b] {reservas["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
-        return card
+            return card
     
     #----------Targeta de servcios creados-------------------
     def crear_card_servicio(self, servicio):

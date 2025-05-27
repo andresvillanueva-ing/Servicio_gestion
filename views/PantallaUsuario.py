@@ -25,7 +25,7 @@ class TabHotel(FloatLayout, MDTabsBase):
         self.icon = "city-variant"
         self.parent_screen = parent_screen
         self.build_ui()
-        #color de fondo
+
 
     def build_ui(self, ):
         servicios = obtener_servicios_por_tipo("Hotel")

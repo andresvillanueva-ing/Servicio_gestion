@@ -26,7 +26,7 @@ def agregar_servicio(razon_social, nit,tipo_servicio, administrador, id_prestado
 def obtener_servicios_por_tipo(tipo_servicio):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "SELECT id_prestador, razon_social, administrador, ubicacion, imagen, descripcion, horario, puestos FROM data_servicios WHERE tipo_servicio = %s"
+    sql = "SELECT id_prestador, razon_social, administrador, tipo_servicio, ubicacion, imagen, descripcion, horario, puestos FROM data_servicios WHERE tipo_servicio = %s"
     cursor.execute(sql, (tipo_servicio,))
     servicios = cursor.fetchall()
     cursor.close()
@@ -37,11 +37,12 @@ def obtener_servicios_por_tipo(tipo_servicio):
             "id_prestador": row[0],
             "razon_social": fernet.decrypt(row[1]).decode(),
             "administrador": fernet.decrypt(row[2]).decode(),
-            "ubicacion": fernet.decrypt(row[3]).decode(),
-            "imagen": row[4],
-            "descripcion": fernet.decrypt(row[5]).decode(),
-            "horario":fernet.decrypt(row[6]).decode(),
-            "puestos": fernet.decrypt(row[7]).decode()
+            "tipo_servicio": row[3],
+            "ubicacion": fernet.decrypt(row[4]).decode(),
+            "imagen": row[5],
+            "descripcion": fernet.decrypt(row[6]).decode(),
+            "horario":fernet.decrypt(row[7]).decode(),
+            "puestos": fernet.decrypt(row[8]).decode()
         }
         for row in servicios
     ]
