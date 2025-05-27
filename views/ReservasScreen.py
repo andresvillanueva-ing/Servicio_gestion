@@ -116,6 +116,8 @@ class reservas_screen(MDScreen):
                 razon_social_cifrado = fernet.encrypt(servicio.get("razon_social", "").encode())
                 nit_cifrado = fernet.encrypt(servicio.get("nit", "").encode())
                 administrador_cifrado = fernet.encrypt(servicio.get("administrador", "").encode())
+                fecha_reserva_str = str(fecha_reserva)
+                hora_actual_str = str(hora_actual)
 
                 agregar_reserva(
                     id_prestador = servicio.get("id_prestador",""),
@@ -129,8 +131,8 @@ class reservas_screen(MDScreen):
                     nombre_cliente=nombre_cifrado,
                     telefono_cliente=telefono_cifrado,
                     correo_cliente=correo,
-                    hora_reserva=hora_actual,
-                    fecha_reserva=fecha_reserva.strftime('%Y-%m-%d')
+                    hora_reserva=hora_actual_str,
+                    fecha_reserva=fecha_reserva_str
                 )
                 
 

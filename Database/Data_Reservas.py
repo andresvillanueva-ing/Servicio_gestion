@@ -58,17 +58,24 @@ def obtener_reservas(id_prestador):
 
     return[
         {
-            "razon_social": fernet.decrypt(row[0]).decode(),
-            "nit": fernet.decrypt(row[1]).decode(),
-            "administrador": fernet.decrypt(row[2]).decode(),
+            "razon_social": seguro_descifrar(row[0]),
+            "nit": seguro_descifrar(row[1]),
+            "administrador": seguro_descifrar(row[2]),
             "ubicacion": row[3],
             "tipo_servicio":row[4],
             "imagen": row[5],
-            "nombre_cliente": fernet.decrypt(row[6]).decode(),
-            "telefono_cliente": fernet.decrypt(row[7]).decode(),
-            "correo_cliente": row[8],
-            "hora_reserva": row[9],
-            "fecha_reserva": row[10],
+            "id_usuario": row[6],
+            "nombre_cliente": seguro_descifrar(row[7]),
+            "telefono_cliente": seguro_descifrar(row[8]),
+            "correo_cliente": row[9],
+            "hora_reserva": row[10],
+            "fecha_reserva": row[11],
         }
         for row in reservas
     ]
+
+def seguro_descifrar(valor):
+    try:
+        return fernet.decrypt(valor).decode()
+    except Exception:
+        return "[ERROR DESCIFRADO]"

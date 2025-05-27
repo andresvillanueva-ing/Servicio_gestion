@@ -187,24 +187,23 @@ class Pantalla_P_Servicio(MDScreen):
 
     #----------Targeta de reservas realizadas-------------------
     def crear_card_reserva(self, reserva):
-        for reservas in reserva:
-            card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(130),
-                          padding=dp(10), ripple_behavior=True, elevation=4, md_bg_color="#FFF2F26C")
-            imagen=FitImage(
-                source=reservas["imagen"],
-                radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
-                size_hint=(None, None),
-                size=(dp(100), dp(100)),
-                pos_hint={"center_x": 0.5}
-            )
-            card.add_widget(imagen)
-            datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
-            datos.add_widget(MDLabel(text=reservas["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
-            datos.add_widget(MDLabel(text="[b]Cliente:[/b] " + reservas['nombre_cliente'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-            datos.add_widget(MDLabel(text=f"[b]Telefono:[/b] {reservas["telefono_cliente"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
-            datos.add_widget(MDLabel(text=f"[b]Hora de reserva:[/b] {reservas["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
-            card.add_widget(datos)
-            return card
+        card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(130),
+                      padding=dp(10), ripple_behavior=True, elevation=4, md_bg_color="#FFF2F26C")
+        imagen=FitImage(
+            source=reserva["imagen"],
+             radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
+            size_hint=(None, None),
+            size=(dp(100), dp(100)),
+            pos_hint={"center_x": 0.5}
+        )
+        card.add_widget(imagen)
+        datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
+        datos.add_widget(MDLabel(text=reserva["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
+        datos.add_widget(MDLabel(text="[b]Cliente:[/b] " + reserva['nombre_cliente'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
+        datos.add_widget(MDLabel(text=f"[b]Telefono:[/b] {reserva["telefono_cliente"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+        datos.add_widget(MDLabel(text=f"[b]Hora de reserva:[/b] {reserva["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
+        card.add_widget(datos)
+        return card
     
     #----------Targeta de servcios creados-------------------
     def crear_card_servicio(self, servicio):
