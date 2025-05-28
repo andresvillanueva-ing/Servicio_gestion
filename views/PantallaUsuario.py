@@ -16,6 +16,7 @@ from kivymd.uix.dialog import MDDialog
 from kivy.uix.image import Image
 from kivymd.uix.fitimage import FitImage
 import os
+from Database.Data_Reservas import obtener_reservas_realizadas
 
 
 class TabHotel(FloatLayout, MDTabsBase):
@@ -226,20 +227,20 @@ class Pantalla_Usuario(MDScreen):
         md_bg_color="#FFF2F2"
 
     def build_ui(self):
-        # Layout principal
         main_layout = MDBoxLayout(orientation='vertical')
-
-        # Top bar
         main_layout.add_widget(self.create_top_bar())
 
-        # Navegación inferior
-        bottom_nav = MDBottomNavigation(panel_color=("#02020262"))
+        self.bottom_nav = MDBottomNavigation(panel_color=("#02020262"))
 
-        bottom_nav.add_widget(self.Servicios_tab())
-        bottom_nav.add_widget(self.Reservas_tab())
+        self.bottom_nav.add_widget(self.Servicios_tab())
+        self.bottom_nav.add_widget(self.Reservas_tab())
 
-        main_layout.add_widget(bottom_nav)
+        main_layout.add_widget(self.bottom_nav)
         self.add_widget(main_layout)
+
+    def on_pre_enter(self):
+        self.Servicios_tab()
+        self.datos_reservas()
 
     def create_top_bar(self):
         return MDTopAppBar(
@@ -276,18 +277,83 @@ class Pantalla_Usuario(MDScreen):
         tab.add_widget(layout)
         return tab
     
+    
     def Reservas_tab(self):
         tab = MDBottomNavigationItem(name="reservas", text="Reservas", icon="calendar")
-        layout = MDBoxLayout(
+
+        self.layout_reservas = MDBoxLayout(
             orientation="vertical",
             padding="10dp",
             spacing="10dp"
         )
+        self.layout_reservas.add_widget(MDLabel(text="En el momento no hay reservas", halign="center"))
 
-        layout.add_widget(MDLabel(text="En el momento no hay reservas", halign="center"))
-        tab.add_widget(layout)
+        tab.add_widget(self.layout_reservas)
         return tab
     
+    def datos_reservas(self):
+        self.layout_reservas.clear_widgets()
+        from kivy.app import App
+        app = App.get_running_app()
+        if not hasattr(app, "id_usuario") or not app.id_usuario:
+            self.layout_reservas.add_widget(MDLabel(text="Por favor, inicie sesión primero.", halign="center"))
+            return
+        try:
+            reservas = obtener_reservas_realizadas(app.id_usuario)
+            print(App.get_running_app().id_usuario)
+        except Exception as e:
+            print("Error al obtener reservas:", e)
+            self.layout_reservas.add_widget(MDLabel(text="Error al cargar reservas", halign="center"))
+            return
+
+        if reservas:
+            for reserva in reservas:
+                self.layout_reservas.add_widget(self.crear_card_reserva(reserva))
+        else:
+            self.layout_reservas.add_widget(MDLabel(text="No hay servicios registrados.", halign="center"))
+
+    def crear_card_reserva(self, reserva):
+        card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(130),
+                      padding=dp(10), ripple_behavior=True, elevation=4, md_bg_color="#FFF2F26C")
+        imagen=FitImage(
+            source=reserva["imagen"],
+             radius=[dp(75), dp(75), dp(75), dp(75)],  # Radios para los cuatro bordes (circular si alto=ancho)
+            size_hint=(None, None),
+            size=(dp(100), dp(100)),
+            pos_hint={"center_x": 0.5}
+        )
+        card.add_widget(imagen)
+        datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
+        datos.add_widget(MDLabel(text=reserva["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
+        datos.add_widget(MDLabel(text="[b]Admin:[/b] " + reserva['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
+        datos.add_widget(MDLabel(text=f"[b]ubicacion:[/b] {reserva["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+        datos.add_widget(MDLabel(text=f"[b]fecha de reserva:[/b] {reserva["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
+        card.add_widget(datos)
+        card.on_touch_up = lambda touch, reserva=reserva, card=card: self.mostrar_dialogo(reserva) if card.collide_point(*touch.pos) else None
+        return card
+    
+    def mostrar_dialogo(self, reserva):
+        self.dialog = MDDialog(
+            title="¿Ver información del reserva?",
+            text=f"Nombre del servicio: {reserva['razon_social']}\nAdministrador: {reserva['administrador']}",
+            buttons=[
+                MDFlatButton(
+                     text="CANCELAR", 
+                    on_release=lambda x: self.dialog.dismiss()
+                ),
+                MDFlatButton(
+                    text="VER",
+                    on_release=lambda x: self.ir_a_informacion(reserva)
+                ),
+            ],
+        )
+        self.dialog.open()
+
+    def ir_a_informacion(self, reserva):
+            self.manager.current = "informacionreserva"
+            pantalla_info = self.manager.get_screen("informacionreserva")
+            pantalla_info.reserva_actual = reserva 
+            print(reserva)
 
     def volver_atras(self):
         self.manager.current = "loginscreen"

@@ -10,24 +10,27 @@ from kivy.metrics import dp
 from kivy.uix.widget import Widget
 
 
-class informacion_servicios_screen(MDScreen):
+class informacion_reserva_screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.name = "informacionservicios"
-        self.layout = MDBoxLayout(orientation="vertical", spacing=10, padding=(0,0,0,10))
+        self.name = "informacionreserva"
+        self.layout = MDBoxLayout(orientation="vertical", spacing=10, padding=(0, 0, 0, 10))
         self.add_widget(self.layout)
         self.dialog = None
-        self.datos_servicio = None
-        self.servicio_actual = None
+        self.reserva_actual = None
+
+    def recibir_reserva(self, datos):
+        """Recibe los datos desde otra pantalla y actualiza la interfaz."""
+        self.reserva_actual = datos
+        self.on_pre_enter()  # fuerza la actualización
 
     def on_pre_enter(self):
         self.layout.clear_widgets()
-        if self.servicio_actual:
-            self.construir_ui(self.servicio_actual)
+        if self.reserva_actual:
+            self.construir_ui(self.reserva_actual)
 
-    def construir_ui(self, servicio):
+    def construir_ui(self, reserva):
         self.layout.clear_widgets()
-        self.datos_servicio = servicio
 
         # --- Encabezado con imagen y título superpuesto ---
         encabezado = MDCard(
@@ -40,9 +43,9 @@ class informacion_servicios_screen(MDScreen):
             md_bg_color="#015551",
         )
 
-        if servicio.get("imagen"):
+        if reserva.get("imagen"):
             imagen = Image(
-                source=servicio["imagen"],
+                source=reserva["imagen"],
                 size_hint=(1, 1),
                 allow_stretch=True,
                 keep_ratio=False,
@@ -59,9 +62,8 @@ class informacion_servicios_screen(MDScreen):
 
         encabezado.add_widget(imagen)
 
-        # Título superpuesto sobre la imagen
         titulo_label = MDLabel(
-            text=f"[b]{servicio.get('razon_social', 'Servicio') }[/b]",
+            text=f"[b]{reserva.get('razon_social', 'Servicio')}[/b]",
             markup=True,
             font_style="H5",
             size_hint=(1, None),
@@ -72,18 +74,16 @@ class informacion_servicios_screen(MDScreen):
             valign="middle",
         )
         encabezado.add_widget(titulo_label)
-
         self.layout.add_widget(encabezado)
 
-        # ScrollView para el contenido
-        
+        # ScrollView con contenido informativo
         scroll_view = ScrollView()
         content_layout = MDBoxLayout(
             orientation="vertical", padding=10, spacing=10, size_hint_y=None
         )
         content_layout.bind(minimum_height=content_layout.setter("height"))
 
-        # --- Botones ---
+        # Botones
         botones = MDBoxLayout(
             orientation="horizontal",
             spacing=20,
@@ -106,7 +106,6 @@ class informacion_servicios_screen(MDScreen):
         reservar_content.add_widget(MDLabel(halign="center"))
         reservar_btn.add_widget(reservar_content)
         botones.add_widget(reservar_btn)
-
         botones.add_widget(Widget())
 
         ir_btn = MDRaisedButton(
@@ -116,17 +115,16 @@ class informacion_servicios_screen(MDScreen):
             height=dp(48),
             md_bg_color="#FFFFFF00",
         )
-        ir_content = MDBoxLayout(orientation="vertical", spacing=5, )
+        ir_content = MDBoxLayout(orientation="vertical", spacing=5)
         ir_content.add_widget(
             MDIcon(icon="bus-marker", size_hint=(1, None), size=(dp(24), dp(40)), halign="center")
         )
-        ir_content.add_widget(MDLabel( halign="center"))
+        ir_content.add_widget(MDLabel(halign="center"))
         ir_btn.add_widget(ir_content)
         botones.add_widget(ir_btn)
 
         self.layout.add_widget(botones)
 
-        # --- Sección Información ---
         self.layout.add_widget(
             MDLabel(
                 text="[b]Información del servicio[/b]",
@@ -139,6 +137,7 @@ class informacion_servicios_screen(MDScreen):
             )
         )
 
+        # Descripción
         info_card = MDCard(
             padding=dp(15),
             size_hint=(1, None),
@@ -147,7 +146,7 @@ class informacion_servicios_screen(MDScreen):
             radius=[15],
         )
         info_box = MDBoxLayout(orientation="vertical")
-        descripcion = servicio.get("descripcion", "").strip()
+        descripcion = reserva.get("nombre_cliente", "").strip()
         if descripcion:
             info_box.add_widget(
                 MDLabel(
@@ -160,8 +159,7 @@ class informacion_servicios_screen(MDScreen):
         info_card.add_widget(info_box)
         self.layout.add_widget(info_card)
 
-        # --- Informacion del servicio ---
-
+        # Información adicional
         informacion_box = MDCard(
             orientation="vertical",
             padding=dp(10),
@@ -169,35 +167,31 @@ class informacion_servicios_screen(MDScreen):
             elevation=2,
             radius=[15],
         )
+
         administrador_box = MDBoxLayout(orientation="horizontal", spacing=10)
         administrador_box.add_widget(
             MDIcon(icon="account-cog", size_hint=(None, None), size=(dp(24), dp(24)))
         )
         administrador_box.add_widget(
-            MDLabel(
-                text=servicio.get("administrador", "Sin administrador"), halign="left"
-            )
+            MDLabel(text=reserva.get("administrador", "Sin administrador"), halign="left")
         )
+
         ubicacion_box = MDBoxLayout(orientation="horizontal", spacing=10)
         ubicacion_box.add_widget(
             MDIcon(icon="map-marker", size_hint=(None, None), size=(dp(24), dp(24)))
         )
         ubicacion_box.add_widget(
-            MDLabel(text=servicio.get("ubicacion", "No disponible"), halign="left")
+            MDLabel(text=reserva.get("ubicacion", "No disponible"), halign="left")
         )
+
         horario_box = MDBoxLayout(orientation="horizontal", spacing=10)
         horario_box.add_widget(
-            MDIcon(
-                icon="clock-time-four-outline",
-                size_hint=(None, None),
-                size=(dp(24), dp(24)),
-            )
+            MDIcon(icon="clock-time-four-outline", size_hint=(None, None), size=(dp(24), dp(24)))
         )
         horario_box.add_widget(
-            MDLabel(
-                text=servicio.get("horario", "Abierto de 7:00 a 22:00"), halign="left"
-            )
+            MDLabel(text=reserva.get("fecha_reserva", ""), halign="left")
         )
+
         informacion_box.add_widget(administrador_box)
         informacion_box.add_widget(ubicacion_box)
         informacion_box.add_widget(horario_box)
@@ -221,11 +215,10 @@ class informacion_servicios_screen(MDScreen):
     def realizar_reserva(self, *args):
         self.dialog.dismiss()
         from kivymd.app import MDApp
-
         app = MDApp.get_running_app()
         pantalla_reservas = app.root.get_screen("reservasscreen")
-        pantalla_reservas.recibir_servicio(self.datos_servicio)
+        pantalla_reservas.recibir_servicio(self.reserva_actual)
         app.root.current = "reservasscreen"
 
     def abrir_mapa(self, *args):
-        print("Abrir mapa con ubicación:", self.datos_servicio.get("ubicacion"))
+        print("Abrir mapa con ubicación:", self.reserva_actual.get("ubicacion"))
