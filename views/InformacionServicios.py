@@ -14,7 +14,7 @@ class informacion_servicios_screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "informacionservicios"
-        self.layout = MDBoxLayout(orientation="vertical", spacing=10, padding=(0,0,0,10))
+        self.layout = MDBoxLayout(orientation="vertical", spacing=dp(10))
         self.add_widget(self.layout)
         self.dialog = None
         self.datos_servicio = None
@@ -31,7 +31,7 @@ class informacion_servicios_screen(MDScreen):
 
         # --- Encabezado con imagen y título superpuesto ---
         encabezado = MDCard(
-            size_hint=(1, None),
+            size_hint=(1, 1),
             height=dp(260),
             radius=[0, 0, 20, 20],
             elevation=6,
@@ -86,18 +86,18 @@ class informacion_servicios_screen(MDScreen):
         # --- Botones ---
         botones = MDBoxLayout(
             orientation="horizontal",
-            spacing=20,
-            size_hint=(1, None),
-            height=dp(60),
-            padding=(dp(20), 0),
+            spacing=dp(10),
+            size_hint_y=None,
+            height=dp(50),
+            pos_hint={'center_x': 0.5, 'center_y': 0.5} # Centra el contenedor 'botones'
         )
 
         reservar_btn = MDRaisedButton(
             on_release=self.confirmar_reserva,
             size_hint=(1, None),
-            width=dp(200),
+            width=dp(48),
             height=dp(48),
-            md_bg_color="#FFFFFF00",
+            md_bg_color="#FFFFFF00"
         )
         reservar_content = MDBoxLayout(orientation="vertical", spacing=5)
         reservar_content.add_widget(
@@ -111,16 +111,21 @@ class informacion_servicios_screen(MDScreen):
 
         ir_btn = MDRaisedButton(
             on_release=self.abrir_mapa,
-            size_hint=(1, None),
-            width=dp(120),
-            height=dp(48),
-            md_bg_color="#FFFFFF00",
+            size_hint=(None, None), 
+            md_bg_color="#FFFFFF00", 
+            padding=dp(5) 
         )
-        ir_content = MDBoxLayout(orientation="vertical", spacing=5, )
+        
+        ir_content = MDBoxLayout(
+            orientation="vertical",
+            spacing=dp(2), # Reducí el spacing para que el texto y el ícono estén más cerca
+            size_hint=(1, 1), # Hacer que ocupe todo el espacio disponible en el botón
+            pos_hint={'center_x': 0.5, 'center_y': 0.5}, # Centra el boxlayout dentro del botón
+            )
         ir_content.add_widget(
-            MDIcon(icon="bus-marker", size_hint=(1, None), size=(dp(24), dp(40)), halign="center")
+            MDIcon(icon="bus-marker", size_hint=(1, None), size=(dp(24), dp(40)), halign="center", valign="middle" )
         )
-        ir_content.add_widget(MDLabel( halign="center"))
+        ir_content.add_widget(MDLabel(text="Reservar", halign="center"))
         ir_btn.add_widget(ir_content)
         botones.add_widget(ir_btn)
 
@@ -138,37 +143,23 @@ class informacion_servicios_screen(MDScreen):
                 padding=(0, dp(10)),
             )
         )
-
         info_card = MDCard(
-            padding=dp(15),
-            size_hint=(1, None),
-            height=dp(120),
-            elevation=3,
-            radius=[15],
-        )
-        info_box = MDBoxLayout(orientation="vertical")
-        descripcion = servicio.get("descripcion", "").strip()
-        if descripcion:
-            info_box.add_widget(
-                MDLabel(
-                    text=descripcion,
-                    halign="center",
-                    theme_text_color="Secondary",
-                    font_style="Body1",
-                )
-            )
-        info_card.add_widget(info_box)
-        self.layout.add_widget(info_card)
-
-        # --- Informacion del servicio ---
-
-        informacion_box = MDCard(
             orientation="vertical",
             padding=dp(10),
             size_hint=(1, None),
+            height=dp(300),
             elevation=2,
             radius=[15],
         )
+        
+        descripcion = servicio.get("descripcion")
+        descripcion_box = MDBoxLayout(orientation="horizontal", spacing=10)
+        descripcion_box.add_widget(
+            MDLabel(
+                text=descripcion, halign="center"
+            )
+        )
+        # --- Informacion del servicio ---
         administrador_box = MDBoxLayout(orientation="horizontal", spacing=10)
         administrador_box.add_widget(
             MDIcon(icon="account-cog", size_hint=(None, None), size=(dp(24), dp(24)))
@@ -198,10 +189,15 @@ class informacion_servicios_screen(MDScreen):
                 text=servicio.get("horario", "Abierto de 7:00 a 22:00"), halign="left"
             )
         )
-        informacion_box.add_widget(administrador_box)
-        informacion_box.add_widget(ubicacion_box)
-        informacion_box.add_widget(horario_box)
-        self.layout.add_widget(informacion_box)
+        info_card.add_widget(MDLabel(text="Descripcion del servicio", halign="center", font_style="H6"))
+        info_card.add_widget(descripcion_box)
+        info_card.add_widget(MDLabel(text="Informacion de servicio", halign="center", font_style="H6"))
+        info_card.add_widget(administrador_box)
+        info_card.add_widget(ubicacion_box)
+        info_card.add_widget(horario_box)
+        content_layout.add_widget(info_card)
+        scroll_view.add_widget(content_layout)
+        self.layout.add_widget(scroll_view)
 
     def confirmar_reserva(self, *args):
         if not self.dialog:

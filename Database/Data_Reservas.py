@@ -24,7 +24,7 @@ def agregar_reserva(id_prestador, razon_social, nit, administrador, ubicacion, t
 def obtener_reservas_realizadas(id_usuario):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "SELECT razon_social, nit, administrador, ubicacion, tipo_servicio, imagen, nombre_cliente, telefono_cliente, correo_cliente, hora_reserva, fecha_reserva FROM data_reservas WHERE id_usuario = %s"
+    sql = "SELECT razon_social, nit, administrador, ubicacion, tipo_servicio, imagen, nombre_cliente, telefono_cliente, correo_cliente, hora_reserva, fecha_reserva, id_usuario FROM data_reservas WHERE id_usuario = %s"
     cursor.execute(sql, (id_usuario,))
     reservas = cursor.fetchall()
     cursor.close()
@@ -43,6 +43,7 @@ def obtener_reservas_realizadas(id_usuario):
             "correo_cliente": row[8],
             "hora_reserva": row[9],
             "fecha_reserva": row[10],
+            "id_usuario": row[11]
         }
         for row in reservas
     ]
@@ -79,3 +80,12 @@ def seguro_descifrar(valor):
         return fernet.decrypt(valor).decode()
     except Exception:
         return "[ERROR DESCIFRADO]"
+    
+def eliminar_reserva(id_usuario):
+    conexion = crear_conexion()
+    cursor = conexion.cursor()
+    sql = "DELETE FROM data_reservas WHERE id_usuario = %s"
+    cursor.execute(sql, (id_usuario,))
+    conexion.commit()
+    cursor.close()
+    conexion.close()

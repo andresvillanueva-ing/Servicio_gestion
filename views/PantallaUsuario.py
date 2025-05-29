@@ -52,11 +52,15 @@ class TabHotel(FloatLayout, MDTabsBase):
             datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicio["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
-            card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
+            card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, servicio))
             content.add_widget(card)
 
         layout_scroll.add_widget(content)
         self.add_widget(layout_scroll)
+
+    def on_card_touch(self, instance, touch, servicio):
+        if instance.collide_point(*touch.pos):
+            self.mostrar_dialogo(servicio)
 
     def mostrar_dialogo(self, servicio):
         self.dialog = MDDialog(
@@ -119,11 +123,16 @@ class TabParqueadero(FloatLayout, MDTabsBase):
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
 
-            card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
+            card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, servicio))
+
             content.add_widget(card)
 
         layout_scroll.add_widget(content)
         self.add_widget(layout_scroll)
+
+    def on_card_touch(self, instance, touch, servicio):
+        if instance.collide_point(*touch.pos):
+            self.mostrar_dialogo(servicio)
 
     def mostrar_dialogo(self, servicio):
         self.dialog = MDDialog(
@@ -186,12 +195,15 @@ class TabRestaurante(FloatLayout, MDTabsBase):
             datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicio["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
-            card.on_touch_up = lambda touch, servicio=servicio, card=card: self.mostrar_dialogo(servicio) if card.collide_point(*touch.pos) else None
-            
+            card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, servicio))
             content.add_widget(card)
 
         layout_scroll.add_widget(content)
         self.add_widget(layout_scroll)
+
+    def on_card_touch(self, instance, touch, servicio):
+        if instance.collide_point(*touch.pos):
+            self.mostrar_dialogo(servicio)
 
     def mostrar_dialogo(self, servicio):
         self.dialog = MDDialog(
@@ -283,7 +295,6 @@ class Pantalla_Usuario(MDScreen):
 
         self.layout_reservas = MDBoxLayout(
             orientation="vertical",
-            padding="10dp",
             spacing="10dp"
         )
         self.layout_reservas.add_widget(MDLabel(text="En el momento no hay reservas", halign="center"))
@@ -300,7 +311,7 @@ class Pantalla_Usuario(MDScreen):
             return
         try:
             reservas = obtener_reservas_realizadas(app.id_usuario)
-            print(App.get_running_app().id_usuario)
+            print(reservas)
         except Exception as e:
             print("Error al obtener reservas:", e)
             self.layout_reservas.add_widget(MDLabel(text="Error al cargar reservas", halign="center"))
@@ -326,15 +337,19 @@ class Pantalla_Usuario(MDScreen):
         datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
         datos.add_widget(MDLabel(text=reserva["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
         datos.add_widget(MDLabel(text="[b]Admin:[/b] " + reserva['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-        datos.add_widget(MDLabel(text=f"[b]ubicacion:[/b] {reserva["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+        datos.add_widget(MDLabel(text=f"[b]ubicacion:[/b] {reserva["nit"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
         datos.add_widget(MDLabel(text=f"[b]fecha de reserva:[/b] {reserva["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
         card.add_widget(datos)
-        card.on_touch_up = lambda touch, reserva=reserva, card=card: self.mostrar_dialogo(reserva) if card.collide_point(*touch.pos) else None
+        card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, reserva))
         return card
     
+    def on_card_touch(self, instance, touch, reserva):
+        if instance.collide_point(*touch.pos):
+            self.mostrar_dialogo(reserva)
+
     def mostrar_dialogo(self, reserva):
         self.dialog = MDDialog(
-            title="¿Ver información del reserva?",
+            title="¿Ver información de la reserva?",
             text=f"Nombre del servicio: {reserva['razon_social']}\nAdministrador: {reserva['administrador']}",
             buttons=[
                 MDFlatButton(
@@ -343,17 +358,19 @@ class Pantalla_Usuario(MDScreen):
                 ),
                 MDFlatButton(
                     text="VER",
-                    on_release=lambda x: self.ir_a_informacion(reserva)
+                    on_release=lambda x: self.ir_a_informacion(reserva) 
                 ),
             ],
         )
         self.dialog.open()
 
     def ir_a_informacion(self, reserva):
-            self.manager.current = "informacionreserva"
+        self.dialog.dismiss()
+        if self.manager:
             pantalla_info = self.manager.get_screen("informacionreserva")
-            pantalla_info.reserva_actual = reserva 
-            print(reserva)
+            pantalla_info.reserva_actual = reserva  
+            self.manager.current = "informacionreserva"
+            self.dialog.dismiss()
 
     def volver_atras(self):
         self.manager.current = "loginscreen"
