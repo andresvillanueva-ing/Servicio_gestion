@@ -82,6 +82,11 @@ class reservas_screen(MDScreen):
         main_layout.add_widget(scroll)
         self.add_widget(main_layout)
 
+    #Límite de caracteres del campo de telefono
+        def validar_longitud_telefono(self, instance, value):
+            if len(value) > 10:
+                instance.text = value[:10]
+
     def show_date_picker(self, *args):
         date_dialog = MDDatePicker(
             year=datetime.now().year,
@@ -183,8 +188,3 @@ class reservas_screen(MDScreen):
             ]
         )
         dialog.open()
-
-        #Límite de caracteres del campo de telefono
-        def validar_longitud_telefono(self, instance, value):
-            if len(value) > 10:
-                instance.text = value[:10]
