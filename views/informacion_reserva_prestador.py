@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel, MDIcon
-from kivymd.uix.button import  MDButton, MDFabButton
+from kivymd.uix.button import  MDButton, MDRectangleFlatIconButton
 from kivymd.uix.card import MDCard
 from kivymd.uix.appbar import MDTopAppBar
 from kivy.uix.scrollview import ScrollView
@@ -11,10 +11,10 @@ from Database.Data_Reservas import eliminar_reserva
 
 from kivy.metrics import dp
 
-class Informacion_Reserva_Screen(MDScreen):
+class Informacion_Reserva_prestador_Screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.name = "informacionreserva"
+        self.name = "informacionreservaprestador"
         self.reserva_actual = None
         self.dialog = None
         self.layout = MDBoxLayout(orientation="vertical", spacing=dp(10))
@@ -30,17 +30,7 @@ class Informacion_Reserva_Screen(MDScreen):
         if not self.reserva_actual:
             self.layout.add_widget(MDLabel(text="No hay información para mostrar", halign="center"))
             return
-        
-        self.topapp = MDTopAppBar(
-            title="",
-            left_action_items=[["arrow-left", lambda x: self.volver()]],
-            elevation=4,
-            pos_hint={"top": 1},
-            specific_text_color="#FFFFFF"
-        )
-        self.layout.add_widget(self.topapp)
 
-        #--------Encabezado de la pantalla-------
         encabezado = MDCard(
             size_hint=(1, 1),
             height=dp(260),
@@ -67,39 +57,11 @@ class Informacion_Reserva_Screen(MDScreen):
             halign="center",
             valign="middle",
         )
-        btn_volver = MDFabButton(
-            icon="arrow-left",
-            style= "standard"
-        )
-        encabezado.add_widget(btn_volver)
         encabezado.add_widget(imagen)
         encabezado.add_widget(titulo)
         self.layout.add_widget(encabezado)
 
-        botones = MDBoxLayout(
-            orientation="horizontal",
-            spacing=20,
-            size_hint=(1, None),
-            height=dp(60),
-            padding =(dp(20), 0)
-        )
-        cancelar_btn = MDButton(
-            text="Reservar",
-            icon="calendar-plus",
-            on_release=self.confirmar_cancelacion_reserva,
-            size_hint=(1, None),
-        )
-        ir_btn = MDButton(
-            text="ir a mapa",
-            icon="bus-marker",
-            on_release=self.sitio_reserva,
-            size_hint=(1, None),
-        )
         
-        botones.add_widget(cancelar_btn)
-        botones.add_widget(ir_btn)
-        self.layout.add_widget(botones)
-
         scroll_view = ScrollView()
         content_layout = MDBoxLayout(
             orientation="vertical", padding=10, spacing=10, size_hint_y=None
@@ -200,41 +162,6 @@ class Informacion_Reserva_Screen(MDScreen):
         scroll_view.add_widget(content_layout)
         self.layout.add_widget(scroll_view)
 
-    def cancelar_reserva(self, *args):
-        id_usuario = self.reserva_actual['id_usuario']
-        eliminar = eliminar_reserva(id_usuario)
-        self.dialog.dismiss()
-            # mensaje de exito en pantalla
-        self.layout.clear_widgets()
-            # dialogo de exito
-        self.dialogo = MDDialog(
-            title="Reserva Cancelada",
-            text="La reserva ha sido cancelada exitosamente.",
-            buttons=[
-                MDButton(
-                    text="Aceptar", on_release=self.volver, size_hint=(1, None), height=dp(48)
-                )
-            ]
-        )
-        self.dialogo.open()
-
-    def sitio_reserva(self):
-        pass
-
-    def confirmar_cancelacion_reserva(self, *args):
-        if not self.dialog:
-            self.dialog = MDDialog(
-                title="¿Cancelar reserva?",
-                text="¿Deseas realizar cancelacion de la reserva de este servicio?",
-                buttons=[
-                    MDButton(text="Cancelar", on_release=self.cancelar_dialogo),
-                    MDButton(text="Confirmar", on_release=self.cancelar_reserva),
-                ],
-            )
-        self.dialog.open()
-
-    def cancelar_dialogo(self, *args):
-        self.dialog.dismiss()
 
     def volver(self, *args):
         self.manager.current = "pantallaUsuario"

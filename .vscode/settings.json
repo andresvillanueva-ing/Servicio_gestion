@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
         "./views"
-    ]
+    ],
+    "python.analysis.autoImportCompletions": true
 }

@@ -4,7 +4,7 @@ from Database.Data_Reservas import agregar_reserva # Asegúrate de que esta impo
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.textfield import MDTextField
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDButton
 from kivy.uix.scrollview import ScrollView
 from kivymd.app import MDApp
 from kivymd.uix.pickers import MDDatePicker
@@ -43,7 +43,7 @@ class reservas_screen(MDScreen):
         self.telefono = MDTextField(hint_text="Teléfono")
         self.correo = MDTextField(hint_text="Correo electrónico")
 
-        self.boton_fecha = MDRaisedButton(
+        self.boton_fecha = MDButton(
             text="Seleccionar fecha",
             pos_hint={"center_x": 0.5},
             on_release=self.show_date_picker
@@ -55,7 +55,7 @@ class reservas_screen(MDScreen):
         )
 
 
-        self.boton_reservar = MDRaisedButton(
+        self.boton_reservar = MDButton(
             text="Reservar",
             pos_hint={"center_x": 0.5},
             on_release=self.reservar
@@ -168,7 +168,7 @@ class reservas_screen(MDScreen):
             title=title,
             text=text,
             buttons=[
-                MDRaisedButton(text="OK", on_release=lambda x: dialog.dismiss())
+                MDButton(text="OK", on_release=lambda x: dialog.dismiss())
             ]
         )
         dialog.open()

@@ -65,10 +65,9 @@ def Verificar_datos(usuario, contraseña):
                     "telefono": telefono
                 }
                 # Desciframos los campos antes de retornarlos
-                usuario_descifrado = descifrar_campos_usuario(usuario_dict, ['nombre', 'telefono'])
+                usuario_descifrado = descifrar_campos_usuario(usuario_dict, ['nombre','correo', 'telefono'])
                 return usuario_descifrado
         except Exception as e:
             print("Error al verificar contraseña:", e)
             return None
-    return None
 

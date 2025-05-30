@@ -32,16 +32,6 @@ def agregar_usuario(nombre_usuario, correo_usuario, telefono_usuario, contraseñ
     conexion.commit()
     cursor.close()
     conexion.close()
-    print('Usuario registrado con exito')
-
-def listar_usuario():
-    conexion = crear_conexion()
-    cursor = conexion.cursor()
-    cursor.execute("SELECT * FROM data_base_usuario")
-    for usaurio in  cursor.fetchall():
-        print(usaurio)
-    cursor.close()
-    conexion.close()
 
 #funcion para verificar datos de correo y contraseña
 
@@ -77,3 +67,4 @@ def Verificar_datos_usuario(usuario, contraseña):
         except Exception as e:
             print("Error al verificar contraseña:", e)
             return None
+        

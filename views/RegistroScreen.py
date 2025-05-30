@@ -1,5 +1,5 @@
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDButton
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.uix.widget import Widget
@@ -29,7 +29,7 @@ class Registro_Screen(MDScreen):
         float_layout = MDFloatLayout()
 
         # Botón de Usuario
-        self.user_button = MDRaisedButton(
+        self.user_button = MDButton(
             text="Usuario", 
             size_hint=(None, None),
             size=(250, 50),
@@ -42,7 +42,7 @@ class Registro_Screen(MDScreen):
         self.user_button.bind(on_press=self.registro_usuario)
 
         # Botón de Prestador de Servicios
-        self.service_button = MDRaisedButton(  
+        self.service_button = MDButton(  
             text="Prestador de Servicios",
             size_hint=(None, None),
             size=(250, 50),
