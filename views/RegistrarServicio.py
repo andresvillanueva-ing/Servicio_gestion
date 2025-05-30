@@ -62,11 +62,8 @@ class registrar_servicio_screen(MDScreen):
         self.Descripcion = MDTextField(hint_text="Descripcion del servicio",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="sort-alphabetical-descending")
         self.horario = MDTextField(hint_text="Horario de atencion. ej: 00:00 a 00:00",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="alarm-check")
         self.Puestos = MDTextField(hint_text="Puestos disponibles",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="arrow-all")
-        self.boton_ubicacion = MDRaisedButton(
-            text="Seleccionar ubicación en el mapa",
-            pos_hint={"center_x": 0.5},
-            on_release=self.abrir_mapa_dialog
-        )
+        self.ubicacion = MDTextField(hint_text="Direccion del servicio. Ej: Calle 10 #12-34 Barrio 1era de mayo", helper_text="", helper_text_mode="on_error", mode="rectangle", icon_right="map-marker-outline")
+
         self.boton_imagen = MDIconButton(
             icon="image",
             icon_size="32sp",
@@ -105,8 +102,7 @@ class registrar_servicio_screen(MDScreen):
         content_layout.add_widget(self.Descripcion)
         content_layout.add_widget(self.horario)
         content_layout.add_widget(self.Puestos)
-        content_layout.add_widget(MDLabel(text="Seleccionar ubicación en el mapa", halign="center"))
-        content_layout.add_widget(self.boton_ubicacion)
+        content_layout.add_widget(self.ubicacion)
         content_layout.add_widget(self.boton_imagen)
         content_layout.add_widget(self.registro_button)
 
