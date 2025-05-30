@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel, MDIcon
-from kivymd.uix.button import MDButton, MDRectangleFlatIconButton
+from kivymd.uix.button import MDRaisedButton, MDRectangleFlatIconButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.card import MDCard
 from kivy.uix.image import Image
@@ -184,8 +184,8 @@ class informacion_servicios_screen(MDScreen):
                 title="¿Confirmar reserva?",
                 text="¿Deseas realizar la reserva de este servicio?",
                 buttons=[
-                    MDButton(text="Cancelar", on_release=self.cancelar_dialogo),
-                    MDButton(text="Confirmar", on_release=self.realizar_reserva),
+                    MDRaisedButton(text="Cancelar", on_release=self.cancelar_dialogo),
+                    MDRaisedButton(text="Confirmar", on_release=self.realizar_reserva),
                 ],
             )
         self.dialog.open()

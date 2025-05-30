@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
-from kivymd.uix.button import MDButton, MDFlatButton, MDIconButton
+from kivymd.uix.button import MDRaisedButton, MDFlatButton, MDIconButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.menu import MDDropdownMenu
@@ -40,7 +40,7 @@ class modificar_servicio_screen(MDScreen):
         # Layout principal
         main_layout = MDBoxLayout(orientation='vertical')
 
-        # TopAppBar
+        # Toptoolbar
         top_bar = MDTopAppBar(
             title="Registro de Servicio",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
@@ -62,7 +62,7 @@ class modificar_servicio_screen(MDScreen):
         self.Descripcion = MDTextField(hint_text="Descripcion del servicio",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="sort-alphabetical-descending")
         self.horario = MDTextField(hint_text="Horario de atencion. ej: 00:00 a 00:00",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="alarm-check")
         self.Puestos = MDTextField(hint_text="Puestos disponibles",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="arrow-all")
-        self.boton_ubicacion = MDButton(
+        self.boton_ubicacion = MDRaisedButton(
             text="Seleccionar ubicación en el mapa",
             pos_hint={"center_x": 0.5},
             on_release=self.abrir_mapa_dialog
@@ -94,7 +94,7 @@ class modificar_servicio_screen(MDScreen):
         )
 
         self.tipo_servicios_button.bind(on_release=lambda *args: self.tipo_servicio_menu.open())
-        self.registro_button = MDButton(text="Registrar", pos_hint={"center_x": 0.5},md_bg_color= "#FE4F2D", on_release=self.registrar)
+        self.registro_button = MDRaisedButton(text="Registrar", pos_hint={"center_x": 0.5},md_bg_color= "#FE4F2D", on_release=self.registrar)
 
         # Agregar widgets al layout de contenido
         content_layout.add_widget(self.razon_social)

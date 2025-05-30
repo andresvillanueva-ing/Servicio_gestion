@@ -12,7 +12,7 @@ class PerfilUsuario(MDScreen):
 
         layout = MDBoxLayout(orientation='vertical')
 
-        # TopAppBar con flecha para regresar
+        # Toptoolbar con flecha para regresar
         top_bar = MDTopAppBar(
             title="Información del Usuario",
             left_action_items=[["arrow-left", lambda x: self.regresar()]]

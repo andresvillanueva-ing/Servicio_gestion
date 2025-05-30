@@ -1,7 +1,7 @@
 from kivy.core.text import LabelBase
 
 from kivy.uix.screenmanager import Screen
-from kivymd.uix.button import MDButton, MDFlatButton
+from kivymd.uix.button import MDRaisedButton, MDFlatButton
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
@@ -24,7 +24,7 @@ class login_screen(Screen):
         # Color de fondo
         layout.md_bg_color = ("#FFF2F2")
 
-        # TopAppBar
+        # Toptoolbar
         top_bar = MDBoxLayout(
             orientation="horizontal",
             pos_hint={"top": 1},
@@ -82,7 +82,7 @@ class login_screen(Screen):
         )
 
         # Botón de inicio de sesión
-        login_button = MDButton(
+        login_button = MDRaisedButton(
             text="Iniciar sesión",
             pos_hint={"center_x": 0.5},
             md_bg_color=("#FE4F2D"),  
