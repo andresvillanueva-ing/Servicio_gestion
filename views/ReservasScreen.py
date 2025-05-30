@@ -40,7 +40,15 @@ class reservas_screen(MDScreen):
         content.bind(minimum_height=content.setter('height'))
 
         self.nombre_usuario = MDTextField(hint_text="Nombre completo")
-        self.telefono = MDTextField(hint_text="Teléfono")
+
+        # Solo permite numeros y la validacion de longitud
+        
+        self.telefono = MDTextField(
+            hint_text="Telefono",
+            input_filter="int", # Solo acepta numeros
+        )
+        self.telefono.bind(text=self.validar_longitud_telefono) # Limita a 10 caracteres 
+        
         self.correo = MDTextField(hint_text="Correo electrónico")
 
         self.boton_fecha = MDRaisedButton(
@@ -100,7 +108,10 @@ class reservas_screen(MDScreen):
             fecha_reserva = self.selected_date
             hora_actual = datetime.now().strftime('%H:%M:%S')
             
-            
+            # Validacion del numero de telefono
+            if not telefono.isdigit() or len(telefono) != 10:
+                self.show_message_dialog("Error", "El número de telefono debe tener 10 dígitos.")
+                return
 
             # Validar que todos los campos necesarios estén llenos
             if not all([nombre, telefono, correo, hora_actual, fecha_reserva, servicio, ]):
@@ -172,3 +183,8 @@ class reservas_screen(MDScreen):
             ]
         )
         dialog.open()
+
+        #Límite de caracteres del campo de telefono
+        def validar_longitud_telefono(self, instance, value):
+            if len(value) > 10:
+                instance.text = value[:10]
