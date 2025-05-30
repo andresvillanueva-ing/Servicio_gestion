@@ -1,16 +1,16 @@
 from kivy.lang import Builder
 from kivy.uix.floatlayout import FloatLayout
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.button import MDButton
+from kivymd.uix.button import MDRaisedButton, MDFlatButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.card import MDCard
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.scrollview import ScrollView
-from kivymd.uix.navigationbar import MDNavigationBar, MDNavigationItem
+from kivymd.uix.bottomnavigation import MDBottomNavigation, MDBottomNavigationItem
 from kivy.metrics import dp
 from Database.Data_sercivios import obtener_servicios_por_tipo
-from kivymd.uix.appbar import MDTopAppBar
+from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.tab import MDTabs
 from kivymd.uix.dialog import MDDialog
 from kivy.uix.image import Image
@@ -67,11 +67,11 @@ class TabHotel(FloatLayout, MDTabsBase):
             title="¿Ver información del servicio?",
             text=f"{servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
             buttons=[
-                MDButton(
+                MDFlatButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDButton(
+                MDFlatButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(servicio)
                 ),
@@ -139,11 +139,11 @@ class TabParqueadero(FloatLayout, MDTabsBase):
             title="¿Ver información del servicio?",
             text=f"{servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
             buttons=[
-                MDButton(
+                MDFlatButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDButton(
+                MDFlatButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(servicio)
                 ),
@@ -210,11 +210,11 @@ class TabRestaurante(FloatLayout, MDTabsBase):
             title="¿Ver información del servicio?",
             text=f"Nombre del servicio: {servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
             buttons=[
-                MDButton(
+                MDFlatButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDButton(
+                MDFlatButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(servicio)
                 ),
@@ -242,7 +242,7 @@ class Pantalla_Usuario(MDScreen):
         main_layout = MDBoxLayout(orientation='vertical')
         main_layout.add_widget(self.create_top_bar())
 
-        self.bottom_nav = MDNavigationBar(panel_color=("#02020262"))
+        self.bottom_nav = MDBottomNavigation(panel_color=("#02020262"))
 
         self.bottom_nav.add_widget(self.Servicios_tab())
         self.bottom_nav.add_widget(self.Reservas_tab())
@@ -266,7 +266,7 @@ class Pantalla_Usuario(MDScreen):
         )
     
     def Servicios_tab(self):
-        tab = MDNavigationItem(name="servicios", text="Servicios", icon="home")
+        tab = MDBottomNavigationItem(name="servicios", text="Servicios", icon="home")
 
         layout = MDBoxLayout(
             orientation="vertical",
@@ -291,7 +291,7 @@ class Pantalla_Usuario(MDScreen):
     
     
     def Reservas_tab(self):
-        tab = MDNavigationItem(name="reservas", text="Reservas", icon="calendar")
+        tab = MDBottomNavigationItem(name="reservas", text="Reservas", icon="calendar")
 
         self.layout_reservas = MDBoxLayout(
             orientation="vertical",
@@ -358,11 +358,11 @@ class Pantalla_Usuario(MDScreen):
             title="¿Ver información de la reserva?",
             text=f"Nombre del servicio: {reserva['razon_social']}\nAdministrador: {reserva['administrador']}",
             buttons=[
-                MDButton(
+                MDRaisedButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDButton(
+                MDRaisedButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(reserva) 
                 ),

@@ -1,7 +1,7 @@
 from kivy.core.text import LabelBase
 
 from kivy.uix.screenmanager import Screen
-from kivymd.uix.button import MDButton, MDFlatButton
+from kivymd.uix.button import MDRaisedButton, MDFlatButton
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
@@ -24,7 +24,7 @@ class login_screen(Screen):
         # Color de fondo
         layout.md_bg_color = ("#FFF2F2")
 
-        # TopAppBar
+        # Toptoolbar
         top_bar = MDBoxLayout(
             orientation="horizontal",
             pos_hint={"top": 1},
@@ -82,7 +82,7 @@ class login_screen(Screen):
         )
 
         # Botón de inicio de sesión
-        login_button = MDButton(
+        login_button = MDRaisedButton(
             text="Iniciar sesión",
             pos_hint={"center_x": 0.5},
             md_bg_color=("#FE4F2D"),  
@@ -120,6 +120,9 @@ class login_screen(Screen):
         layout.add_widget(form_container)
         self.add_widget(layout)
 
+    def on_pre_enter(self, *args):
+        self.limpiar_campos
+
     def verificar_credenciales(self, instance):
         usuario = self.username.text.strip()
         contraseña = self.password.text.strip()
@@ -136,18 +139,17 @@ class login_screen(Screen):
             from kivy.app import App
             App.get_running_app().id_usuario = result["id"]  
             self.manager.current = "pantallaUsuario"
-            self.username.text = ""
-            self.password.text = ""
+            self.limpiar_campos
         elif resultado:
             from kivy.app import App
             App.get_running_app().id_prestador = resultado["id"]
             # if not self.manager.has_screen("perfil_usuario"):
             #     self.manager.add_widget(PerfilUsuario(usuario=resultado, name="perfil_usuario"))
             self.manager.current = "pantallaPServicio"
-            self.username.text = ""
-            self.password.text = ""
+            self.limpiar_campos
         else:
             self.mostrar_dialogo("¡Error!", "Credenciales incorrectas.")
+            self.limpiar_campos
 
     def mostrar_dialogo(self, titulo, mensaje):
         if hasattr(self, 'dialog') and self.dialog:
@@ -164,6 +166,11 @@ class login_screen(Screen):
             ]
         )
         self.dialog.open()
+
+    def limpiar_campos(self):
+        self.username.text=""
+        self.password.text=""
+
 
     def screen_registro(self, instance, value):
         self.manager.current = "registroscreen"

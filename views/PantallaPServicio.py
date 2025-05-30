@@ -1,9 +1,9 @@
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.appbar import MDTopAppBar
+from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-from kivymd.uix.button import MDButton
-from kivymd.uix.navigationbar import MDNavigationBar, MDNavigationItem
+from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.bottomnavigation import MDBottomNavigation, MDBottomNavigationItem
 from kivymd.uix.card import MDCard
 from kivy.app import App
 from kivymd.uix.scrollview import ScrollView
@@ -31,7 +31,7 @@ class Pantalla_P_Servicio(MDScreen):
         main_layout.add_widget(self.create_top_bar())
 
         # Navegación inferior
-        bottom_nav = MDNavigationBar(panel_color=("#02020262"))
+        bottom_nav = MDBottomNavigation(panel_color=("#02020262"))
         bottom_nav.add_widget(self.create_reservas_tab())
         bottom_nav.add_widget(self.create_configuracion_tab())
 
@@ -49,7 +49,7 @@ class Pantalla_P_Servicio(MDScreen):
         )
 
     def create_reservas_tab(self):
-        tab = MDNavigationItem(name="reservas", text="Reservas", icon="calendar")
+        tab = MDBottomNavigationItem(name="reservas", text="Reservas", icon="calendar")
 
         layout_reservas = MDBoxLayout(orientation="vertical", padding="10dp", spacing="10dp", md_bg_color="#FFF2F2")
 
@@ -83,7 +83,7 @@ class Pantalla_P_Servicio(MDScreen):
     #----- Tab de configuracion de servicios----
     def create_configuracion_tab(self):
         
-        tab = MDNavigationItem(name="configuracion", text="Configuración", icon="cog")
+        tab = MDBottomNavigationItem(name="configuracion", text="Configuración", icon="cog")
 
         layout = MDBoxLayout(orientation="vertical", padding="10dp", spacing="10dp", md_bg_color="#FFF2F2")
 
@@ -116,15 +116,15 @@ class Pantalla_P_Servicio(MDScreen):
             size_hint=(1, None),
             height="50dp"
         )
-        button_layout.add_widget(MDButton(
+        button_layout.add_widget(MDRaisedButton(
             text="Modificar Info",
             size_hint=(None, None),
             size=("200dp", "40dp"),
             font_style="Button",
             md_bg_color="#FE4F2D",
-            on_release=self.modificar_informacion
+            on_release=self.modificar_informacion_conf()
         ))
-        button_layout.add_widget(MDButton(
+        button_layout.add_widget(MDRaisedButton(
             text="Crear Servicio",
             size_hint=(None, None),
             size=("200dp", "40dp"),
@@ -217,11 +217,11 @@ class Pantalla_P_Servicio(MDScreen):
             title="¿Ver información del servicio?",
             text=f"Nombre del cliente: {reserva['nombre_cliente']}\nTelefono: {reserva['telefono_cliente']}",
             buttons=[
-                MDButton(
+                MDRaisedButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDButton(
+                MDRaisedButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(reserva)
                 ),
@@ -260,7 +260,29 @@ class Pantalla_P_Servicio(MDScreen):
             self.manager.current = "informacionreserva"
 
     #----------Navegacion a modificar la informacion del servicio-------------
-    def modificar_informacion(self, instance):
+    def modificar_informacion_conf(self, servicios):
+        self.dialog = MDDialog(
+            title="¿Desea modifiacar los datos del servicio?",
+            buttons=[
+                MDRaisedButton(
+                     text="CANCELAR", 
+                    on_release=lambda x: self.dialog.dismiss()
+                ),
+                MDRaisedButton(
+                    text="VER",
+                    on_release=lambda x: self.modificar_informacion(servicios)
+                ),
+            ],
+        )
+        self.dialog.open()
+
+
+    def modificar_informacion(self, servicios):
+        self.dialog.dismiss()
+        if self.manager:
+            pantalla_info = self.manager.get_screen("modificar_servicio")
+            pantalla_info.servicio_actual =servicios 
+            self.manager.current = "modificar_servicio"
         print("Modificar información presionado")
         
 

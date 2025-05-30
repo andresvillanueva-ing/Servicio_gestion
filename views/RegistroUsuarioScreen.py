@@ -4,7 +4,7 @@ from cryptography.fernet import Fernet
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDButton, MDIconButton, MDFlatButton
+from kivymd.uix.button import MDRaisedButton, MDIconButton, MDFlatButton
 from cryptography.fernet import Fernet
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.label import MDLabel
@@ -69,7 +69,7 @@ class registro_usuario_screen(MDScreen):
         self.contraseña_usuario = MDTextField(hint_text = "Contraseña", password = True, helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="lock")
         self.v_contraseña_usuario = MDTextField(hint_text = "verificar contraseña", password = True, helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="lock")
         
-        self.button_registro_usuario = MDButton(text = "Registrarse", md_bg_color="#FE4F2D", font_style="Button", pos_hint = {"center_x": 0.5})
+        self.button_registro_usuario = MDRaisedButton(text = "Registrarse", md_bg_color="#FE4F2D", font_style="Button", pos_hint = {"center_x": 0.5})
         self.button_registro_usuario.bind(on_press=self.registrar_usuario)
         
         google_button = MDIconButton(icon="google", pos_hint={"center_x": 0.5})

@@ -1,9 +1,9 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel, MDIcon
-from kivymd.uix.button import  MDButton, MDFabButton
+from kivymd.uix.button import  MDRaisedButton
 from kivymd.uix.card import MDCard
-from kivymd.uix.appbar import MDTopAppBar
+from kivymd.uix.toolbar import MDTopAppBar
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.image import Image
 from kivymd.uix.dialog import MDDialog
@@ -67,11 +67,7 @@ class Informacion_Reserva_Screen(MDScreen):
             halign="center",
             valign="middle",
         )
-        btn_volver = MDFabButton(
-            icon="arrow-left",
-            style= "standard"
-        )
-        encabezado.add_widget(btn_volver)
+
         encabezado.add_widget(imagen)
         encabezado.add_widget(titulo)
         self.layout.add_widget(encabezado)
@@ -83,13 +79,13 @@ class Informacion_Reserva_Screen(MDScreen):
             height=dp(60),
             padding =(dp(20), 0)
         )
-        cancelar_btn = MDButton(
+        cancelar_btn = MDRaisedButton(
             text="Reservar",
             icon="calendar-plus",
             on_release=self.confirmar_cancelacion_reserva,
             size_hint=(1, None),
         )
-        ir_btn = MDButton(
+        ir_btn = MDRaisedButton(
             text="ir a mapa",
             icon="bus-marker",
             on_release=self.sitio_reserva,
@@ -211,7 +207,7 @@ class Informacion_Reserva_Screen(MDScreen):
             title="Reserva Cancelada",
             text="La reserva ha sido cancelada exitosamente.",
             buttons=[
-                MDButton(
+                MDRaisedButton(
                     text="Aceptar", on_release=self.volver, size_hint=(1, None), height=dp(48)
                 )
             ]
@@ -227,8 +223,8 @@ class Informacion_Reserva_Screen(MDScreen):
                 title="¿Cancelar reserva?",
                 text="¿Deseas realizar cancelacion de la reserva de este servicio?",
                 buttons=[
-                    MDButton(text="Cancelar", on_release=self.cancelar_dialogo),
-                    MDButton(text="Confirmar", on_release=self.cancelar_reserva),
+                    MDRaisedButton(text="Cancelar", on_release=self.cancelar_dialogo),
+                    MDRaisedButton(text="Confirmar", on_release=self.cancelar_reserva),
                 ],
             )
         self.dialog.open()
