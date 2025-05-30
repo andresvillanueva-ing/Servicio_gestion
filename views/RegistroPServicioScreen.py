@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.anchorlayout import MDAnchorLayout
@@ -60,7 +60,7 @@ class registro_p_servicio_screen(MDScreen):
         self.vcontraseña = MDTextField(hint_text="Confirmar contraseña", password=True, helper_text="", helper_text_mode="on_error", mode="rectangle", icon_right="lock")
 
         button_container = MDAnchorLayout(anchor_x="center", ) 
-        self.registro_button = MDRaisedButton(text="Registrar",  pos_hint={"center_x": 0.5}, on_release=self.registrar, md_bg_color=("#FE4F2D"), size_hint=(None, None), size=(200, 50))
+        self.registro_button = MDButton(text="Registrar",  pos_hint={"center_x": 0.5}, on_release=self.registrar, md_bg_color=("#FE4F2D"), size_hint=(None, None), size=(200, 50))
 
         # Add widgets to the scrollable layout
         

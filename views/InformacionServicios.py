@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel, MDIcon
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDButton, MDRectangleFlatIconButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.card import MDCard
 from kivy.uix.image import Image
@@ -87,46 +87,25 @@ class informacion_servicios_screen(MDScreen):
         botones = MDBoxLayout(
             orientation="horizontal",
             spacing=dp(10),
+            padding=dp(10),
             size_hint_y=None,
             height=dp(50),
-            pos_hint={'center_x': 0.5, 'center_y': 0.5} # Centra el contenedor 'botones'
+            pos_hint={'center_x': 0.5, 'center_y': 0.5} 
         )
 
-        reservar_btn = MDRaisedButton(
+        reservar_btn = MDRectangleFlatIconButton(
+            text="Reservar",
+            icon="calendar-plus",
             on_release=self.confirmar_reserva,
             size_hint=(1, None),
-            width=dp(48),
-            height=dp(48),
-            md_bg_color="#FFFFFF00"
         )
-        reservar_content = MDBoxLayout(orientation="vertical", spacing=5)
-        reservar_content.add_widget(
-            MDIcon(icon="calendar-cursor", size_hint=(None, None), size=(dp(24), dp(24)), halign="center")
+        ir_btn = MDRectangleFlatIconButton(
+            text="ir a mapa",
+            icon="bus-marker",
+            on_release=self.confirmar_reserva,
+            size_hint=(1, None),
         )
-        reservar_content.add_widget(MDLabel(halign="center"))
-        reservar_btn.add_widget(reservar_content)
         botones.add_widget(reservar_btn)
-
-        botones.add_widget(Widget())
-
-        ir_btn = MDRaisedButton(
-            on_release=self.abrir_mapa,
-            size_hint=(None, None), 
-            md_bg_color="#FFFFFF00", 
-            padding=dp(5) 
-        )
-        
-        ir_content = MDBoxLayout(
-            orientation="vertical",
-            spacing=dp(2), # Reducí el spacing para que el texto y el ícono estén más cerca
-            size_hint=(1, 1), # Hacer que ocupe todo el espacio disponible en el botón
-            pos_hint={'center_x': 0.5, 'center_y': 0.5}, # Centra el boxlayout dentro del botón
-            )
-        ir_content.add_widget(
-            MDIcon(icon="bus-marker", size_hint=(1, None), size=(dp(24), dp(40)), halign="center", valign="middle" )
-        )
-        ir_content.add_widget(MDLabel(text="Reservar", halign="center"))
-        ir_btn.add_widget(ir_content)
         botones.add_widget(ir_btn)
 
         self.layout.add_widget(botones)
@@ -205,8 +184,8 @@ class informacion_servicios_screen(MDScreen):
                 title="¿Confirmar reserva?",
                 text="¿Deseas realizar la reserva de este servicio?",
                 buttons=[
-                    MDRaisedButton(text="Cancelar", on_release=self.cancelar_dialogo),
-                    MDRaisedButton(text="Confirmar", on_release=self.realizar_reserva),
+                    MDButton(text="Cancelar", on_release=self.cancelar_dialogo),
+                    MDButton(text="Confirmar", on_release=self.realizar_reserva),
                 ],
             )
         self.dialog.open()

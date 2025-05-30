@@ -1,16 +1,16 @@
 from kivy.lang import Builder
 from kivy.uix.floatlayout import FloatLayout
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.button import MDRaisedButton, MDFlatButton
+from kivymd.uix.button import MDButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.card import MDCard
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.scrollview import ScrollView
-from kivymd.uix.bottomnavigation import MDBottomNavigation, MDBottomNavigationItem
+from kivymd.uix.navigationbar import MDNavigationBar, MDNavigationItem
 from kivy.metrics import dp
 from Database.Data_sercivios import obtener_servicios_por_tipo
-from kivymd.uix.toolbar import MDTopAppBar
+from kivymd.uix.appbar import MDTopAppBar
 from kivymd.uix.tab import MDTabs
 from kivymd.uix.dialog import MDDialog
 from kivy.uix.image import Image
@@ -67,11 +67,11 @@ class TabHotel(FloatLayout, MDTabsBase):
             title="¿Ver información del servicio?",
             text=f"{servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
             buttons=[
-                MDFlatButton(
+                MDButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDFlatButton(
+                MDButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(servicio)
                 ),
@@ -139,11 +139,11 @@ class TabParqueadero(FloatLayout, MDTabsBase):
             title="¿Ver información del servicio?",
             text=f"{servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
             buttons=[
-                MDFlatButton(
+                MDButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDFlatButton(
+                MDButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(servicio)
                 ),
@@ -210,11 +210,11 @@ class TabRestaurante(FloatLayout, MDTabsBase):
             title="¿Ver información del servicio?",
             text=f"Nombre del servicio: {servicio['razon_social']}\nAdministrador: {servicio['administrador']}",
             buttons=[
-                MDFlatButton(
+                MDButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDFlatButton(
+                MDButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(servicio)
                 ),
@@ -242,7 +242,7 @@ class Pantalla_Usuario(MDScreen):
         main_layout = MDBoxLayout(orientation='vertical')
         main_layout.add_widget(self.create_top_bar())
 
-        self.bottom_nav = MDBottomNavigation(panel_color=("#02020262"))
+        self.bottom_nav = MDNavigationBar(panel_color=("#02020262"))
 
         self.bottom_nav.add_widget(self.Servicios_tab())
         self.bottom_nav.add_widget(self.Reservas_tab())
@@ -266,7 +266,7 @@ class Pantalla_Usuario(MDScreen):
         )
     
     def Servicios_tab(self):
-        tab = MDBottomNavigationItem(name="servicios", text="Servicios", icon="home")
+        tab = MDNavigationItem(name="servicios", text="Servicios", icon="home")
 
         layout = MDBoxLayout(
             orientation="vertical",
@@ -275,10 +275,10 @@ class Pantalla_Usuario(MDScreen):
 
          # Crear tabs y añadirlos
         tabs = MDTabs(
-            md_bg_color="#FFF2F2",# Color de fondo de la barra de pestañas (Ejemplo: el mismo de la TopAppBar)
-            indicator_color="#FF0000", # Color del indicador de la pestaña activa (Ejemplo: rojo vibrante)
-            text_color_normal="#FFFFFF", # Color del texto/ícono de las pestañas inactivas (Ejemplo: blanco)
-            text_color_active="#015551", # Color del texto/ícono de la pestaña activa (Ejemplo: amarillo)
+            md_bg_color="#FFF2F2",# Color de fondo de la barra de pestañas 
+            indicator_color="#FF0000", # Color del indicador de la pestaña activa 
+            text_color_normal="#FFFFFF", # Color del texto/ícono de las pestañas inactivas 
+            text_color_active="#015551", # Color del texto/ícono de la pestaña activa 
             )
 
         tabs.add_widget(TabHotel(parent_screen=self))
@@ -291,7 +291,7 @@ class Pantalla_Usuario(MDScreen):
     
     
     def Reservas_tab(self):
-        tab = MDBottomNavigationItem(name="reservas", text="Reservas", icon="calendar")
+        tab = MDNavigationItem(name="reservas", text="Reservas", icon="calendar")
 
         self.layout_reservas = MDBoxLayout(
             orientation="vertical",
@@ -306,20 +306,26 @@ class Pantalla_Usuario(MDScreen):
         self.layout_reservas.clear_widgets()
         from kivy.app import App
         app = App.get_running_app()
+        
+        layout_scroll = ScrollView(size_hint=(1, 1))
+        content = MDBoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10), size_hint_y=None)
+        content.bind(minimum_height=content.setter('height'))
+
         if not hasattr(app, "id_usuario") or not app.id_usuario:
             self.layout_reservas.add_widget(MDLabel(text="Por favor, inicie sesión primero.", halign="center"))
             return
         try:
             reservas = obtener_reservas_realizadas(app.id_usuario)
-            print(reservas)
         except Exception as e:
             print("Error al obtener reservas:", e)
-            self.layout_reservas.add_widget(MDLabel(text="Error al cargar reservas", halign="center"))
+            self.add_widget(MDLabel(text="Error al cargar reservas", halign="center"))
             return
 
         if reservas:
             for reserva in reservas:
-                self.layout_reservas.add_widget(self.crear_card_reserva(reserva))
+                content.add_widget(self.crear_card_reserva(reserva))
+                layout_scroll.add_widget(content)
+                self.layout_reservas.add_widget(layout_scroll)
         else:
             self.layout_reservas.add_widget(MDLabel(text="No hay servicios registrados.", halign="center"))
 
@@ -352,11 +358,11 @@ class Pantalla_Usuario(MDScreen):
             title="¿Ver información de la reserva?",
             text=f"Nombre del servicio: {reserva['razon_social']}\nAdministrador: {reserva['administrador']}",
             buttons=[
-                MDFlatButton(
+                MDButton(
                      text="CANCELAR", 
                     on_release=lambda x: self.dialog.dismiss()
                 ),
-                MDFlatButton(
+                MDButton(
                     text="VER",
                     on_release=lambda x: self.ir_a_informacion(reserva) 
                 ),

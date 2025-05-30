@@ -14,8 +14,9 @@ from views.PantallaUsuario import Pantalla_Usuario
 from views.InformacionServicios import informacion_servicios_screen
 from views.ReservasScreen import reservas_screen
 from views.informacion_reservas import Informacion_Reserva_Screen
-
+from views.informacion_reserva_prestador import Informacion_Reserva_prestador_Screen
 from kivy.uix.screenmanager import Screen
+
 from kivy.lang import Builder
 Builder.load_file('views/SplashScreen.kv')
 
@@ -45,6 +46,7 @@ class ServicioGestion(MDApp):
         self.manager.add_widget(informacion_servicios_screen(name="informacionservicios"))
         self.manager.add_widget(reservas_screen(name="reservasscreen"))
         self.manager.add_widget(Informacion_Reserva_Screen(name="informacionreserva"))
+        self.manager.add_widget(Informacion_Reserva_prestador_Screen(name="informacionreservaprestador"))
 
         return self.manager
     
