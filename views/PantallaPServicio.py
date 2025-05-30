@@ -122,7 +122,7 @@ class Pantalla_P_Servicio(MDScreen):
             size=("200dp", "40dp"),
             font_style="Button",
             md_bg_color="#FE4F2D",
-            on_release=self.modificar_informacion
+            on_release=self.modificar_informacion_conf()
         ))
         button_layout.add_widget(MDRaisedButton(
             text="Crear Servicio",
@@ -260,7 +260,29 @@ class Pantalla_P_Servicio(MDScreen):
             self.manager.current = "informacionreserva"
 
     #----------Navegacion a modificar la informacion del servicio-------------
-    def modificar_informacion(self, instance):
+    def modificar_informacion_conf(self, servicios):
+        self.dialog = MDDialog(
+            title="¿Desea modifiacar los datos del servicio?",
+            buttons=[
+                MDRaisedButton(
+                     text="CANCELAR", 
+                    on_release=lambda x: self.dialog.dismiss()
+                ),
+                MDRaisedButton(
+                    text="VER",
+                    on_release=lambda x: self.modificar_informacion(servicios)
+                ),
+            ],
+        )
+        self.dialog.open()
+
+
+    def modificar_informacion(self, servicios):
+        self.dialog.dismiss()
+        if self.manager:
+            pantalla_info = self.manager.get_screen("modificar_servicio")
+            pantalla_info.servicio_actual =servicios 
+            self.manager.current = "modificar_servicio"
         print("Modificar información presionado")
         
 

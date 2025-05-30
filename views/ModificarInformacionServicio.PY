@@ -32,6 +32,7 @@ class modificar_servicio_screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "modificar_servicio"
+        self.servicio_actual = None
         self.ruta_imagen = ""  # Ahora será una ruta string
 
         # Color de fondo 
@@ -42,7 +43,7 @@ class modificar_servicio_screen(MDScreen):
 
         # Toptoolbar
         top_bar = MDTopAppBar(
-            title="Registro de Servicio",
+            title="Modificar de Servicio",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
             elevation=5,
             size_hint_y=None,
@@ -56,7 +57,7 @@ class modificar_servicio_screen(MDScreen):
         content_layout = MDBoxLayout(orientation='vertical', padding=10, spacing=10, size_hint_y=None)
         content_layout.bind(minimum_height=content_layout.setter('height'))
 
-        self.razon_social = MDTextField(hint_text="Razón social", helper_text="", helper_text_mode="on_error", mode="rectangle", icon_right="home-city")
+        self.razon_social = MDTextField(hint_text=self.servicio_actual['razon_social'], helper_text="", helper_text_mode="on_error", mode="rectangle", icon_right="home-city")
         self.nit = MDTextField(hint_text="NIT", input_filter="int", helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="numeric")
         self.Administrador = MDTextField(hint_text="Nombre del administrador", helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="account-cog")
         self.Descripcion = MDTextField(hint_text="Descripcion del servicio",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="sort-alphabetical-descending")
