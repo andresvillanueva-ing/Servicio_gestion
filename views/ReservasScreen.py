@@ -111,7 +111,7 @@ class reservas_screen(MDScreen):
             telefono = self.telefono.text
             correo = self.correo.text
             fecha_reserva = self.selected_date
-            hora_actual = datetime.now().strftime('%H:%M:%S')
+            fecha_hora_actual = datetime.now().strftime('%Y-%m-%d %H:%M:%S') # Aquí se toma la fecha y hora juntas
             
             # Validacion del numero de telefono
             if not telefono.isdigit() or len(telefono) != 10:
@@ -119,7 +119,7 @@ class reservas_screen(MDScreen):
                 return
 
             # Validar que todos los campos necesarios estén llenos
-            if not all([nombre, telefono, correo, hora_actual, fecha_reserva, servicio, ]):
+            if not all([nombre, telefono, correo, fecha_hora_actual, fecha_reserva, servicio, ]):
                 self.show_message_dialog("Error", "Por favor, complete todos los campos y seleccione una fecha.")
                 return
 
@@ -132,8 +132,6 @@ class reservas_screen(MDScreen):
                 razon_social_cifrado = fernet.encrypt(servicio.get("razon_social").encode())
                 nit_cifrado = fernet.encrypt(servicio.get("nit").encode())
                 administrador_cifrado = fernet.encrypt(servicio.get("administrador").encode())
-                fecha_reserva_str = str(fecha_reserva)
-                hora_actual_str = str(hora_actual)
 
                 agregar_reserva(
                     id_prestador = servicio.get("id_prestador",""),
@@ -147,8 +145,8 @@ class reservas_screen(MDScreen):
                     nombre_cliente=nombre_cifrado,
                     telefono_cliente=telefono_cifrado,
                     correo_cliente=correo,
-                    hora_reserva=hora_actual_str,
-                    fecha_reserva=fecha_reserva_str
+                    hora_reserva=fecha_hora_actual, # Aquí se guarda la fecha y hora juntas
+                    fecha_reserva=fecha_hora_actual,  # También si tu base tiene un campo separado
                 )
                 
 
