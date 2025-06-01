@@ -5,11 +5,11 @@ from kivymd.uix.button import MDTextButton
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.metrics import dp
 
-class PerfilUsuario(MDScreen):
+class Perfilprestador(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.name = "perfil_usuario"
-        self.usuario = None
+        self.name = "perfil_prestador"
+        self.prestador = None
 
         self.layout = MDBoxLayout(orientation='vertical')
         self.top_bar = MDTopAppBar(
@@ -40,7 +40,7 @@ class PerfilUsuario(MDScreen):
         btn_Modificar = MDTextButton(
             text="Modificar datos",
             pos_hint={"center_x": 0.5},
-            text_color=(1, 0, 0, 1),  # Rojo, RGBA
+            text_color=(1, 0, 0, 1),  
             on_release=self.modificar_datos
         )
         btn_eliminar = MDTextButton(
@@ -69,24 +69,18 @@ class PerfilUsuario(MDScreen):
         self.layout.add_widget(self.caja_botones)
 
         self.add_widget(self.layout)
-    
-    def on_pre_enter(self):
-        if self.usuario:
-            self.lbl_nombre.text = f"Nombre: {self.usuario['nombre']}"
-            self.lbl_email.text = f"Email: {self.usuario['correo']}"
-            self.lbl_telefono.text = f"Teléfono: {self.usuario['telefono']}"
 
 
-    def set_usuario(self, usuario):
-        self.usuario = usuario
+    def set_prestador(self, usuario):
+        self.prestador = usuario
         self.lbl_nombre.text = f"Nombre: {usuario['nombre']}"
         self.lbl_email.text = f"Email: {usuario['correo']}"
         self.lbl_telefono.text = f"Teléfono: {usuario['telefono']}"
 
     def modificar_datos(self, *args):
-        modificar_screen = self.manager.get_screen("modificar_usuario")
-        modificar_screen.set_datos_usuario(self.usuario)
-        self.manager.current = "modificar_usuario"
+        modificar_screen = self.manager.get_screen("modificar_prestador")
+        modificar_screen.set_datos_prestador(self.prestador)
+        self.manager.current = "modificar_prestador"
 
     def eliminar_cuenta(self):
         pass
@@ -96,4 +90,4 @@ class PerfilUsuario(MDScreen):
         self.manager.transition.direction = "right"
 
     def regresar(self):
-        self.manager.current = "pantallaUsuario" 
+        self.manager.current = "pantallaPServicio"  

@@ -50,7 +50,6 @@ class reservas_screen(MDScreen):
             spacing = 10
         )
         
-
         self.nombre_usuario = MDTextField(
             hint_text="Nombre completo",
             helper_text="Ingresa un nombre valido",

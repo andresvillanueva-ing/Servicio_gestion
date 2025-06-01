@@ -126,30 +126,29 @@ class login_screen(Screen):
     def verificar_credenciales(self, instance):
         usuario = self.username.text.strip()
         contraseña = self.password.text.strip()
-        
 
         if not usuario or not contraseña:
             self.mostrar_dialogo("¡Error!", "Por favor, rellene todos los campos.")
             return
 
-        resultado = Verificar_datos(usuario, contraseña)
-        result = Verificar_datos_usuario(usuario, contraseña)
+        resultado = Verificar_datos(usuario, contraseña)  # Prestador
+        result = Verificar_datos_usuario(usuario, contraseña)  # Cliente
+
+        from kivy.app import App
+        app = App.get_running_app()
 
         if result:
-            from kivy.app import App
-            App.get_running_app().id_usuario = result["id"]  
+            app.id_usuario = result["id"]
             self.manager.current = "pantallaUsuario"
-            self.limpiar_campos
+            self.limpiar_campos()
         elif resultado:
-            from kivy.app import App
-            App.get_running_app().id_prestador = resultado["id"]
-            if not self.manager.has_screen("perfil_usuario"):
-                self.manager.add_widget(PerfilUsuario(usuario=resultado, name="perfil_usuario"))
+            app.id_prestador = resultado["id"]
             self.manager.current = "pantallaPServicio"
-            self.limpiar_campos
+            self.limpiar_campos()
         else:
             self.mostrar_dialogo("¡Error!", "Credenciales incorrectas.")
-            self.limpiar_campos
+            self.limpiar_campos()
+
 
     def mostrar_dialogo(self, titulo, mensaje):
         if hasattr(self, 'dialog') and self.dialog:

@@ -346,8 +346,7 @@ class Pantalla_P_Servicio(MDScreen):
         if not usuario:
             print('usuario, iniciar sesion')
             return
-
         if self.manager:
-            pantalla_usuario = self.manager.get_screen("perfil_usuario")
-            pantalla_usuario.set_usuario(usuario)
-            self.manager.current = "perfil_usuario"
+            pantalla_usuario = self.manager.get_screen("perfil_prestador")
+            pantalla_usuario.set_prestador(usuario)
+            self.manager.current = "perfil_prestador"

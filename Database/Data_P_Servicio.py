@@ -75,7 +75,7 @@ def obtener_prestador(id_prestador):
     conexion = crear_conexion()
     cursor = conexion.cursor()
 
-    cursor.execute("SELECT nombre, correo, telefono FROM data_base_servicio WHERE id = %s", (id_prestador,))
+    cursor.execute("SELECT nombre, correo, telefono, id FROM data_base_servicio WHERE id = %s", (id_prestador,))
     row = cursor.fetchone()
 
     cursor.close()
@@ -85,9 +85,32 @@ def obtener_prestador(id_prestador):
         return {
             "nombre": fernet.decrypt(row[0]).decode(),
             "correo": row[1],
-            "telefono": fernet.decrypt(row[2]).decode()
+            "telefono": fernet.decrypt(row[2]).decode(),
+            "id": row[3]
         }
     else:
         return None
 
+def modificar_prestador(nombre, correo, telefono, id):
+    conexion = crear_conexion()
+    cursor = conexion.cursor()
+    sql = """
+        UPDATE data_base_servicio 
+        SET nombre = %s, correo = %s,  telefono = %s 
+        WHERE id = %s
+    """
+    valores = (nombre, correo, telefono, id)
+    cursor.execute(sql, valores)
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+def eliminar_prestador(id):
+    conexion = crear_conexion()
+    cursor = conexion.cursor()
+    sql = "DELETE FROM `data_servicios` WHERE id = %s"
+    cursor.execute(sql,(id,))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
 

@@ -1,4 +1,5 @@
 from kivy.config import Config
+
 Config.set('graphics', 'width', '360')
 Config.set('graphics', 'height', '640')
 from kivy.clock import Clock
@@ -17,6 +18,9 @@ from views.informacion_reservas import Informacion_Reserva_Screen
 from views.informacion_reserva_prestador import Informacion_Reserva_prestador_Screen
 from views.ModificarInformacionServicio import modificar_servicio_screen
 from views.PerfilUsuario import PerfilUsuario
+from views.perfilprestador import Perfilprestador
+from views.modificar_usuario import ModificarUsuario
+from views.modificar_prestadores import Modificarprestador
 from kivy.uix.screenmanager import Screen
 
 from kivy.lang import Builder
@@ -51,6 +55,9 @@ class ServicioGestion(MDApp):
         self.manager.add_widget(Informacion_Reserva_prestador_Screen(name="informacionreservaprestador"))
         self.manager.add_widget(modificar_servicio_screen(name="modificar_servicio"))
         self.manager.add_widget(PerfilUsuario(name="perfil_usuario"))
+        self.manager.add_widget(Perfilprestador(name="perfil_prestador"))
+        self.manager.add_widget(ModificarUsuario(name="modificar_usuario"))
+        self.manager.add_widget(Modificarprestador(name="modificar_prestador"))
 
 
         return self.manager
