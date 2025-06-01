@@ -13,6 +13,7 @@ from kivy.metrics import dp
 from plyer import orientation
 from Database.Data_sercivios import eliminar_servicio, obtener_servicios
 from Database.Data_Reservas import obtener_reservas
+from Database.Data_P_Servicio import obtener_prestador
 
 
 
@@ -25,7 +26,6 @@ class Pantalla_P_Servicio(MDScreen):
         md_bg_color="#FFF2F2"
         self.build_ui()
         
-
     def build_ui(self):
         # Layout principal
         main_layout = MDBoxLayout(orientation='vertical')
@@ -191,7 +191,7 @@ class Pantalla_P_Servicio(MDScreen):
         datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
         datos.add_widget(MDLabel(text=reserva["nombre_cliente"].upper(), bold=True, font_style="H6", halign="center"))
         datos.add_widget(MDLabel(text="[b]Telefono:[/b] " + reserva['telefono_cliente'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-        datos.add_widget(MDLabel(text=f"[b]Correo:[/b] {reserva["correo_cliente"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+        datos.add_widget(MDLabel(text=f"[b]correo_usuario:[/b] {reserva["correo_cliente"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
         datos.add_widget(MDLabel(text=f"[b]fecha de reserva:[/b] {reserva["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
         card.add_widget(datos)
         card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, reserva))
@@ -333,4 +333,16 @@ class Pantalla_P_Servicio(MDScreen):
         self.manager.current = "loginscreen"
 
     def abrir_usuario(self):
-        self.manager.current = "pantalla_usuario"
+     # Obtener datos del usuario desde el App
+        from kivy.app import App
+        app = App.get_running_app()
+        usuario = obtener_prestador(app.id_prestador)
+        print(usuario)
+        if not usuario:
+            print('usuario, iniciar sesion')
+            return
+
+        if self.manager:
+            pantalla_usuario = self.manager.get_screen("perfil_usuario")
+            pantalla_usuario.set_usuario(usuario)
+            self.manager.current = "perfil_usuario"

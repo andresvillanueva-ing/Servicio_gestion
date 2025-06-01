@@ -140,11 +140,11 @@ class Informacion_Reserva_Screen(MDScreen):
                 text=self.reserva_actual.get("telefono_cliente",), halign="left"
             )
         )
-        correo_box = MDBoxLayout(orientation="horizontal", spacing=5)
-        correo_box.add_widget(
+        correo_usuario_box = MDBoxLayout(orientation="horizontal", spacing=5)
+        correo_usuario_box.add_widget(
             MDIcon(icon="email", size_hint=(1, None), size=(dp(24), dp(24)))
         )
-        correo_box.add_widget(
+        correo_usuario_box.add_widget(
             MDLabel(
                 text=self.reserva_actual.get("correo_cliente",), halign="left"
             )
@@ -166,7 +166,7 @@ class Informacion_Reserva_Screen(MDScreen):
         informacion_box.add_widget(MDLabel(text="informacion del cliente", halign="center", font_style="H6"))
         informacion_box.add_widget(nombre_box)
         informacion_box.add_widget(telefono_box)
-        informacion_box.add_widget(correo_box)
+        informacion_box.add_widget(correo_usuario_box)
         informacion_box.add_widget(fecha_reserva_box)
         content_layout.add_widget(informacion_box)
         scroll_view.add_widget(content_layout)

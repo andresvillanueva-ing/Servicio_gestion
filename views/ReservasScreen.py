@@ -50,7 +50,7 @@ class reservas_screen(MDScreen):
         )
         self.telefono.bind(text=self.validar_longitud_telefono) # Limita a 10 caracteres 
         
-        self.correo = MDTextField(hint_text="Correo electrónico")
+        self.correo_usuario = MDTextField(hint_text="correo_usuario electrónico")
 
         self.boton_fecha = MDRaisedButton(
             text="Seleccionar fecha",
@@ -74,7 +74,7 @@ class reservas_screen(MDScreen):
         
         content.add_widget(self.nombre_usuario)
         content.add_widget(self.telefono)
-        content.add_widget(self.correo)
+        content.add_widget(self.correo_usuario)
         content.add_widget(self.boton_fecha)
         content.add_widget(self.label_fecha_seleccionada) # Mostrar la fecha seleccionada
         content.add_widget(self.boton_reservar)
@@ -88,7 +88,7 @@ class reservas_screen(MDScreen):
         if len(value) > 10:
             instance.text = value[:10]
 
-    def validar_correo(self, correo_usuario):
+    def validar_correo_usuario(self, correo_usuario):
         patron = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         if re.match(patron, correo_usuario):
             return True
@@ -112,16 +112,16 @@ class reservas_screen(MDScreen):
 
         servicio = self.datos_servicio
 
-        if not self.validar_correo(self.correo_cliente.text):
+        if not self.validar_correo_usuario(self.correo_cliente.text):
             self.correo_cliente.error = True
-            self.correo_cliente.helper_text = "¡¡Correo invalido!!"
+            self.correo_cliente.helper_text = "¡¡correo_usuario invalido!!"
             return
 
         if servicio and isinstance(servicio, dict):
             # Recopilar los datos del usuario
             nombre = self.nombre_usuario.text
             telefono = self.telefono.text
-            correo = self.correo.text
+            correo_usuario = self.correo_usuario.text
             fecha_reserva = self.selected_date
             fecha_hora_actual = datetime.now().strftime('%Y-%m-%d %H:%M:%S') # Aquí se toma la fecha y hora juntas
             
@@ -131,7 +131,7 @@ class reservas_screen(MDScreen):
                 return
 
             # Validar que todos los campos necesarios estén llenos
-            if not all([nombre, telefono, correo, fecha_hora_actual, fecha_reserva, servicio, ]):
+            if not all([nombre, telefono, correo_usuario, fecha_hora_actual, fecha_reserva, servicio, ]):
                 self.show_message_dialog("Error", "Por favor, complete todos los campos y seleccione una fecha.")
                 return
 
@@ -156,7 +156,7 @@ class reservas_screen(MDScreen):
                     id_usuario= App.get_running_app().id_usuario,
                     nombre_cliente=nombre_cifrado,
                     telefono_cliente=telefono_cifrado,
-                    correo_cliente=correo,
+                    correo_cliente=correo_usuario,
                     hora_reserva=fecha_hora_actual, 
                     fecha_reserva=fecha_reserva, 
                 )
@@ -166,7 +166,7 @@ class reservas_screen(MDScreen):
                 # Limpiar campos después de la reserva
                 self.nombre_usuario.text = ""
                 self.telefono.text = ""
-                self.correo.text = ""
+                self.correo_usuario.text = ""
                 self.selected_date = None
                 self.label_fecha_seleccionada.text = "Fecha no seleccionada"
 

@@ -16,6 +16,7 @@ from views.ReservasScreen import reservas_screen
 from views.informacion_reservas import Informacion_Reserva_Screen
 from views.informacion_reserva_prestador import Informacion_Reserva_prestador_Screen
 from views.ModificarInformacionServicio import modificar_servicio_screen
+from views.PerfilUsuario import PerfilUsuario
 from kivy.uix.screenmanager import Screen
 
 from kivy.lang import Builder
@@ -49,6 +50,7 @@ class ServicioGestion(MDApp):
         self.manager.add_widget(Informacion_Reserva_Screen(name="informacionreserva"))
         self.manager.add_widget(Informacion_Reserva_prestador_Screen(name="informacionreservaprestador"))
         self.manager.add_widget(modificar_servicio_screen(name="modificar_servicio"))
+        self.manager.add_widget(PerfilUsuario(name="perfil_usuario"))
 
 
         return self.manager

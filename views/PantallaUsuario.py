@@ -17,6 +17,7 @@ from kivy.uix.image import Image
 from kivymd.uix.fitimage import FitImage
 import os
 from Database.Data_Reservas import obtener_reservas_realizadas
+from Database.Data_usuario import obtener_usuario
 
 
 def formatear_ubicacion_decimal(ubicacion_str):
@@ -287,10 +288,10 @@ class Pantalla_Usuario(MDScreen):
 
          # Crear tabs y añadirlos
         tabs = MDTabs(
-            md_bg_color="#FFF2F2",# Color de fondo de la barra de pestañas 
-            indicator_color="#FF0000", # Color del indicador de la pestaña activa 
-            text_color_normal="#FFFFFF", # Color del texto/ícono de las pestañas inactivas 
-            text_color_active="#015551", # Color del texto/ícono de la pestaña activa 
+            md_bg_color="#FFF2F2", 
+            indicator_color="#FF0000", 
+            text_color_normal="#FFFFFF", 
+            text_color_active="#015551", 
             )
 
         tabs.add_widget(TabHotel(parent_screen=self))
@@ -404,5 +405,17 @@ class Pantalla_Usuario(MDScreen):
         self.manager.current = "loginscreen"
 
     def abrir_usuario(self):
-        self.manager.current = "pantalla_usuario"
+     # Obtener datos del usuario desde el App
+        from kivy.app import App
+        app = App.get_running_app()
+        usuario = obtener_usuario(app.id_usuario)
+        print(usuario)
+        if not usuario:
+            print('usuario, iniciar sesion')
+            return
+
+        if self.manager:
+            pantalla_usuario = self.manager.get_screen("perfil_usuario")
+            pantalla_usuario.set_usuario(usuario)
+            self.manager.current = "perfil_usuario"
 

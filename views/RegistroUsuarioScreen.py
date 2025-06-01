@@ -63,7 +63,7 @@ class registro_usuario_screen(MDScreen):
 
         # Campos de texto
         self.nombre_usuario = MDTextField(hint_text = "Nombre Completo", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="account")
-        self.correo_usuario = MDTextField(hint_text = "Correo Electronico", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="email")
+        self.correo_usuario = MDTextField(hint_text = "correo Electronico", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="email")
         self.telefono_usuario = MDTextField(hint_text = "Telefono", input_filter = "int", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="phone")
         self.telefono_usuario.bind(text=self.validar_longitud_telefono)
         self.contraseña_usuario = MDTextField(hint_text = "Contraseña", password = True, helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="lock")
@@ -94,7 +94,7 @@ class registro_usuario_screen(MDScreen):
         
         self.add_widget(layout)
 
-    def validar_correo(self, correo_usuario):
+    def validar_correo_usuario(self, correo_usuario):
         patron = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         if re.match(patron, correo_usuario):
             return True
@@ -105,9 +105,9 @@ class registro_usuario_screen(MDScreen):
             instance.text = value[:10] 
     
     def registrar_usuario(self, instance):
-        if not self.validar_correo(self.correo_usuario.text):
+        if not self.validar_correo_usuario(self.correo_usuario.text):
             self.correo_usuario.error = True
-            self.correo_usuario.helper_text = "¡¡Correo invalido!!"
+            self.correo_usuario.helper_text = "¡¡correo_usuario invalido!!"
             return
         
         if self.contraseña_usuario.text != self.v_contraseña_usuario.text:
@@ -118,8 +118,8 @@ class registro_usuario_screen(MDScreen):
             return
         
         try:
-            # No cifrar el correo
-            correo = self.correo_usuario.text
+            # No cifrar el correo_usuario
+            correo_usuario = self.correo_usuario.text
 
             # Cifrar los demás datos
             nombre_encriptado = fernet.encrypt(self.nombre_usuario.text.encode())
@@ -133,7 +133,7 @@ class registro_usuario_screen(MDScreen):
             # Guarda los datos en la base de datos encriptados.
             agregar_usuario(
                 nombre_encriptado, 
-                correo, 
+                correo_usuario, 
                 telefono_encriptado, 
                 contraseña_usuario=contraseña_hash.decode('utf_8')
                 )

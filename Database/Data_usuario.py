@@ -23,11 +23,11 @@ def descifrar_campos_usuario(usuario_dict, campos_a_descifrar):
                 usuario_descifrado[campo] = "Dato inválido"
     return usuario_descifrado
 
-def agregar_usuario(nombre_usuario, correo_usuario, telefono_usuario, contraseña_usuario):
+def agregar_usuario(nombre, correo, telefono, contraseña_usuario):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "INSERT INTO data_base_usuario (nombre_usuario, correo_usuario, telefono_usuario, contraseña_usuario) VALUES (%s, %s, %s, %s)"
-    valores = (nombre_usuario, correo_usuario, telefono_usuario, contraseña_usuario)
+    sql = "INSERT INTO data_base_usuario (nombre, correo, telefono, contraseña_usuario) VALUES (%s, %s, %s, %s)"
+    valores = (nombre, correo, telefono, contraseña_usuario)
     cursor.execute(sql, valores)
     conexion.commit()
     cursor.close()
@@ -40,24 +40,24 @@ def Verificar_datos_usuario(usuario, contraseña):
     cursor = conexion.cursor(buffered=True)  # ← Esto es importante
 
     sql = """
-        SELECT id, nombre_usuario, telefono_usuario, correo_usuario, contraseña_usuario
-        FROM data_base_usuario WHERE correo_usuario = %s
+        SELECT id, nombre, telefono, correo, contraseña_usuario
+        FROM data_base_usuario WHERE correo = %s
     """
     cursor.execute(sql, (usuario,))
     resultado = cursor.fetchone()
 
     if resultado:
-        id, nombre_usuario, telefono_usuario, correo_usuario, hash_contraseña = resultado
+        id, nombre, telefono, correo, hash_contraseña = resultado
         try:
             if bcrypt.checkpw(contraseña.encode('utf-8'), hash_contraseña.encode('utf-8')):
                 usuario_dict = {
                     "id": id,
-                    "nombre_usuario": nombre_usuario,
-                    "telefono_usuario": telefono_usuario,
-                    "correo_usuario": correo_usuario
+                    "nombre": nombre,
+                    "telefono": telefono,
+                    "correo": correo
                 }
                 # Descifrar los campos
-                usuario_descifrado = descifrar_campos_usuario(usuario_dict, ['nombre_usuario', 'correo_usuario', 'telefono_usuario'])
+                usuario_descifrado = descifrar_campos_usuario(usuario_dict, ['nombre', 'correo', 'telefono'])
                 
                 cursor.close()
                 conexion.close()
@@ -69,5 +69,24 @@ def Verificar_datos_usuario(usuario, contraseña):
     cursor.close()
     conexion.close()
     return None
+
+def obtener_usuario(id_usuario):
+    conexion = crear_conexion()
+    cursor = conexion.cursor()
+
+    cursor.execute("SELECT nombre, correo, telefono FROM data_base_usuario WHERE id = %s", (id_usuario,))
+    row = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    if row:
+        return {
+            "nombre": fernet.decrypt(row[0]).decode(),
+            "correo": row[1],
+            "telefono": fernet.decrypt(row[2]).decode()
+        }
+    else:
+        return None
 
         

@@ -24,15 +24,15 @@ def descifrar_campos_usuario(usuario_dict, campos_a_descifrar):
     return usuario_descifrado
 
 
-def agregar_prestador_servicio(correo_servicio, nombre_propietario, telefono_servicio, contraseña_servicio):
+def agregar_prestador_servicio(correo, nombre, telefono, contraseña_servicio):
     conexion = crear_conexion()
     cursor = conexion.cursor()
     sql = """
         INSERT INTO data_base_servicio 
-        (correo_servicio, nombre_propietario, telefono_servicio, contraseña_servicio) 
+        (correo, nombre, telefono, contraseña_servicio) 
         VALUES (%s, %s, %s, %s)
     """
-    valores = (correo_servicio, nombre_propietario, telefono_servicio, contraseña_servicio)
+    valores = (correo, nombre, telefono, contraseña_servicio)
     cursor.execute(sql, valores)
     conexion.commit()
     cursor.close()
@@ -43,9 +43,9 @@ def Verificar_datos(usuario, contraseña):
     cursor = conexion.cursor()
 
     sql = """
-        SELECT id, correo_servicio, nombre_propietario,  telefono_servicio, contraseña_servicio 
+        SELECT id, correo, nombre,  telefono, contraseña_servicio 
         FROM data_base_servicio 
-        WHERE correo_servicio = %s
+        WHERE correo = %s
     """
     cursor.execute(sql, (usuario,))
     resultado = cursor.fetchone()
@@ -70,4 +70,24 @@ def Verificar_datos(usuario, contraseña):
         except Exception as e:
             print("Error al verificar contraseña:", e)
             return None
+
+def obtener_prestador(id_prestador):
+    conexion = crear_conexion()
+    cursor = conexion.cursor()
+
+    cursor.execute("SELECT nombre, correo, telefono FROM data_base_servicio WHERE id = %s", (id_prestador,))
+    row = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    if row:
+        return {
+            "nombre": fernet.decrypt(row[0]).decode(),
+            "correo": row[1],
+            "telefono": fernet.decrypt(row[2]).decode()
+        }
+    else:
+        return None
+
 

@@ -64,9 +64,9 @@ class login_screen(Screen):
             text_color=("#000000"),
         )
 
-        # Campo de correo con icono
+        # Campo de correo_usuario con icono
         self.username = MDTextField(
-            hint_text="Correo Electronico",
+            hint_text="correo Electronico",
             icon_right="email",
             size_hint_x=1,
             mode="rectangle",
@@ -143,8 +143,8 @@ class login_screen(Screen):
         elif resultado:
             from kivy.app import App
             App.get_running_app().id_prestador = resultado["id"]
-            # if not self.manager.has_screen("perfil_usuario"):
-            #     self.manager.add_widget(PerfilUsuario(usuario=resultado, name="perfil_usuario"))
+            if not self.manager.has_screen("perfil_usuario"):
+                self.manager.add_widget(PerfilUsuario(usuario=resultado, name="perfil_usuario"))
             self.manager.current = "pantallaPServicio"
             self.limpiar_campos
         else:
