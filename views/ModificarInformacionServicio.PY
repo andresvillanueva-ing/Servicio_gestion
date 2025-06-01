@@ -4,7 +4,6 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.button import MDRaisedButton, MDFlatButton, MDIconButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.toolbar import MDTopAppBar
-from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import Image
@@ -15,7 +14,7 @@ from plyer import filechooser
 from cryptography.fernet import Fernet
 import os
 
-from Database.Data_sercivios import agregar_servicio
+from Database.Data_sercivios import modificar_servicio
 
 # Cargar o generar clave de cifrado
 if not os.path.exists("clave.key"):
@@ -28,20 +27,27 @@ with open("clave.key", "rb") as clave_archivo:
 
 fernet = Fernet(clave)
 
+
 class modificar_servicio_screen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "modificar_servicio"
         self.servicio_actual = None
-        self.ruta_imagen = ""  # Ahora será una ruta string
+        self.layout = MDBoxLayout(orientation="vertical", spacing=10)
+        self.add_widget(self.layout)
+        self.ruta_imagen = ""
+        self.map_marker = None
 
-        # Color de fondo 
-        md_bg_color = "#FFF2F2"
+    def on_pre_enter(self):
+        self.layout.clear_widgets()
+        if self.servicio_actual:
+            self.construir_ui(self.servicio_actual)
 
-        # Layout principal
-        main_layout = MDBoxLayout(orientation='vertical')
+    def construir_ui(self, servicio):
+        self.layout.clear_widgets()
+        self.servicio_actual = servicio
+        self.ruta_imagen = servicio.get("imagen", "")
 
-        # Toptoolbar
         top_bar = MDTopAppBar(
             title="Modificar de Servicio",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
@@ -50,70 +56,66 @@ class modificar_servicio_screen(MDScreen):
             height="56dp",
             md_bg_color="#015551"
         )
-        main_layout.add_widget(top_bar)
+        self.layout.add_widget(top_bar)
 
-        # ScrollView para el contenido
         scroll_view = ScrollView()
         content_layout = MDBoxLayout(orientation='vertical', padding=10, spacing=10, size_hint_y=None)
         content_layout.bind(minimum_height=content_layout.setter('height'))
 
-        self.razon_social = MDTextField(hint_text=self.servicio_actual['razon_social'], helper_text="", helper_text_mode="on_error", mode="rectangle", icon_right="home-city")
-        self.nit = MDTextField(hint_text="NIT", input_filter="int", helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="numeric")
-        self.Administrador = MDTextField(hint_text="Nombre del administrador", helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="account-cog")
-        self.Descripcion = MDTextField(hint_text="Descripcion del servicio",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="sort-alphabetical-descending")
-        self.horario = MDTextField(hint_text="Horario de atencion. ej: 00:00 a 00:00",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="alarm-check")
-        self.Puestos = MDTextField(hint_text="Puestos disponibles",helper_text="", helper_text_mode="on_error", mode= "rectangle", icon_right="arrow-all")
-        self.boton_ubicacion = MDRaisedButton(
-            text="Seleccionar ubicación en el mapa",
-            pos_hint={"center_x": 0.5},
-            on_release=self.abrir_mapa_dialog
-        )
+        self.razon_social = MDTextField(text=servicio.get('razon_social'), hint_text="Nombre del servicio", mode="rectangle", icon_right="home-city")
+        self.nit = MDTextField(text=servicio.get('nit'), hint_text="NIT", input_filter="int", mode="rectangle", icon_right="numeric")
+        self.Administrador = MDTextField(text=servicio.get('administrador'), hint_text="Nombre del administrador", mode="rectangle", icon_right="account-cog")
+        self.Descripcion = MDTextField(text=servicio.get('descripcion'), hint_text="Descripción del servicio", mode="rectangle", icon_right="sort-alphabetical-descending")
+        self.horario = MDTextField(text=servicio.get('horario'), hint_text="Horario de atención. ej: 00:00 a 00:00", mode="rectangle", icon_right="alarm-check")
+        self.Puestos = MDTextField(text=servicio.get('puestos'), hint_text="Puestos disponibles", mode="rectangle", icon_right="arrow-all")
+        self.ubicacion = MDTextField(text=servicio.get('ubicacion'), hint_text="Dirección. Ej: Calle 10 #12-34", mode="rectangle", icon_right="map-marker-outline")
+
         self.boton_imagen = MDIconButton(
             icon="image",
             icon_size="32sp",
             pos_hint={"center_x": 0.5},
-            md_bg_color= "#F17259",
+            md_bg_color="#F17259",
             on_release=self.seleccionar_imagen
         )
         self.boton_imagen.tooltip_text = "Seleccionar imagen"
 
+        if self.ruta_imagen:
+            content_layout.add_widget(MDLabel(text="Imagen actual:", halign="center"))
+            content_layout.add_widget(Image(source=self.ruta_imagen, size_hint_y=None, height=200))
 
-        self.tipo_servicios_button = MDFlatButton(
-            text="Tipo de servicio", pos_hint={"center_x": 0.5}
-        )
+        content_layout.add_widget(self.boton_imagen)
 
-        menu_items = [
-            {"text": "Parqueadero", "on_release": lambda x="Parqueadero": self.set_tipo_servicio(x)},
-            {"text": "Hotel", "on_release": lambda x="Hotel": self.set_tipo_servicio(x)},
-            {"text": "Restaurante", "on_release": lambda x="Restaurante": self.set_tipo_servicio(x)}
-        ]
-
-        self.tipo_servicio_menu = MDDropdownMenu(
-            caller=self.tipo_servicios_button,
-            items=menu_items,
-            width_mult=4
-        )
-
-        self.tipo_servicios_button.bind(on_release=lambda *args: self.tipo_servicio_menu.open())
-        self.registro_button = MDRaisedButton(text="Registrar", pos_hint={"center_x": 0.5},md_bg_color= "#FE4F2D", on_release=self.registrar)
-
-        # Agregar widgets al layout de contenido
+        # Campos de texto
         content_layout.add_widget(self.razon_social)
         content_layout.add_widget(self.nit)
-        content_layout.add_widget(MDLabel(text="Seleccionar Tipo de servicio", halign="center"))
-        content_layout.add_widget(self.tipo_servicios_button)
         content_layout.add_widget(self.Administrador)
         content_layout.add_widget(self.Descripcion)
         content_layout.add_widget(self.horario)
         content_layout.add_widget(self.Puestos)
-        content_layout.add_widget(MDLabel(text="Seleccionar ubicación en el mapa", halign="center"))
-        content_layout.add_widget(self.boton_ubicacion)
-        content_layout.add_widget(self.boton_imagen)
+        content_layout.add_widget(self.ubicacion)
+
+        # Mapa interactivo
+        self.map_view = MapView(zoom=15, lat=4.60971, lon=-74.08175, size_hint_y=None, height=300)
+        self.map_view.bind(on_touch_down=self.on_map_touch)
+        
+        content_layout.add_widget(self.map_view)
+
+        ubicacion_str = servicio.get("ubicacion")
+        if ubicacion_str:
+            try:
+                lat_str, lon_str = ubicacion_str.split(",")
+                lat, lon = float(lat_str), float(lon_str)
+                self.map_marker = MapMarker(lat=lat, lon=lon)
+                self.map_view.center_on(lat, lon)
+                self.map_view.add_marker(self.map_marker)
+            except Exception as e:
+                print("Error al interpretar la ubicación:", e)
+
+        self.registro_button = MDRaisedButton(text="Guardar Cambios", pos_hint={"center_x": 0.5}, md_bg_color="#FE4F2D", on_release=self.registrar)
         content_layout.add_widget(self.registro_button)
 
         scroll_view.add_widget(content_layout)
-        main_layout.add_widget(scroll_view)
-        self.add_widget(main_layout)
+        self.layout.add_widget(scroll_view)
 
     def registrar(self, instance):
         if not all([
@@ -123,7 +125,7 @@ class modificar_servicio_screen(MDScreen):
             self.Descripcion.text.strip(),
             self.horario.text.strip(),
             self.Puestos.text.strip(),
-            self.tipo_servicios_button.text != "Tipo de servicio"
+            self.ubicacion.text.strip(),
         ]):
             print("⚠️ Todos los campos son obligatorios.")
             return
@@ -135,68 +137,31 @@ class modificar_servicio_screen(MDScreen):
         try:
             razon_social_cifrado = fernet.encrypt(self.razon_social.text.encode())
             nit_cifrado = fernet.encrypt(self.nit.text.encode())
-            tipo_servicio_cifrado = self.tipo_servicios_button.text
             administrador_cifrado = fernet.encrypt(self.Administrador.text.encode())
             descripcion_cifrado = fernet.encrypt(self.Descripcion.text.encode())
             horario_cifrado = fernet.encrypt(self.horario.text.encode())
             puestos_cifrado = fernet.encrypt(self.Puestos.text.encode())
-            ubicacion_cifrada = getattr(self, 'ubicacion_cifrada', fernet.encrypt(b"0.0,0.0"))
+            ubicacion_cifrada = fernet.encrypt(self.ubicacion.text.encode())
 
-            agregar_servicio(
+            modificar_servicio(
                 razon_social=razon_social_cifrado,
                 nit=nit_cifrado,
-                tipo_servicio=tipo_servicio_cifrado,
                 administrador=administrador_cifrado,
                 id_prestador=App.get_running_app().id_prestador,
                 descripcion=descripcion_cifrado,
                 horario=horario_cifrado,
                 puestos=puestos_cifrado,
                 ubicacion=ubicacion_cifrada,
-                imagen=self.ruta_imagen 
+                imagen=self.ruta_imagen
             )
 
             print("✅ Registro exitoso para:", self.razon_social.text)
 
-            # Limpiar campos
-            self.razon_social.text = ""
-            self.nit.text = ""
-            self.Administrador.text = ""
-            self.Descripcion.text = ""
-            self.horario.text = ""
-            self.Puestos.text = ""
-            self.tipo_servicios_button.text = "Tipo de servicio"
-            self.ruta_imagen = ""
-
             self.manager.current = "pantallaPServicio"
 
         except Exception as e:
-            print("❌ Error al registrar:", e)
-
-    def set_tipo_servicio(self, tipo):
-        self.tipo_servicios_button.text = tipo
-        self.tipo_servicio_menu.dismiss()
-
-    def abrir_mapa_dialog(self, instance):
-        self.mapa = MapView(zoom=10, lat=4.710989, lon=-74.072090, size_hint=(1, 1), height="300dp")
-        self.marker = MapMarker(lat=4.710989, lon=-74.072090)
-        self.mapa.add_marker(self.marker)
-
-        def guardar_ubicacion(x):
-            lat = self.marker.lat
-            lon = self.marker.lon
-            self.ubicacion_cifrada = fernet.encrypt(f"{lat},{lon}".encode())
-            self.dialog_mapa.dismiss()
-
-        self.dialog_mapa = MDDialog(
-            title="Seleccionar ubicación",
-            type="custom",
-            content_cls=self.mapa,
-            buttons=[
-                MDFlatButton(text="Cancelar", on_release=lambda x: self.dialog_mapa.dismiss()),
-                MDFlatButton(text="Guardar", on_release=guardar_ubicacion),
-            ],
-        )
-        self.dialog_mapa.open()
+            import traceback
+            traceback.print_exc()
 
     def seleccionar_imagen(self, instance):
         filechooser.open_file(
@@ -234,8 +199,21 @@ class modificar_servicio_screen(MDScreen):
             self.dialog_imagen.open()
 
     def confirmar_imagen(self, ruta):
-        self.ruta_imagen = ruta  # guardar la ruta como string
+        self.ruta_imagen = ruta
         self.dialog_imagen.dismiss()
+
+    def on_map_touch(self, mapview, touch):
+        if not self.map_view.collide_point(*touch.pos):
+            return
+
+        lat, lon = self.map_view.get_latlon_at(touch.x, touch.y)
+        self.ubicacion.text = f"{lat:.6f},{lon:.6f}"
+
+        if self.map_marker:
+            self.map_view.remove_marker(self.map_marker)
+
+        self.map_marker = MapMarker(lat=lat, lon=lon)
+        self.map_view.add_marker(self.map_marker)
 
     def volver_atras(self):
         self.manager.current = "pantallaPServicio"

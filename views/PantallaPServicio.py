@@ -10,7 +10,8 @@ from kivymd.uix.scrollview import ScrollView
 from kivymd.uix.fitimage import FitImage
 from kivymd.uix.dialog import MDDialog
 from kivy.metrics import dp
-from Database.Data_sercivios import obtener_servicios
+from plyer import orientation
+from Database.Data_sercivios import eliminar_servicio, obtener_servicios
 from Database.Data_Reservas import obtener_reservas
 
 
@@ -19,9 +20,11 @@ class Pantalla_P_Servicio(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "pantallaPServicio"
+        self.dialog= None
         self.info_layout = None  # Se define en otro método
         md_bg_color="#FFF2F2"
         self.build_ui()
+        
 
     def build_ui(self):
         # Layout principal
@@ -51,18 +54,14 @@ class Pantalla_P_Servicio(MDScreen):
     def create_reservas_tab(self):
         tab = MDBottomNavigationItem(name="reservas", text="Reservas", icon="calendar")
 
-        layout_reservas = MDBoxLayout(orientation="vertical", padding="10dp", spacing="10dp", md_bg_color="#FFF2F2")
+        layout_reservas = MDBoxLayout(orientation="vertical", spacing="10dp", md_bg_color="#FFF2F2")
 
-        layout_reservas.add_widget(MDLabel(
-            text="reservas realizadas", halign="center", font_style="H5",
-            size_hint=(1, None), height="50dp"
-        ))
         
         # Layout para la información del servicio con ScrollView
         self.info_layout_res = MDBoxLayout(
             orientation="vertical",
             spacing="10dp",
-            padding="20dp",
+            padding="10dp",
             size_hint_y=None,
         )
         self.info_layout_res.bind(minimum_height=self.info_layout_res.setter('height'))
@@ -74,7 +73,6 @@ class Pantalla_P_Servicio(MDScreen):
         scroll_view.add_widget(self.info_layout_res)
 
         layout_reservas.add_widget(scroll_view)
-        # Botones
 
         tab.add_widget(layout_reservas)
         return tab
@@ -82,7 +80,6 @@ class Pantalla_P_Servicio(MDScreen):
 
     #----- Tab de configuracion de servicios----
     def create_configuracion_tab(self):
-        
         tab = MDBottomNavigationItem(name="configuracion", text="Configuración", icon="cog")
 
         layout = MDBoxLayout(orientation="vertical", padding="10dp", spacing="10dp", md_bg_color="#FFF2F2")
@@ -116,14 +113,7 @@ class Pantalla_P_Servicio(MDScreen):
             size_hint=(1, None),
             height="50dp"
         )
-        button_layout.add_widget(MDRaisedButton(
-            text="Modificar Info",
-            size_hint=(None, None),
-            size=("200dp", "40dp"),
-            font_style="Button",
-            md_bg_color="#FE4F2D",
-            on_release=self.modificar_informacion_conf()
-        ))
+
         button_layout.add_widget(MDRaisedButton(
             text="Crear Servicio",
             size_hint=(None, None),
@@ -132,7 +122,6 @@ class Pantalla_P_Servicio(MDScreen):
             md_bg_color="#FE4F2D",
             on_release=self.ir_a_registrar_servicio
         ))
-
         layout.add_widget(button_layout)
         tab.add_widget(layout)
         return tab
@@ -162,7 +151,7 @@ class Pantalla_P_Servicio(MDScreen):
             for reserva in reservas:
                 self.info_layout_res.add_widget(self.crear_card_reserva(reserva))
         else:
-            self.info_layout_res.add_widget(MDLabel(text="No hay servicios registrados.", halign="center"))
+            self.info_layout_res.add_widget(MDLabel(text="No hay reservas registradas.", halign="center"))
 
     #----------- Datos de servicios creados por el prestador de servicio-----------
     def datos_servicios(self):
@@ -201,8 +190,8 @@ class Pantalla_P_Servicio(MDScreen):
         card.add_widget(imagen)
         datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
         datos.add_widget(MDLabel(text=reserva["nombre_cliente"].upper(), bold=True, font_style="H6", halign="center"))
-        datos.add_widget(MDLabel(text="[b]Telefono:[/b] " + reserva['telefono'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-        datos.add_widget(MDLabel(text=f"[b]Correo:[/b] {reserva["correo_clinete"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+        datos.add_widget(MDLabel(text="[b]Telefono:[/b] " + reserva['telefono_cliente'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
+        datos.add_widget(MDLabel(text=f"[b]Correo:[/b] {reserva["correo_cliente"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
         datos.add_widget(MDLabel(text=f"[b]fecha de reserva:[/b] {reserva["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
         card.add_widget(datos)
         card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, reserva))
@@ -228,8 +217,6 @@ class Pantalla_P_Servicio(MDScreen):
             ],
         )
         self.dialog.open()
-
-
     
     #----------Targeta de servcios creados-------------------
     def crear_card_servicio(self, servicio):
@@ -249,6 +236,27 @@ class Pantalla_P_Servicio(MDScreen):
             "puestos": "Puestos"
         }.items():
             card.add_widget(MDLabel(text=f"[b]{label}[/b]: {servicio.get(key, '')}", markup=True,halign="left", theme_text_color="Custom"))
+        botones = MDBoxLayout(
+            orientation="horizontal",
+            spacing=dp(10),
+            padding=dp(10),
+            size_hint_y=None,
+            height=dp(50),
+            pos_hint={'center_x': 0.5, 'center_y': 0.5} 
+        )
+        modificar_btn = MDRaisedButton(
+            text="Modificar",
+            size_hint=(1, None),
+        )
+        modificar_btn.bind(on_release=lambda x, servicio=servicio: self.modificar_informacion_conf(servicio))
+        eliminar_btn = MDRaisedButton(
+            text="Eliminar",
+            size_hint=(1, None),
+        )
+        eliminar_btn.bind(on_release=lambda x, servicio=servicio: self.eliminar_servicio(servicio))
+        botones.add_widget(modificar_btn)
+        botones.add_widget(eliminar_btn)
+        card.add_widget(botones)
         return card
 
     #----------navegacion a la informacion de reserva-------------------
@@ -276,6 +284,21 @@ class Pantalla_P_Servicio(MDScreen):
         )
         self.dialog.open()
 
+    def eliminar_servicio(self, servicios):
+        self.dialog = MDDialog(
+            title="¿Desea modifiacar los datos del servicio?",
+            buttons=[
+                MDRaisedButton(
+                     text="CANCELAR", 
+                    on_release=lambda x: self.dialog.dismiss()
+                ),
+                MDRaisedButton(
+                    text="Eliminar",
+                    on_release=lambda x: self.eliminar_servicios(servicios)
+                ),
+            ],
+        )
+        self.dialog.open()
 
     def modificar_informacion(self, servicios):
         self.dialog.dismiss()
@@ -283,8 +306,25 @@ class Pantalla_P_Servicio(MDScreen):
             pantalla_info = self.manager.get_screen("modificar_servicio")
             pantalla_info.servicio_actual =servicios 
             self.manager.current = "modificar_servicio"
-        print("Modificar información presionado")
+            print(servicios)
         
+    def eliminar_servicios(self, servicios):
+        self.dialog.dismiss()
+        try:
+            eliminar_servicio(servicios.get('id_prestador'))
+            print(servicios.get("id_prestador"))
+            self.info_layout.clear_widgets()
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+
+
+    def datos(self):
+        from kivy.app import App
+        app  = App.get_running_app().id_prestador
+        servicios = obtener_servicios(app)
+        print(servicios)
+        return servicios
 
     def ir_a_registrar_servicio(self, instance):
         App.get_running_app().root.current = "registrarservicios"

@@ -72,33 +72,9 @@ class Informacion_Reserva_Screen(MDScreen):
         encabezado.add_widget(titulo)
         self.layout.add_widget(encabezado)
 
-        botones = MDBoxLayout(
-            orientation="horizontal",
-            spacing=20,
-            size_hint=(1, None),
-            height=dp(60),
-            padding =(dp(20), 0)
-        )
-        cancelar_btn = MDRaisedButton(
-            text="Reservar",
-            icon="calendar-plus",
-            on_release=self.confirmar_cancelacion_reserva,
-            size_hint=(1, None),
-        )
-        ir_btn = MDRaisedButton(
-            text="ir a mapa",
-            icon="bus-marker",
-            on_release=self.sitio_reserva,
-            size_hint=(1, None),
-        )
-        
-        botones.add_widget(cancelar_btn)
-        botones.add_widget(ir_btn)
-        self.layout.add_widget(botones)
-
         scroll_view = ScrollView()
         content_layout = MDBoxLayout(
-            orientation="vertical", padding=10, spacing=10, size_hint_y=None
+            orientation="vertical", padding=10, size_hint_y=None
         )
         content_layout.bind(minimum_height=content_layout.setter("height"))
 

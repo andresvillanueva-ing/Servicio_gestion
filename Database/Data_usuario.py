@@ -37,34 +37,37 @@ def agregar_usuario(nombre_usuario, correo_usuario, telefono_usuario, contraseñ
 
 def Verificar_datos_usuario(usuario, contraseña):
     conexion = crear_conexion()
-    cursor = conexion.cursor()
+    cursor = conexion.cursor(buffered=True)  # ← Esto es importante
 
-    # Buscar en la base de datos el correo en texto plano
-    sql ="""
-            SELECT id, nombre_usuario, telefono_usuario, correo_usuario, contraseña_usuario
-            FROM data_base_usuario WHERE correo_usuario = %s
-        """
+    sql = """
+        SELECT id, nombre_usuario, telefono_usuario, correo_usuario, contraseña_usuario
+        FROM data_base_usuario WHERE correo_usuario = %s
+    """
     cursor.execute(sql, (usuario,))
     resultado = cursor.fetchone()
 
-    cursor.close()
-    conexion.close()
-
     if resultado:
-        id, correo_usuario, nombre_nombre, telefono_usuario, hast_contraseña = resultado
+        id, nombre_usuario, telefono_usuario, correo_usuario, hash_contraseña = resultado
         try:
-            if bcrypt.checkpw(contraseña.encode('utf-8'), hast_contraseña.encode('utf-8')):
-                # Creamos el diccionario con los datos cifrados
+            if bcrypt.checkpw(contraseña.encode('utf-8'), hash_contraseña.encode('utf-8')):
                 usuario_dict = {
                     "id": id,
-                    "correo": correo_usuario,
-                    "nombre": nombre_nombre,
-                    "telefono": telefono_usuario,
+                    "nombre_usuario": nombre_usuario,
+                    "telefono_usuario": telefono_usuario,
+                    "correo_usuario": correo_usuario
                 }
-                # Desciframos los campos antes de retornarlos
+                # Descifrar los campos
                 usuario_descifrado = descifrar_campos_usuario(usuario_dict, ['nombre_usuario', 'correo_usuario', 'telefono_usuario'])
+                
+                cursor.close()
+                conexion.close()
+
                 return usuario_descifrado
         except Exception as e:
             print("Error al verificar contraseña:", e)
-            return None
+
+    cursor.close()
+    conexion.close()
+    return None
+
         

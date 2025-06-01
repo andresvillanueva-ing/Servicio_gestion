@@ -1,3 +1,4 @@
+from venv import create
 from .database import crear_conexion
 from cryptography.fernet import Fernet
 import bcrypt
@@ -51,7 +52,7 @@ def obtener_servicios_por_tipo(tipo_servicio):
 def obtener_servicios(id_prestador):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "SELECT razon_social, administrador, tipo_servicio, ubicacion, puestos FROM data_servicios WHERE id_prestador = %s"
+    sql = "SELECT razon_social, administrador, tipo_servicio, ubicacion, puestos, nit, horario,imagen,descripcion, id_prestador FROM data_servicios WHERE id_prestador = %s"
     cursor.execute(sql, (id_prestador,))
     servicios = cursor.fetchall()
     cursor.close()
@@ -64,6 +65,37 @@ def obtener_servicios(id_prestador):
             "tipo_servicio": row[2],
             "ubicacion": fernet.decrypt(row[3]).decode(),
             "puestos": fernet.decrypt(row[4]).decode(),
+            "nit": fernet.decrypt(row[5]).decode(),
+            "horario":fernet.decrypt(row[6]).decode(),
+            "imagen": row[7],
+            "descripcion": fernet.decrypt(row[8]).decode(),
+            "id_prestador": row[9]
+
         }
         for row in servicios
     ]
+
+def modificar_servicio(razon_social, nit, administrador, id_prestador, descripcion, horario, puestos, ubicacion, imagen):
+    conexion = crear_conexion()
+    cursor = conexion.cursor()
+    sql = """
+        UPDATE data_servicios 
+        SET razon_social = %s, nit = %s,  administrador = %s, 
+            descripcion = %s, horario = %s, puestos = %s, ubicacion = %s, imagen = %s 
+        WHERE id_prestador = %s
+    """
+    valores = (razon_social, nit,  administrador, descripcion, horario, puestos, ubicacion, imagen, id_prestador)
+    cursor.execute(sql, valores)
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+
+def eliminar_servicio(id_prestador):
+    conexion = crear_conexion()
+    cursor = conexion.cursor()
+    sql = "DELETE FROM `data_servicios` WHERE id_prestador = %s"
+    cursor.execute(sql,(id_prestador,))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
