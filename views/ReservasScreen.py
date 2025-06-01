@@ -11,9 +11,10 @@ from kivymd.uix.pickers import MDDatePicker
 from kivy.app import App
 from kivy.lang import Builder
 from datetime import datetime
-from kivymd.uix.dialog import MDDialog # Importar MDDialog para mensajes al usuario
+from kivymd.uix.dialog import MDDialog 
 from cryptography.fernet import Fernet
 import os
+import re
 
 # Cargar o generar clave de cifrado
 if not os.path.exists("clave.key"):
@@ -83,9 +84,15 @@ class reservas_screen(MDScreen):
         self.add_widget(main_layout)
 
     #Límite de caracteres del campo de telefono
-        def validar_longitud_telefono(self, instance, value):
-            if len(value) > 10:
-                instance.text = value[:10]
+    def validar_longitud_telefono(self, instance, value):
+        if len(value) > 10:
+            instance.text = value[:10]
+
+    def validar_correo(self, correo_usuario):
+        patron = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if re.match(patron, correo_usuario):
+            return True
+        return False
 
     def show_date_picker(self, *args):
         date_dialog = MDDatePicker(
@@ -102,8 +109,13 @@ class reservas_screen(MDScreen):
 
 
     def reservar(self, instance):
-        # ¡AQUÍ ESTÁ LA CORRECCIÓN! Accede a la propiedad self.datos_servicio
+
         servicio = self.datos_servicio
+
+        if not self.validar_correo(self.correo_cliente.text):
+            self.correo_cliente.error = True
+            self.correo_cliente.helper_text = "¡¡Correo invalido!!"
+            return
 
         if servicio and isinstance(servicio, dict):
             # Recopilar los datos del usuario
@@ -145,14 +157,10 @@ class reservas_screen(MDScreen):
                     nombre_cliente=nombre_cifrado,
                     telefono_cliente=telefono_cifrado,
                     correo_cliente=correo,
-                    hora_reserva=fecha_hora_actual, # Aquí se guarda la fecha y hora juntas
-                    fecha_reserva=fecha_hora_actual,  # También si tu base tiene un campo separado
+                    hora_reserva=fecha_hora_actual, 
+                    fecha_reserva=fecha_reserva, 
                 )
                 
-
-
-                # Ejemplo de cómo podrías llamar a agregar_reserva
-                # agregar_reserva(id_servicio, razon_social, nombre, telefono, correo, fecha_reserva.strftime('%Y-%m-%d'))
                 self.show_message_dialog("Reserva Exitosa", f"Has reservado en {servicio['razon_social']} para el {fecha_reserva.strftime('%d/%m/%Y')}.")
 
                 # Limpiar campos después de la reserva

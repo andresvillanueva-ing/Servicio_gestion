@@ -19,6 +19,15 @@ import os
 from Database.Data_Reservas import obtener_reservas_realizadas
 
 
+def formatear_ubicacion_decimal(ubicacion_str):
+        try:
+            lat_str, lon_str = ubicacion_str.split(",")
+            lat = float(lat_str.strip())
+            lon = float(lon_str.strip())
+            return f"Lat: {lat:.6f}, Lon: {lon:.6f}"
+        except Exception as e:
+            return "Ubicación inválida"
+        
 class TabHotel(FloatLayout, MDTabsBase):
     def __init__(self, parent_screen=None,**kwargs):
         super().__init__(**kwargs)
@@ -49,7 +58,8 @@ class TabHotel(FloatLayout, MDTabsBase):
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
             datos.add_widget(MDLabel(text=servicio["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
             datos.add_widget(MDLabel(text="[b]Admin:[/b] " + servicio['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicio["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+            ubicacion= formatear_ubicacion_decimal(servicio['ubicacion'])
+            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {ubicacion}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
             card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, servicio))
@@ -119,7 +129,8 @@ class TabParqueadero(FloatLayout, MDTabsBase):
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
             datos.add_widget(MDLabel(text=servicio["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
             datos.add_widget(MDLabel(text="[b]Admin:[/b] " + servicio['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicio["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+            ubicacion= formatear_ubicacion_decimal(servicio['ubicacion'])
+            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {ubicacion}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
 
@@ -192,7 +203,8 @@ class TabRestaurante(FloatLayout, MDTabsBase):
             datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
             datos.add_widget(MDLabel(text=servicio["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
             datos.add_widget(MDLabel(text="[b]Admin:[/b] " + servicio['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {servicio["ubicacion"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+            ubicacion= formatear_ubicacion_decimal(servicio['ubicacion'])
+            datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {ubicacion}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
             card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, servicio))
@@ -329,6 +341,15 @@ class Pantalla_Usuario(MDScreen):
         else:
             self.layout_reservas.add_widget(MDLabel(text="No hay servicios registrados.", halign="center"))
 
+    def formatear_ubicacion_decimal(self, ubicacion_str):
+        try:
+            lat_str, lon_str = ubicacion_str.split(",")
+            lat = float(lat_str.strip())
+            lon = float(lon_str.strip())
+            return f"Lat: {lat:.6f}, Lon: {lon:.6f}"
+        except Exception as e:
+            return "Ubicación inválida"
+        
     def crear_card_reserva(self, reserva):
         card = MDCard(orientation="horizontal", size_hint_y=None, height=dp(130),
                       padding=dp(10), ripple_behavior=True, elevation=4, md_bg_color="#FFF2F26C")
@@ -343,7 +364,8 @@ class Pantalla_Usuario(MDScreen):
         datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
         datos.add_widget(MDLabel(text=reserva["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
         datos.add_widget(MDLabel(text="[b]Admin:[/b] " + reserva['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-        datos.add_widget(MDLabel(text=f"[b]ubicacion:[/b] {reserva["nit"]}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
+        ubicacion_legible = self.formatear_ubicacion_decimal(reserva["ubicacion"])
+        datos.add_widget(MDLabel(text=f"[b]ubicacion:[/b] {ubicacion_legible}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
         datos.add_widget(MDLabel(text=f"[b]fecha de reserva:[/b] {reserva["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
         card.add_widget(datos)
         card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, reserva))
