@@ -45,22 +45,39 @@ class reservas_screen(MDScreen):
         self.imagen_servicio = FitImage(
             radius=[dp(75), dp(75), dp(75), dp(75)],
             size_hint=(None, None),
-            size=(dp(100), dp(100)),
-            pos_hint={"center_x": 0.5}
+            size=(dp(150), dp(150)),
+            pos_hint={"center_x": 0.5},
+            spacing = 10
         )
-        content.add_widget(self.imagen_servicio) 
+        
 
-        self.nombre_usuario = MDTextField(hint_text="Nombre completo")
+        self.nombre_usuario = MDTextField(
+            hint_text="Nombre completo",
+            helper_text="Ingresa un nombre valido",
+            helper_text_mode="on_error",
+            mode="rectangle", 
+            icon_right="account"
+            )
 
         # Solo permite numeros y la validacion de longitud
         
         self.telefono = MDTextField(
-            hint_text="Telefono",
-            input_filter="int", # Solo acepta numeros
+            hint_text="Telefono", 
+            helper_text="",
+            helper_text_mode="on_error",
+            mode="rectangle",
+            icon_right="phone",
+            input_filter="int",
         )
         self.telefono.bind(text=self.validar_longitud_telefono) # Limita a 10 caracteres 
         
-        self.correo_usuario = MDTextField(hint_text="Correo electrónico")
+        self.correo_usuario = MDTextField(
+            hint_text="Correo electrónico",
+            helper_text="Ingresa un correo valido",
+            helper_text_mode="on_error",
+            mode="rectangle",
+            icon_right="email"
+            )
 
         self.boton_fecha = MDRaisedButton(
             text="Seleccionar fecha",
@@ -81,7 +98,7 @@ class reservas_screen(MDScreen):
         )
 
         content.add_widget(MDLabel(text="Datos de la reserva", halign="center", theme_text_color="Primary", font_style="H5"))
-        
+        content.add_widget(self.imagen_servicio) 
         content.add_widget(self.nombre_usuario)
         content.add_widget(self.telefono)
         content.add_widget(self.correo_usuario)
@@ -92,6 +109,9 @@ class reservas_screen(MDScreen):
         scroll.add_widget(content)
         main_layout.add_widget(scroll)
         self.add_widget(main_layout)
+
+    def on_pre_enter(self):
+        self.recibir_servicio_imagen()
 
     #Límite de caracteres del campo de telefono
     def validar_longitud_telefono(self, instance, value):
@@ -117,17 +137,17 @@ class reservas_screen(MDScreen):
         self.selected_date = value
         self.label_fecha_seleccionada.text = f"Fecha seleccionada: {value.strftime('%d/%m/%Y')}"
 
+    def recibir_servicio_imagen(self):
+        servicio = self.datos_servicio
+        ruta_imagen = servicio.get("imagen")
+        if ruta_imagen and os.path.exists(ruta_imagen):
+            self.imagen_servicio.source = ruta_imagen
+        else:
+            self.imagen_servicio.source = "image/error.png"
 
     def reservar(self, instance):
 
         servicio = self.datos_servicio
-
-        if servicio and isinstance(servicio, dict):
-            ruta_imagen = servicio.get("imagen")
-            if ruta_imagen and os.path.exists(ruta_imagen):
-                self.imagen_servicio.source = ruta_imagen
-            else:
-                self.imagen_servicio.source = "image/error.png"
 
         if not self.validar_correo_usuario(self.correo_usuario.text):
             self.correo_usuario.error = True
