@@ -95,7 +95,7 @@ class modificar_servicio_screen(MDScreen):
         content_layout.add_widget(self.ubicacion)
 
         # Mapa interactivo
-        self.map_view = MapView(zoom=15, lat=4.60971, lon=-74.08175, size_hint_y=None, height=300)
+        self.map_view = MapView(zoom=15, lat=9.2419, lon=-74.4262, size_hint_y=None, height="300dp")
         self.map_view.bind(on_touch_down=self.on_map_touch)
         
         content_layout.add_widget(self.map_view)
@@ -155,8 +155,12 @@ class modificar_servicio_screen(MDScreen):
                 imagen=self.ruta_imagen
             )
 
-            print("✅ Registro exitoso para:", self.razon_social.text)
-
+            from kivymd.uix.snackbar import Snackbar
+            Snackbar(
+                MDLabel(
+                    text="Servicio modificado con éxito."
+                )).open()
+            
             self.manager.current = "pantallaPServicio"
 
         except Exception as e:

@@ -121,8 +121,11 @@ class registro_p_servicio_screen(MDScreen):
                 telefono=telefono_cifrado,
                 contraseña_servicio=contraseña_hash.decode('utf-8')  # IMPORTANTE: guarda como string
             )
-
-            print("Registro exitoso para:", self.nombre.text)
+            from kivymd.uix.snackbar import Snackbar
+            Snackbar(
+                MDLabel(
+                    text=f"!Registros éxito¡. {self.nombre.text}"
+                )).open()
 
             # Limpiar campos
             self.correo_usuario.text = ""
@@ -132,7 +135,8 @@ class registro_p_servicio_screen(MDScreen):
             self.vcontraseña.text = ""
 
         except Exception as e:
-            print("Error al registrar:", e)
+            import traceback
+            traceback.print_exc()
 
         # Regresar a la pantalla de inicio de sesión
         self.manager.current = "loginscreen"

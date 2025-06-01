@@ -314,6 +314,11 @@ class Pantalla_P_Servicio(MDScreen):
             eliminar_servicio(servicios.get('id_prestador'))
             print(servicios.get("id_prestador"))
             self.info_layout.clear_widgets()
+            from kivymd.uix.snackbar import Snackbar
+            Snackbar(
+                MDLabel(
+                    text="¡¡Servicio Eliminado con éxito.!!"
+            )).open()
         except Exception as e:
             import traceback
             traceback.print_exc()

@@ -71,7 +71,8 @@ class registrar_servicio_screen(MDScreen):
             icon_right="map-marker",
             readonly=True
         )
-        self.map_view = MapView(zoom=15, lat=4.710989, lon=-74.072090, size_hint_y=None, height="300dp")
+        #mapa interactivo
+        self.map_view = MapView(zoom=15, lat=9.2419, lon=-74.4262, size_hint_y=None, height="300dp")
         self.map_view.bind(on_touch_down=self.colocar_marcador)
 
         self.boton_imagen = MDIconButton(
@@ -222,7 +223,7 @@ class registrar_servicio_screen(MDScreen):
             from kivymd.uix.snackbar import Snackbar
             Snackbar(
                 MDLabel(
-                    text="Servicio modificado con éxito."
+                    text="!!Servicio creado con éxito.¡¡"
                 )).open()
 
             # Limpiar campos

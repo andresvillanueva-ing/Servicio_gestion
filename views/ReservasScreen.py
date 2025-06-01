@@ -8,13 +8,16 @@ from kivymd.uix.button import MDRaisedButton
 from kivy.uix.scrollview import ScrollView
 from kivymd.app import MDApp
 from kivymd.uix.pickers import MDDatePicker
+from kivymd.uix.fitimage import FitImage
 from kivy.app import App
 from kivy.lang import Builder
 from datetime import datetime
 from kivymd.uix.dialog import MDDialog 
 from cryptography.fernet import Fernet
+from kivy.metrics import dp
 import os
 import re
+
 
 # Cargar o generar clave de cifrado
 if not os.path.exists("clave.key"):
@@ -33,12 +36,19 @@ class reservas_screen(MDScreen):
         self.name = "reservasscreen"
         self.datos_servicio = None # Inicializa esta propiedad para almacenar el servicio
         self.selected_date = None # Para almacenar la fecha seleccionada
-
         main_layout = MDBoxLayout(orientation='vertical', padding=10, spacing=10)
 
         scroll = ScrollView()
         content = MDBoxLayout(orientation='vertical', padding=10, spacing=10, size_hint_y=None)
         content.bind(minimum_height=content.setter('height'))
+
+        self.imagen_servicio = FitImage(
+            radius=[dp(75), dp(75), dp(75), dp(75)],
+            size_hint=(None, None),
+            size=(dp(100), dp(100)),
+            pos_hint={"center_x": 0.5}
+        )
+        content.add_widget(self.imagen_servicio) 
 
         self.nombre_usuario = MDTextField(hint_text="Nombre completo")
 
@@ -50,7 +60,7 @@ class reservas_screen(MDScreen):
         )
         self.telefono.bind(text=self.validar_longitud_telefono) # Limita a 10 caracteres 
         
-        self.correo_usuario = MDTextField(hint_text="correo_usuario electrónico")
+        self.correo_usuario = MDTextField(hint_text="Correo electrónico")
 
         self.boton_fecha = MDRaisedButton(
             text="Seleccionar fecha",
@@ -112,9 +122,16 @@ class reservas_screen(MDScreen):
 
         servicio = self.datos_servicio
 
-        if not self.validar_correo_usuario(self.correo_cliente.text):
-            self.correo_cliente.error = True
-            self.correo_cliente.helper_text = "¡¡correo_usuario invalido!!"
+        if servicio and isinstance(servicio, dict):
+            ruta_imagen = servicio.get("imagen")
+            if ruta_imagen and os.path.exists(ruta_imagen):
+                self.imagen_servicio.source = ruta_imagen
+            else:
+                self.imagen_servicio.source = "image/error.png"
+
+        if not self.validar_correo_usuario(self.correo_usuario.text):
+            self.correo_usuario.error = True
+            self.correo_usuario.helper_text = "¡¡correo_usuario invalido!!"
             return
 
         if servicio and isinstance(servicio, dict):

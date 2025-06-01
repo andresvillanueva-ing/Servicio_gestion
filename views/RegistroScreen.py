@@ -24,7 +24,6 @@ class Registro_Screen(MDScreen):
             md_bg_color=("#015551"),  # Color morado
 
         )
-
         # Layout flotante para centrar botones
         float_layout = MDFloatLayout()
 

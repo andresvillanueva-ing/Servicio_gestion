@@ -70,11 +70,7 @@ class registro_usuario_screen(MDScreen):
         self.v_contraseña_usuario = MDTextField(hint_text = "verificar contraseña", password = True, helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="lock")
         
         self.button_registro_usuario = MDRaisedButton(text = "Registrarse", md_bg_color="#FE4F2D", font_style="Button", pos_hint = {"center_x": 0.5})
-        self.button_registro_usuario.bind(on_press=self.registrar_usuario)
-        
-        google_button = MDIconButton(icon="google", pos_hint={"center_x": 0.5})
-        google_button.bind(on_press= self.google_sign_in)
-        
+        self.button_registro_usuario.bind(on_press=self.registrar_usuario)        
         
         # Agregar widgets al scroll layout
         scroll_layout.add_widget(self.nombre_usuario)
@@ -83,8 +79,6 @@ class registro_usuario_screen(MDScreen):
         scroll_layout.add_widget(self.contraseña_usuario)
         scroll_layout.add_widget(self.v_contraseña_usuario)
         scroll_layout.add_widget(self.button_registro_usuario)
-        scroll_layout.add_widget(MDLabel(text="0", halign="center"))
-        scroll_layout.add_widget(google_button)
         scrollView.add_widget(scroll_layout)
 
         # Agregar widgets al layout principal
@@ -136,9 +130,13 @@ class registro_usuario_screen(MDScreen):
                 correo_usuario, 
                 telefono_encriptado, 
                 contraseña_usuario=contraseña_hash.decode('utf_8')
-                )
+            )
+            from kivymd.uix.snackbar import Snackbar
+            Snackbar(
+                MDLabel(
+                    text=f"!Registros éxito¡. {self.nombre_usuario.text}"
+                )).open()
             
-            print("Registro exitoso para:", self.nombre_usuario.text)
 
             # Limpia los campos despues de enviar los datos
             self.nombre_usuario.text = ""
@@ -148,14 +146,12 @@ class registro_usuario_screen(MDScreen):
             self.v_contraseña_usuario.text = ""
         
         except Exception as e:
-            print("Error al registrar:", e)
+            import traceback
+            traceback.print_exc()
 
         #regresar a la pantalla de inicio de sesión
         self.manager.current = "loginscreen"
 
-
-    def google_sign_in(self, instance):
-        print("Iniciar sesion con google")
     
     def show_error(self, message):
         print("Error:", message)
