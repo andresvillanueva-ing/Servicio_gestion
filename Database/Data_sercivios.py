@@ -99,3 +99,29 @@ def eliminar_servicio(id_prestador):
     conexion.commit()
     cursor.close()
     conexion.close()
+
+def reducir_puestos_servicio(id_prestador):
+    conexion = crear_conexion()  # Asegúrate de usar tu base de datos real
+    cursor = conexion.cursor()
+
+    try:
+        cursor.execute("SELECT puestos FROM data_servicios WHERE id_prestador = ?", (id_prestador,))
+        resultado = cursor.fetchone()
+
+        if resultado:
+            puestos_actuales = int(resultado[0])
+            if puestos_actuales > 0:
+                nuevos_puestos = puestos_actuales - 1
+                cursor.execute("UPDATE data_servicios SET puestos = ? WHERE id_prestador = ?", (nuevos_puestos, id_prestador))
+                conexion.commit()
+            else:
+                raise Exception("No hay puestos disponibles.")
+        else:
+            raise Exception("Servicio no encontrado.")
+
+    except Exception as e:
+        print(f"Error al reducir puestos: {e}")
+        raise
+
+    finally:
+        conexion.close()

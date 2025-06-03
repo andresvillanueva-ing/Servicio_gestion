@@ -1,6 +1,7 @@
 # views/ReservasScreen.py
 from kivymd.uix.screen import MDScreen
 from Database.Data_Reservas import agregar_reserva # Asegúrate de que esta importación sea correcta
+from Database.Data_sercivios import reducir_puestos_servicio
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.textfield import MDTextField
@@ -17,7 +18,6 @@ from cryptography.fernet import Fernet
 from kivy.metrics import dp
 import os
 import re
-
 
 # Cargar o generar clave de cifrado
 if not os.path.exists("clave.key"):
@@ -196,7 +196,7 @@ class reservas_screen(MDScreen):
                     hora_reserva=fecha_hora_actual, 
                     fecha_reserva=fecha_reserva, 
                 )
-                
+                reducir_puestos_servicio(servicio.get("id_prestador"))
                 self.show_message_dialog("Reserva Exitosa", f"Has reservado en {servicio['razon_social']} para el {fecha_reserva.strftime('%d/%m/%Y')}.")
 
                 # Limpiar campos después de la reserva
@@ -215,6 +215,7 @@ class reservas_screen(MDScreen):
 
         else:
             self.show_message_dialog("Error", "No se ha seleccionado un servicio para reservar.")
+
 
 
     def recibir_servicio(self, datos_servicio):

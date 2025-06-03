@@ -202,14 +202,13 @@ class informacion_servicios_screen(MDScreen):
         self.dialog.dismiss()
     
     
-    def ir_reserva(self):
-        self.dialog.dismiss()
+    def ir_reserva(self, *args):
         from kivymd.app import MDApp
 
         app = MDApp.get_running_app()
-        pantalla_reservas = app.root.get_screen("reservasscreen")
-        pantalla_reservas.recibir_servicio(self.datos_servicio)
-        app.root.current = "reservasscreen"
+        pantalla_mapa = app.root.get_screen("mapascreen")
+        pantalla_mapa.recibir_servicio(self.datos_servicio)
+        app.root.current = "mapascreen"
 
     def realizar_reserva(self, *args):
         self.dialog.dismiss()

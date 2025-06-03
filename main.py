@@ -21,6 +21,7 @@ from views.PerfilUsuario import PerfilUsuario
 from views.perfilprestador import Perfilprestador
 from views.modificar_usuario import ModificarUsuario
 from views.modificar_prestadores import Modificarprestador
+from views.mapa import Mapa_Screen
 from kivy.uix.screenmanager import Screen
 
 from kivy.lang import Builder
@@ -58,6 +59,7 @@ class ServicioGestion(MDApp):
         self.manager.add_widget(Perfilprestador(name="perfil_prestador"))
         self.manager.add_widget(ModificarUsuario(name="modificar_usuario"))
         self.manager.add_widget(Modificarprestador(name="modificar_prestador"))
+        self.manager.add_widget(Mapa_Screen(name="mapascreen"))
 
 
         return self.manager
