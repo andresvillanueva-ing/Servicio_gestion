@@ -66,18 +66,21 @@ class Perfilprestador(MDScreen):
         btn_Modificar = MDTextButton(
             text="Modificar datos",
             pos_hint={"center_x": 0.5},
-            text_color=(0.2, 0.6, 0.86, 1),
+            theme_text_color="Custom",
+            text_color=(1, 0, 0, 1),
             on_release=self.modificar_datos
         )
         btn_eliminar = MDTextButton(
             text="Eliminar Cuenta",
             pos_hint={"center_x": 0.5},
+            theme_text_color="Custom",
             text_color=(1, 0, 0, 1),
             on_release=self.eliminar_cuenta
         )
         btn_cerrar_sesion = MDTextButton(
             text="Cerrar Sesión",
             pos_hint={"center_x": 0.5},
+            theme_text_color="Custom",
             text_color=(1, 0, 0, 1),
             on_release=self.cerrar_sesion
         )

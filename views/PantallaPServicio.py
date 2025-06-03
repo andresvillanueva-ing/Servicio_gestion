@@ -262,9 +262,9 @@ class Pantalla_P_Servicio(MDScreen):
     def ir_a_informacion(self, reserva):
         self.dialog.dismiss()
         if self.manager:
-            pantalla_info = self.manager.get_screen("informacionreserva")
+            pantalla_info = self.manager.get_screen("informacionreservaprestador")
             pantalla_info.reserva_actual = reserva  
-            self.manager.current = "informacionreserva"
+            self.manager.current = "informacionreservaprestador"
 
     #----------Navegacion a modificar la informacion del servicio-------------
     def modificar_informacion_conf(self, servicios):

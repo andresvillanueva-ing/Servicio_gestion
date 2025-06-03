@@ -204,7 +204,7 @@ class registrar_servicio_screen(MDScreen):
             administrador_cifrado = fernet.encrypt(self.Administrador.text.encode())
             descripcion_cifrado = fernet.encrypt(self.Descripcion.text.encode())
             horario_cifrado = fernet.encrypt(self.horario.text.encode())
-            puestos_cifrado = fernet.encrypt(self.Puestos.text.encode())
+            puestos_cifrado = fernet.encrypt(str(self.Puestos.text).encode())
             ubicacion_cifrada = fernet.encrypt(self.ubicacion.text.encode())
 
             agregar_servicio(

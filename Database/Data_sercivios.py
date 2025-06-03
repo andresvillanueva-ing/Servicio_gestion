@@ -71,6 +71,7 @@ def obtener_servicios(id_prestador):
             "descripcion": fernet.decrypt(row[8]).decode(),
             "id_prestador": row[9]
 
+
         }
         for row in servicios
     ]
@@ -84,7 +85,7 @@ def modificar_servicio(razon_social, nit, administrador, id_prestador, descripci
             descripcion = %s, horario = %s, puestos = %s, ubicacion = %s, imagen = %s 
         WHERE id_prestador = %s
     """
-    valores = (razon_social, nit,  administrador, descripcion, horario, puestos, ubicacion, imagen, id_prestador)
+    valores = (razon_social, nit,  administrador,descripcion, horario, puestos, ubicacion, imagen, id_prestador)
     cursor.execute(sql, valores)
     conexion.commit()
     cursor.close()
@@ -105,14 +106,16 @@ def reducir_puestos_servicio(id_prestador):
     cursor = conexion.cursor()
 
     try:
-        cursor.execute("SELECT puestos FROM data_servicios WHERE id_prestador = ?", (id_prestador,))
+        cursor.execute("SELECT puestos FROM data_servicios WHERE id_prestador = %s", (id_prestador,))
         resultado = cursor.fetchone()
 
         if resultado:
-            puestos_actuales = int(resultado[0])
-            if puestos_actuales > 0:
-                nuevos_puestos = puestos_actuales - 1
-                cursor.execute("UPDATE data_servicios SET puestos = ? WHERE id_prestador = ?", (nuevos_puestos, id_prestador))
+            puestos_descifrados = int(fernet.decrypt(resultado[0]).decode())
+            
+            if puestos_descifrados > 0:
+                nuevos_puestos = str(puestos_descifrados - 1).encode()
+                puestos_cifrados = fernet.encrypt(nuevos_puestos)
+                cursor.execute("UPDATE data_servicios SET puestos = %s WHERE id_prestador = %s", (puestos_cifrados, id_prestador))
                 conexion.commit()
             else:
                 raise Exception("No hay puestos disponibles.")

@@ -182,7 +182,7 @@ class reservas_screen(MDScreen):
                 administrador_cifrado = fernet.encrypt(servicio.get("administrador").encode())
 
                 agregar_reserva(
-                    id_prestador = servicio.get("id_prestador",""),
+                    id_prestador = servicio.get("id_prestador"),
                     razon_social=razon_social_cifrado,
                     nit=nit_cifrado,
                     administrador=administrador_cifrado,
