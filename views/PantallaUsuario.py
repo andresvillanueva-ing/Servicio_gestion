@@ -63,7 +63,7 @@ class TabHotel(FloatLayout, MDTabsBase):
             datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {ubicacion}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
-            card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, servicio))
+            card.bind(on_touch_up=lambda instance, touch, s=servicio: self.on_card_touch(instance, touch, s))
             content.add_widget(card)
 
         layout_scroll.add_widget(content)
@@ -135,7 +135,7 @@ class TabParqueadero(FloatLayout, MDTabsBase):
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
 
-            card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, servicio))
+            card.bind(on_touch_up=lambda instance, touch, s=servicio: self.on_card_touch(instance, touch, s))
 
             content.add_widget(card)
 
@@ -208,7 +208,7 @@ class TabRestaurante(FloatLayout, MDTabsBase):
             datos.add_widget(MDLabel(text=f"[b]Ubicación:[/b] {ubicacion}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
             datos.add_widget(MDLabel(text=f"[b]Puestos disponibles:[/b] {servicio["puestos"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
             card.add_widget(datos)
-            card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, servicio))
+            card.bind(on_touch_up=lambda instance, touch, s=servicio: self.on_card_touch(instance, touch, s))
             content.add_widget(card)
 
         layout_scroll.add_widget(content)
@@ -306,26 +306,36 @@ class Pantalla_Usuario(MDScreen):
     def Reservas_tab(self):
         tab = MDBottomNavigationItem(name="reservas", text="Reservas", icon="calendar")
 
-        self.layout_reservas = MDBoxLayout(
-            orientation="vertical",
-            spacing="10dp"
-        )
-        self.layout_reservas.add_widget(MDLabel(text="En el momento no hay reservas", halign="center"))
+        layout_reservas = MDBoxLayout(orientation="vertical", spacing="10dp", md_bg_color="#FFF2F2")
 
-        tab.add_widget(self.layout_reservas)
+        
+        # Layout para la información del servicio con ScrollView
+        self.info_layout_res = MDBoxLayout(
+            orientation="vertical",
+            spacing="10dp",
+            padding="10dp",
+            size_hint_y=None,
+        )
+        self.info_layout_res.bind(minimum_height=self.info_layout_res.setter('height'))
+
+        scroll_view = ScrollView(
+            size_hint=(1, 1),
+            bar_width="8dp"
+        )
+        scroll_view.add_widget(self.info_layout_res)
+
+        layout_reservas.add_widget(scroll_view)
+
+        tab.add_widget(layout_reservas)
         return tab
     
     def datos_reservas(self):
-        self.layout_reservas.clear_widgets()
+        self.info_layout_res.clear_widgets()
         from kivy.app import App
         app = App.get_running_app()
-        
-        layout_scroll = ScrollView(size_hint=(1, 1))
-        content = MDBoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10), size_hint_y=None)
-        content.bind(minimum_height=content.setter('height'))
 
         if not hasattr(app, "id_usuario") or not app.id_usuario:
-            self.layout_reservas.add_widget(MDLabel(text="Por favor, inicie sesión primero.", halign="center"))
+            self.info_layout_res.add_widget(MDLabel(text="Por favor, inicie sesión primero.", halign="center"))
             return
         try:
             reservas = obtener_reservas_realizadas(app.id_usuario)
@@ -336,11 +346,9 @@ class Pantalla_Usuario(MDScreen):
 
         if reservas:
             for reserva in reservas:
-                content.add_widget(self.crear_card_reserva(reserva))
-                layout_scroll.add_widget(content)
-                self.layout_reservas.add_widget(layout_scroll)
+                self.info_layout_res.add_widget(self.crear_card_reserva(reserva))
         else:
-            self.layout_reservas.add_widget(MDLabel(text="No hay servicios registrados.", halign="center"))
+            self.info_layout_res.add_widget(MDLabel(text="No hay reservas registradas.", halign="center"))
 
     def formatear_ubicacion_decimal(self, ubicacion_str):
         try:
@@ -363,15 +371,43 @@ class Pantalla_Usuario(MDScreen):
         )
         card.add_widget(imagen)
         datos = MDBoxLayout(orientation="vertical", padding=(dp(10), 0))
-        datos.add_widget(MDLabel(text=reserva["razon_social"].upper(), bold=True, font_style="H6", halign="center"))
-        datos.add_widget(MDLabel(text="[b]Admin:[/b] " + reserva['administrador'], markup=True, font_style="Body2", font_size="16sp", theme_text_color="Custom"))
-        ubicacion_legible = self.formatear_ubicacion_decimal(reserva["ubicacion"])
-        datos.add_widget(MDLabel(text=f"[b]ubicacion:[/b] {ubicacion_legible}", font_style="Body2", font_size="16sp",markup=True, theme_text_color="Custom"))
-        datos.add_widget(MDLabel(text=f"[b]fecha de reserva:[/b] {reserva["fecha_reserva"]}", font_style="Body2", font_size="16sp", markup=True, theme_text_color="Custom"))
+        datos.add_widget(MDLabel(
+            text="[b]Admin:[/b] " + reserva['administrador'],
+            markup=True,
+            font_style="Body2",
+            font_size="16sp",
+            theme_text_color="Custom"
+        ))
+
+        ubicacion = self.formatear_ubicacion_decimal(reserva['ubicacion'])
+        datos.add_widget(MDLabel(
+            text=f"[b]Ubicación:[/b] {ubicacion}",
+            font_style="Body2",
+            font_size="16sp",
+            markup=True,
+            theme_text_color="Custom"
+        ))
+
+        datos.add_widget(MDLabel(
+            text=f"[b]Fecha:[/b] {reserva['fecha_reserva']}",
+            font_style="Body2",
+            font_size="16sp",
+            markup=True,
+            theme_text_color="Custom"
+        ))
+
+        datos.add_widget(MDLabel(
+            text=f"[b]Hora:[/b] {reserva['hora_reserva']}",
+            font_style="Body2",
+            font_size="16sp",
+            markup=True,
+            theme_text_color="Custom"
+        ))
+        card.bind(on_touch_up=lambda instance, touch, s=reserva: self.on_card_touch(instance, touch, s))
+
         card.add_widget(datos)
-        card.bind(on_touch_up=lambda instance, touch: self.on_card_touch(instance, touch, reserva))
         return card
-    
+
     def on_card_touch(self, instance, touch, reserva):
         if instance.collide_point(*touch.pos):
             self.mostrar_dialogo(reserva)

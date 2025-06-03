@@ -33,12 +33,19 @@ class Informacion_Reserva_prestador_Screen(MDScreen):
 
         encabezado = MDCard(
             size_hint=(1, 1),
-            height=dp(260),
+            height=dp(250),
             radius=[0, 0, 20, 20],
             elevation=6,
             padding=0,
             orientation="vertical",
             md_bg_color="#015551",
+        )
+        top_bar = MDTopAppBar(
+            left_action_items=[["arrow-left", lambda x: self.volver()]],  
+            elevation=5,
+            size_hint_y=None,  
+            height="40dp",
+            md_bg_color=("#FFFFFF00"), 
         )
         imagen = Image(
             source=self.reserva_actual['imagen'],
@@ -57,6 +64,7 @@ class Informacion_Reserva_prestador_Screen(MDScreen):
             halign="center",
             valign="middle",
         )
+        encabezado.add_widget(top_bar)
         encabezado.add_widget(imagen)
         encabezado.add_widget(titulo)
         self.layout.add_widget(encabezado)
@@ -148,6 +156,15 @@ class Informacion_Reserva_prestador_Screen(MDScreen):
                 text=self.reserva_actual.get("fecha_reserva",), halign="left"
             )
         )
+        hora_reserva_box = MDBoxLayout(orientation="horizontal", spacing=5)
+        hora_reserva_box.add_widget(
+            MDIcon(icon="calendar", size_hint=(1, None), size=(dp(24), dp(24)))
+        )
+        hora_reserva_box.add_widget(
+            MDLabel(
+                text=self.reserva_actual.get("hora_reserva",), halign="left"
+            )
+        )
         informacion_box.add_widget(MDLabel(text="Informacion de servicio", halign="center", font_style="H6"))
         informacion_box.add_widget(razon_social_box)
         informacion_box.add_widget(nit_box)
@@ -158,10 +175,11 @@ class Informacion_Reserva_prestador_Screen(MDScreen):
         informacion_box.add_widget(telefono_box)
         informacion_box.add_widget(correo_usuario_box)
         informacion_box.add_widget(fecha_reserva_box)
+        informacion_box.add_widget(hora_reserva_box)
         content_layout.add_widget(informacion_box)
         scroll_view.add_widget(content_layout)
         self.layout.add_widget(scroll_view)
 
 
     def volver(self, *args):
-        self.manager.current = "pantallaUsuario"
+        self.manager.current = "pantallaPServicio"

@@ -5,6 +5,7 @@ from kivymd.uix.button import MDRaisedButton, MDRectangleFlatIconButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.card import MDCard
 from kivy.uix.image import Image
+from kivymd.uix.toolbar import MDTopAppBar
 from kivy.uix.scrollview import ScrollView
 from kivy.metrics import dp
 from kivy.uix.widget import Widget
@@ -32,14 +33,21 @@ class informacion_servicios_screen(MDScreen):
         # --- Encabezado con imagen y título superpuesto ---
         encabezado = MDCard(
             size_hint=(1, 1),
-            height=dp(260),
+            height=dp(250),
             radius=[0, 0, 20, 20],
             elevation=6,
             padding=0,
             orientation="vertical",
             md_bg_color="#015551",
         )
-
+        top_bar = MDTopAppBar(
+            left_action_items=[["arrow-left", lambda x: self.volver()]],  
+            elevation=5,
+            size_hint_y=None,  
+            height="40dp",
+            md_bg_color=("#FFFFFF00"), 
+        )
+        encabezado.add_widget(top_bar)
         if servicio.get("imagen"):
             imagen = Image(
                 source=servicio["imagen"],
@@ -102,7 +110,7 @@ class informacion_servicios_screen(MDScreen):
         ir_btn = MDRectangleFlatIconButton(
             text="ir a mapa",
             icon="bus-marker",
-            on_release=self.confirmar_reserva,
+            on_release=self.ir_reserva,
             size_hint=(1, None),
         )
         botones.add_widget(reservar_btn)
@@ -192,6 +200,16 @@ class informacion_servicios_screen(MDScreen):
 
     def cancelar_dialogo(self, *args):
         self.dialog.dismiss()
+    
+    
+    def ir_reserva(self):
+        self.dialog.dismiss()
+        from kivymd.app import MDApp
+
+        app = MDApp.get_running_app()
+        pantalla_reservas = app.root.get_screen("reservasscreen")
+        pantalla_reservas.recibir_servicio(self.datos_servicio)
+        app.root.current = "reservasscreen"
 
     def realizar_reserva(self, *args):
         self.dialog.dismiss()
@@ -204,3 +222,6 @@ class informacion_servicios_screen(MDScreen):
 
     def abrir_mapa(self, *args):
         print("Abrir mapa con ubicación:", self.datos_servicio.get("ubicacion"))
+
+    def volver(self, *args):
+        self.manager.current = "pantallaUsuario"

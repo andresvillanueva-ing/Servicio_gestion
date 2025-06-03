@@ -1,7 +1,8 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivymd.uix.label import MDLabel, MDIcon
-from kivymd.uix.button import  MDRaisedButton
+from kivymd.uix.button import  MDRaisedButton,MDRectangleFlatIconButton,MDIconButton
 from kivymd.uix.card import MDCard
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.uix.scrollview import ScrollView
@@ -30,25 +31,23 @@ class Informacion_Reserva_Screen(MDScreen):
         if not self.reserva_actual:
             self.layout.add_widget(MDLabel(text="No hay información para mostrar", halign="center"))
             return
-        
-        self.topapp = MDTopAppBar(
-            title="",
-            left_action_items=[["arrow-left", lambda x: self.volver()]],
-            elevation=4,
-            pos_hint={"top": 1},
-            specific_text_color="#FFFFFF"
-        )
-        self.layout.add_widget(self.topapp)
 
         #--------Encabezado de la pantalla-------
         encabezado = MDCard(
-            size_hint=(1, 1),
-            height=dp(260),
+            size_hint=(1, None),
+            height=dp(250),
             radius=[0, 0, 20, 20],
             elevation=6,
             padding=0,
             orientation="vertical",
-            md_bg_color="#015551",
+            md_bg_color="#01555100",
+        )
+        top_bar = MDTopAppBar(
+            left_action_items=[["arrow-left", lambda x: self.volver()]],  
+            elevation=5,
+            size_hint_y=None,  
+            height="40dp",
+            md_bg_color=("#FFFFFF00"), 
         )
         imagen = Image(
             source=self.reserva_actual['imagen'],
@@ -67,10 +66,38 @@ class Informacion_Reserva_Screen(MDScreen):
             halign="center",
             valign="middle",
         )
-
+        encabezado.add_widget(top_bar)
         encabezado.add_widget(imagen)
         encabezado.add_widget(titulo)
         self.layout.add_widget(encabezado)
+
+        # --- Botones ---
+        botones = MDBoxLayout(
+            orientation="horizontal",
+            spacing=dp(10),
+            padding=dp(10),
+            size_hint_y=None,
+            height=dp(50),
+            pos_hint={'center_x': 0.5, 'center_y': 0.5} 
+        )
+
+        reservar_btn = MDRectangleFlatIconButton(
+            text="cancelar",
+            icon="calendar-plus",
+            on_release=self.cancelar_reserva,
+            size_hint=(1, None),
+        )
+        ir_btn = MDRectangleFlatIconButton(
+            text="ir a mapa",
+            icon="bus-marker",
+            on_release=self.sitio_reserva,
+            size_hint=(1, None),
+        )
+        botones.add_widget(reservar_btn)
+        botones.add_widget(ir_btn)
+
+        self.layout.add_widget(botones)
+
 
         scroll_view = ScrollView()
         content_layout = MDBoxLayout(
@@ -158,6 +185,15 @@ class Informacion_Reserva_Screen(MDScreen):
                 text=self.reserva_actual.get("fecha_reserva",), halign="left"
             )
         )
+        hora_reserva_box = MDBoxLayout(orientation="horizontal", spacing=5)
+        hora_reserva_box.add_widget(
+            MDIcon(icon="calendar", size_hint=(1, None), size=(dp(24), dp(24)))
+        )
+        hora_reserva_box.add_widget(
+            MDLabel(
+                text=self.reserva_actual.get("hora_reserva",), halign="left"
+            )
+        )
         informacion_box.add_widget(MDLabel(text="Informacion de servicio", halign="center", font_style="H6"))
         informacion_box.add_widget(razon_social_box)
         informacion_box.add_widget(nit_box)
@@ -168,6 +204,7 @@ class Informacion_Reserva_Screen(MDScreen):
         informacion_box.add_widget(telefono_box)
         informacion_box.add_widget(correo_usuario_box)
         informacion_box.add_widget(fecha_reserva_box)
+        informacion_box.add_widget(hora_reserva_box)
         content_layout.add_widget(informacion_box)
         scroll_view.add_widget(content_layout)
         self.layout.add_widget(scroll_view)
@@ -175,7 +212,6 @@ class Informacion_Reserva_Screen(MDScreen):
     def cancelar_reserva(self, *args):
         id_usuario = self.reserva_actual['id_usuario']
         eliminar = eliminar_reserva(id_usuario)
-        self.dialog.dismiss()
             # mensaje de exito en pantalla
         self.layout.clear_widgets()
             # dialogo de exito
@@ -184,7 +220,7 @@ class Informacion_Reserva_Screen(MDScreen):
             text="La reserva ha sido cancelada exitosamente.",
             buttons=[
                 MDRaisedButton(
-                    text="Aceptar", on_release=self.volver, size_hint=(1, None), height=dp(48)
+                    text="Aceptar", on_release=self.volver, size_hint=(1, None), height=dp(48),
                 )
             ]
         )
