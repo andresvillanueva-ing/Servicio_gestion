@@ -4,20 +4,18 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.label import MDLabel
-from Database.Data_usuario import modificar_usuario
-from Database.Data_usuario import eliminar_usuario
-from Database.Data_P_Servicio import modificar_prestador
-from Database.Data_P_Servicio import eliminar_prestador
+from kivy.uix.scrollview import ScrollView
 from kivy.metrics import dp
+from Database.Data_usuario import modificar_usuario
 from cryptography.fernet import Fernet
 import os
 
-
+# Generar clave si no existe
 if not os.path.exists("clave.key"):
     with open("clave.key", "wb") as clave_archivo:
         clave_archivo.write(Fernet.generate_key())
 
-# Cargar la clave de cifrado
+# Cargar la clave
 with open("clave.key", "rb") as clave_archivo:
     clave = clave_archivo.read()
 
@@ -29,12 +27,13 @@ class ModificarUsuario(MDScreen):
         self.name = "modificar_usuario"
         self.id_usuario = None
 
-
-
+        # Layout principal
         layout = MDBoxLayout(orientation="vertical", spacing=dp(10))
+        self.add_widget(layout)
 
+        # Barra superior
         top_bar = MDTopAppBar(
-            title="Registro de Servicio",
+            title="Modificar Servicio",
             left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
             elevation=5,
             size_hint_y=None,
@@ -43,35 +42,59 @@ class ModificarUsuario(MDScreen):
         )
         layout.add_widget(top_bar)
 
-        self.txt_nombre = MDTextField(hint_text = "Nombre Completo", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="account")
-        self.txt_correo = MDTextField(hint_text = "correo Electronico", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="email")
-        self.txt_telefono = self.telefono_usuario = MDTextField(hint_text = "Telefono", input_filter = "int", helper_text = "", helper_text_mode = "on_error", mode="rectangle", icon_right="phone")
+        # ScrollView
+        scroll = ScrollView()
+        campos_container = MDBoxLayout(
+            orientation="vertical",
+            padding=dp(20),
+            spacing=dp(20),
+            size_hint_y=None
+        )
+        campos_container.bind(minimum_height=campos_container.setter("height"))
+
+        self.txt_nombre = MDTextField(
+            hint_text="Nombre Completo",
+            mode="rectangle",
+            icon_right="account"
+        )
+        self.txt_correo = MDTextField(
+            hint_text="Correo Electrónico",
+            mode="rectangle",
+            icon_right="email"
+        )
+        self.txt_telefono = MDTextField(
+            hint_text="Teléfono",
+            input_filter="int",
+            mode="rectangle",
+            icon_right="phone"
+        )
         self.txt_telefono.bind(text=self.validar_longitud_telefono)
 
         self.registro_button = MDRaisedButton(
-            text="Registrar",
+            text="Modificar",
             pos_hint={"center_x": 0.5},
             md_bg_color="#FE4F2D",
             on_release=self.registrar
         )
 
-        layout.add_widget(self.txt_nombre)
-        layout.add_widget(self.txt_correo)
-        layout.add_widget(self.txt_telefono)
-        layout.add_widget(self.registro_button)
+        # Agregar campos al contenedor
+        campos_container.add_widget(self.txt_nombre)
+        campos_container.add_widget(self.txt_correo)
+        campos_container.add_widget(self.txt_telefono)
+        campos_container.add_widget(self.registro_button)
 
-        self.add_widget(layout)
+        scroll.add_widget(campos_container)
+        layout.add_widget(scroll)
 
     def validar_longitud_telefono(self, instance, value):
         if len(value) > 10:
-            instance.text = value[:10] 
+            instance.text = value[:10]
 
     def registrar(self, instance):
         if not all([
             self.txt_nombre.text.strip(),
             self.txt_correo.text.strip(),
             self.txt_telefono.text.strip(),
-          
         ]):
             print("⚠️ Todos los campos son obligatorios.")
             return
@@ -87,17 +110,14 @@ class ModificarUsuario(MDScreen):
                 telefono=telefono,
                 id=self.id_usuario
             )
+
             from kivymd.uix.snackbar import Snackbar
-            Snackbar(
-                MDLabel(
-                    text="!!Datos Modificados con éxito.¡¡"
-                )).open()
+            Snackbar(MDLabel(text="¡Datos modificados con éxito!")).open()
 
             # Limpiar campos
             self.txt_nombre.text = ""
             self.txt_correo.text = ""
             self.txt_telefono.text = ""
-            
 
             self.manager.current = "pantallaUsuario"
 

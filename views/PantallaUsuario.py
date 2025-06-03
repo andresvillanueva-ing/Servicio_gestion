@@ -249,7 +249,7 @@ class Pantalla_Usuario(MDScreen):
         self.name = "pantallaUsuario"
         self.build_ui()
         #color de fondo
-        md_bg_color="#FFF2F2"
+        self.md_bg_color="#FFF2F2"
 
     def build_ui(self):
         main_layout = MDBoxLayout(orientation='vertical')
@@ -445,7 +445,6 @@ class Pantalla_Usuario(MDScreen):
         from kivy.app import App
         app = App.get_running_app()
         usuario = obtener_usuario(app.id_usuario)
-        print(usuario)
         if not usuario:
             print('usuario, iniciar sesion')
             return

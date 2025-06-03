@@ -107,7 +107,7 @@ def modificar_usuario(nombre, correo, telefono, id):
 def eliminar_usuario(id):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "DELETE FROM `data_servicios` WHERE id = %s"
+    sql = "DELETE FROM `data_base_usuario` WHERE id = %s"
     cursor.execute(sql,(id,))
     conexion.commit()
     cursor.close()

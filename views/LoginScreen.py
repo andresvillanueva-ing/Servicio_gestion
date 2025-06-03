@@ -11,7 +11,6 @@ from Database.Data_P_Servicio import Verificar_datos
 from Database.Data_usuario import Verificar_datos_usuario
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.fitimage import FitImage
-from views.PerfilUsuario import PerfilUsuario
 from kivy.metrics import dp
 
 
@@ -19,10 +18,11 @@ class login_screen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "loginscreen"
+        self.md_bg_color = "#FFF2F2"
 
         layout = RelativeLayout()
         # Color de fondo
-        layout.md_bg_color = ("#FFF2F2")
+
 
         # Toptoolbar
         top_bar = MDBoxLayout(

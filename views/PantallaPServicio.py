@@ -23,7 +23,7 @@ class Pantalla_P_Servicio(MDScreen):
         self.name = "pantallaPServicio"
         self.dialog= None
         self.info_layout = None  # Se define en otro método
-        md_bg_color="#FFF2F2"
+        self.md_bg_color="#FFF2F2"
         self.build_ui()
         
     def build_ui(self):
@@ -44,7 +44,6 @@ class Pantalla_P_Servicio(MDScreen):
     def create_top_bar(self):
         return MDTopAppBar(
             title="Administrador",
-            left_action_items=[["arrow-left", lambda x: self.volver_atras()]],
             right_action_items=[["account", lambda x: self.abrir_usuario()]],
             elevation=5,
             size_hint_y=None,
@@ -334,15 +333,12 @@ class Pantalla_P_Servicio(MDScreen):
     def ir_a_registrar_servicio(self, instance):
         App.get_running_app().root.current = "registrarservicios"
 
-    def volver_atras(self):
-        self.manager.current = "loginscreen"
 
     def abrir_usuario(self):
      # Obtener datos del usuario desde el App
         from kivy.app import App
         app = App.get_running_app()
         usuario = obtener_prestador(app.id_prestador)
-        print(usuario)
         if not usuario:
             print('usuario, iniciar sesion')
             return

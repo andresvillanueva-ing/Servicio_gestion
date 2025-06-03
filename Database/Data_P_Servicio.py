@@ -108,7 +108,7 @@ def modificar_prestador(nombre, correo, telefono, id):
 def eliminar_prestador(id):
     conexion = crear_conexion()
     cursor = conexion.cursor()
-    sql = "DELETE FROM `data_servicios` WHERE id = %s"
+    sql = "DELETE FROM `data_base_servicio` WHERE id = %s"
     cursor.execute(sql,(id,))
     conexion.commit()
     cursor.close()
