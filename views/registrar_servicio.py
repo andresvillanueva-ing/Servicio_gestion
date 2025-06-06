@@ -1,3 +1,12 @@
+"""Pantalla principal de registro de servicios"""
+
+import os
+
+from kivy.app import App
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.image import Image
+
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
@@ -5,19 +14,16 @@ from kivymd.uix.button import MDRaisedButton, MDFlatButton, MDIconButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.menu import MDDropdownMenu
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.image import Image
 from kivymd.uix.dialog import MDDialog
-from kivy.app import App
-from plyer import filechooser
-from cryptography.fernet import Fernet
-import os
+from kivymd.uix.snackbar import Snackbar
 
 from kivy_garden.mapview import MapView, MapMarker
-from kivy.clock import Clock
 
-from Database.Data_sercivios import agregar_servicio
+from plyer import filechooser
+from cryptography.fernet import Fernet
+
+from ..Database.Data_servicios import agregar_servicio
+
 
 # Cargar o generar clave de cifrado
 if not os.path.exists("clave.key"):
@@ -30,7 +36,10 @@ with open("clave.key", "rb") as clave_archivo:
 
 fernet = Fernet(clave)
 
+
 class registrar_servicio_screen(MDScreen):
+    """Clase Principal de la pantalla de registro de servicios."""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "registrarservicios"
@@ -38,7 +47,7 @@ class registrar_servicio_screen(MDScreen):
         self.map_marker = None
 
         # Layout principal
-        main_layout = MDBoxLayout(orientation='vertical')
+        main_layout = MDBoxLayout(orientation="vertical")
 
         # Top AppBar
         top_bar = MDTopAppBar(
@@ -47,21 +56,41 @@ class registrar_servicio_screen(MDScreen):
             elevation=5,
             size_hint_y=None,
             height="56dp",
-            md_bg_color="#015551"
+            md_bg_color="#015551",
         )
         main_layout.add_widget(top_bar)
 
         # ScrollView para el contenido
         scroll_view = ScrollView()
-        content_layout = MDBoxLayout(orientation='vertical', padding=10, spacing=10, size_hint_y=None)
-        content_layout.bind(minimum_height=content_layout.setter('height'))
+        content_layout = MDBoxLayout(
+            orientation="vertical", padding=10, spacing=10, size_hint_y=None
+        )
+        content_layout.bind(minimum_height=content_layout.setter("height"))
 
-        self.razon_social = MDTextField(hint_text="Razón social", mode="rectangle", icon_right="home-city")
-        self.nit = MDTextField(hint_text="NIT", input_filter="int", mode="rectangle", icon_right="numeric")
-        self.Administrador = MDTextField(hint_text="Nombre del administrador", mode="rectangle", icon_right="account-cog")
-        self.Descripcion = MDTextField(hint_text="Descripción del servicio", mode="rectangle", icon_right="sort-alphabetical-descending")
-        self.horario = MDTextField(hint_text="Horario de atención. ej: 00:00 a 00:00", mode="rectangle", icon_right="alarm-check")
-        self.Puestos = MDTextField(hint_text="Puestos disponibles", mode="rectangle", icon_right="arrow-all")
+        self.razon_social = MDTextField(
+            hint_text="Razón social", mode="rectangle", icon_right="home-city"
+        )
+        self.nit = MDTextField(
+            hint_text="NIT", input_filter="int", mode="rectangle", icon_right="numeric"
+        )
+        self.Administrador = MDTextField(
+            hint_text="Nombre del administrador",
+            mode="rectangle",
+            icon_right="account-cog",
+        )
+        self.Descripcion = MDTextField(
+            hint_text="Descripción del servicio",
+            mode="rectangle",
+            icon_right="sort-alphabetical-descending",
+        )
+        self.horario = MDTextField(
+            hint_text="Horario de atención. ej: 00:00 a 00:00",
+            mode="rectangle",
+            icon_right="alarm-check",
+        )
+        self.Puestos = MDTextField(
+            hint_text="Puestos disponibles", mode="rectangle", icon_right="arrow-all"
+        )
 
         self.ubicacion = MDTextField(
             hint_text="Coordenadas (lat, lon)",
@@ -69,10 +98,12 @@ class registrar_servicio_screen(MDScreen):
             helper_text_mode="on_focus",
             mode="rectangle",
             icon_right="map-marker",
-            readonly=True
+            readonly=True,
         )
-        #mapa interactivo
-        self.map_view = MapView(zoom=15, lat=9.2419, lon=-74.4262, size_hint_y=None, height="300dp")
+        # mapa interactivo
+        self.map_view = MapView(
+            zoom=15, lat=9.2419, lon=-74.4262, size_hint_y=None, height="300dp"
+        )
         self.map_view.bind(on_touch_down=self.colocar_marcador)
 
         self.boton_imagen = MDIconButton(
@@ -84,41 +115,52 @@ class registrar_servicio_screen(MDScreen):
         )
 
         self.tipo_servicios_button = MDFlatButton(
-            text="Tipo de servicio",
-            pos_hint={"center_x": 0.5},
-            md_bg_color="#F17259"
+            text="Tipo de servicio", pos_hint={"center_x": 0.5}, md_bg_color="#F17259"
         )
 
         menu_items = [
-            {"text": "Hotel", "on_release": lambda x="Hotel": self.set_tipo_servicio(x)},
-            {"text": "Parqueadero", "on_release": lambda x="Parqueadero": self.set_tipo_servicio(x)},
-            {"text": "Restaurante", "on_release": lambda x="Restaurante": self.set_tipo_servicio(x)}
+            {
+                "text": "Hotel",
+                "on_release": lambda x="Hotel": self.set_tipo_servicio(x),
+            },
+            {
+                "text": "Parqueadero",
+                "on_release": lambda x="Parqueadero": self.set_tipo_servicio(x),
+            },
+            {
+                "text": "Restaurante",
+                "on_release": lambda x="Restaurante": self.set_tipo_servicio(x),
+            },
         ]
 
         self.tipo_servicio_menu = MDDropdownMenu(
-            caller=self.tipo_servicios_button,
-            items=menu_items,
-            width_mult=4
+            caller=self.tipo_servicios_button, items=menu_items, width_mult=4
         )
-        self.tipo_servicios_button.bind(on_release=lambda *args: self.tipo_servicio_menu.open())
- 
+        self.tipo_servicios_button.bind(
+            on_release=lambda *args: self.tipo_servicio_menu.open()
+        )
+
         self.registro_button = MDRaisedButton(
             text="Registrar",
             pos_hint={"center_x": 0.5},
             md_bg_color="#FE4F2D",
-            on_release=self.registrar
+            on_release=self.registrar,
         )
 
         # Agregar widgets al layout
         content_layout.add_widget(self.razon_social)
         content_layout.add_widget(self.nit)
-        content_layout.add_widget(MDLabel(text="Seleccionar Tipo de servicio", halign="center"))
+        content_layout.add_widget(
+            MDLabel(text="Seleccionar Tipo de servicio", halign="center")
+        )
         content_layout.add_widget(self.tipo_servicios_button)
         content_layout.add_widget(self.Administrador)
         content_layout.add_widget(self.Descripcion)
         content_layout.add_widget(self.horario)
         content_layout.add_widget(self.Puestos)
-        content_layout.add_widget(MDLabel(text="Selecciona la ubicación en el mapa:", halign="center"))
+        content_layout.add_widget(
+            MDLabel(text="Selecciona la ubicación en el mapa:", halign="center")
+        )
         content_layout.add_widget(self.map_view)
         content_layout.add_widget(self.ubicacion)
         content_layout.add_widget(self.boton_imagen)
@@ -129,6 +171,8 @@ class registrar_servicio_screen(MDScreen):
         self.add_widget(main_layout)
 
     def colocar_marcador(self, instance, touch):
+        """Metodo para colocar el marcador en el mapa."""
+
         if not self.map_view.collide_point(*touch.pos):
             return
 
@@ -141,25 +185,30 @@ class registrar_servicio_screen(MDScreen):
         self.map_marker = MapMarker(lat=lat, lon=lon)
         self.map_view.add_widget(self.map_marker)
 
-
     def set_tipo_servicio(self, tipo):
+        """Metodo que recibe los datos."""
+
         self.tipo_servicios_button.text = tipo
         self.tipo_servicio_menu.dismiss()
 
     def seleccionar_imagen(self, instance):
+        """Metodo para seleccionar imagen."""
+
         filechooser.open_file(
             title="Seleccionar imagen",
             filters=[("Archivos de imagen", "*.png", "*.jpg", "*.jpeg")],
-            on_selection=self.imagen_seleccionada
+            on_selection=self.imagen_seleccionada,
         )
 
     def imagen_seleccionada(self, seleccion):
+        """Metodo que recibe y para confirmar la imagen seleccionada"""
+
         if seleccion:
             ruta = seleccion[0]
 
             class ImagenDialogLayout(BoxLayout):
                 def __init__(self, ruta_img, **kwargs):
-                    super().__init__(orientation='vertical', **kwargs)
+                    super().__init__(orientation="vertical", **kwargs)
                     self.add_widget(Image(source=ruta_img, size_hint=(1, 1)))
 
             content = ImagenDialogLayout(ruta)
@@ -169,27 +218,38 @@ class registrar_servicio_screen(MDScreen):
                 type="custom",
                 content_cls=content,
                 buttons=[
-                    MDFlatButton(text="Cancelar", on_release=lambda x: self.dialog_imagen.dismiss()),
-                    MDFlatButton(text="Aceptar", on_release=lambda x: self.confirmar_imagen(ruta)),
+                    MDFlatButton(
+                        text="Cancelar",
+                        on_release=lambda x: self.dialog_imagen.dismiss(),
+                    ),
+                    MDFlatButton(
+                        text="Aceptar", on_release=lambda x: self.confirmar_imagen(ruta)
+                    ),
                 ],
             )
             self.dialog_imagen.open()
 
     def confirmar_imagen(self, ruta):
+        """Metodo para confirmar la imagen seleccionada."""
+
         self.ruta_imagen = ruta
         self.dialog_imagen.dismiss()
 
     def registrar(self, instance):
-        if not all([
-            self.razon_social.text.strip(),
-            self.nit.text.strip(),
-            self.Administrador.text.strip(),
-            self.Descripcion.text.strip(),
-            self.horario.text.strip(),
-            self.Puestos.text.strip(),
-            self.ubicacion.text.strip(),
-            self.tipo_servicios_button.text != "Tipo de servicio"
-        ]):
+        """Metodo para registrar los datos del servicio"""
+
+        if not all(
+            [
+                self.razon_social.text.strip(),
+                self.nit.text.strip(),
+                self.Administrador.text.strip(),
+                self.Descripcion.text.strip(),
+                self.horario.text.strip(),
+                self.Puestos.text.strip(),
+                self.ubicacion.text.strip(),
+                self.tipo_servicios_button.text != "Tipo de servicio",
+            ]
+        ):
             print("⚠️ Todos los campos son obligatorios.")
             return
 
@@ -217,14 +277,10 @@ class registrar_servicio_screen(MDScreen):
                 horario=horario_cifrado,
                 puestos=puestos_cifrado,
                 ubicacion=ubicacion_cifrada,
-                imagen=self.ruta_imagen
+                imagen=self.ruta_imagen,
             )
 
-            from kivymd.uix.snackbar import Snackbar
-            Snackbar(
-                MDLabel(
-                    text="!!Servicio creado con éxito.¡¡"
-                )).open()
+            Snackbar(MDLabel(text="!!Servicio creado con éxito.¡¡")).open()
 
             # Limpiar campos
             self.razon_social.text = ""
@@ -244,6 +300,7 @@ class registrar_servicio_screen(MDScreen):
 
         except Exception as e:
             import traceback
+
             traceback.print_exc()
 
     def volver_atras(self):

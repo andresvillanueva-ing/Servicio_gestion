@@ -1,36 +1,40 @@
-from kivy.core.text import LabelBase
+"""Pantalla de Inicio de sesion"""
 
 from kivy.uix.screenmanager import Screen
+from kivy.metrics import dp
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.app import App
+
 from kivymd.uix.button import MDRaisedButton, MDFlatButton
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-from kivy.uix.relativelayout import RelativeLayout
 from kivymd.uix.gridlayout import MDGridLayout
-from Database.Data_P_Servicio import Verificar_datos
-from Database.Data_usuario import Verificar_datos_usuario
 from kivymd.uix.dialog import MDDialog
-from kivymd.uix.fitimage import FitImage
-from kivy.metrics import dp
+
+from ..Database.Data_P_Servicio import Verificar_datos
+from ..Database.Data_usuario import Verificar_datos_usuario
 
 
 class login_screen(Screen):
+    """Clase principal de la pantalla de inicio de sesion"""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "loginscreen"
+        self.dialog = None
         self.md_bg_color = "#FFF2F2"
 
         layout = RelativeLayout()
         # Color de fondo
-
 
         # Toptoolbar
         top_bar = MDBoxLayout(
             orientation="horizontal",
             pos_hint={"top": 1},
             size_hint_y=None,
-            height=dp(120), 
-            md_bg_color=("#015551"),  
+            height=dp(120),
+            md_bg_color=("#015551"),
             radius=[0, 0, dp(25), dp(25)],
         )
 
@@ -40,7 +44,6 @@ class login_screen(Screen):
             theme_text_color="Custom",
             text_color=(1, 1, 1, 1),
             font_style="H3",
-            
         )
 
         top_bar.add_widget(titulo)
@@ -85,9 +88,9 @@ class login_screen(Screen):
         login_button = MDRaisedButton(
             text="Iniciar sesión",
             pos_hint={"center_x": 0.5},
-            md_bg_color=("#FE4F2D"),  
+            md_bg_color=("#FE4F2D"),
             size_hint_x=1,
-            font_style="Button"
+            font_style="Button",
         )
         login_button.bind(on_release=self.verificar_credenciales)
 
@@ -121,9 +124,13 @@ class login_screen(Screen):
         self.add_widget(layout)
 
     def on_pre_enter(self, *args):
+        """Preparar la pantalla antes de que se muestre."""
+        
         self.limpiar_campos
 
     def verificar_credenciales(self, instance):
+        """Verifica las credenciales del usuario."""
+
         usuario = self.username.text.strip()
         contraseña = self.password.text.strip()
 
@@ -134,7 +141,6 @@ class login_screen(Screen):
         resultado = Verificar_datos(usuario, contraseña)  # Prestador
         result = Verificar_datos_usuario(usuario, contraseña)  # Cliente
 
-        from kivy.app import App
         app = App.get_running_app()
 
         if result:
@@ -149,29 +155,26 @@ class login_screen(Screen):
             self.mostrar_dialogo("¡Error!", "Credenciales incorrectas.")
             self.limpiar_campos()
 
-
     def mostrar_dialogo(self, titulo, mensaje):
-        if hasattr(self, 'dialog') and self.dialog:
+        """Metodo de dialogo para mostrar mensaje al usaurio"""
+
+        if hasattr(self, "dialog") and self.dialog:
             self.dialog.dismiss()
 
         self.dialog = MDDialog(
             title=titulo,
             text=mensaje,
             buttons=[
-                MDFlatButton(
-                    text="OK",
-                    on_release=lambda x: self.dialog.dismiss()
-                )
-            ]
+                MDFlatButton(text="OK", on_release=lambda x: self.dialog.dismiss())
+            ],
         )
         self.dialog.open()
 
     def limpiar_campos(self):
-        self.username.text=""
-        self.password.text=""
+        """Limpiar los campos"""
 
+        self.username.text = ""
+        self.password.text = ""
 
     def screen_registro(self, instance, value):
         self.manager.current = "registroscreen"
-
-    

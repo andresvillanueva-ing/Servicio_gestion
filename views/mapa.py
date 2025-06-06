@@ -1,3 +1,5 @@
+"""Pantalla del mapa"""
+
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.metrics import dp
@@ -6,23 +8,26 @@ from kivy_garden.mapview import MapView, MapMarkerPopup
 from kivymd.uix.label import MDIcon
 
 
-# Clase personalizada de marcador con ícono
 class IconMarker(MapMarkerPopup):
+    """Clase personalizada del icono de marcado de ubicacion"""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.size = (dp(48), dp(48))
         self.anchor = (0.5, 0.5)
 
         self.icon = MDIcon(
-            icon="map-marker",             # Ícono de Material Design
+            icon="map-marker",
             theme_text_color="Custom",
-            text_color=(1, 0, 0, 1),       # Rojo
-            font_size=dp(32)
+            text_color=(1, 0, 0, 1),
+            font_size=dp(32),
         )
         self.add_widget(self.icon)
 
 
 class Mapa_Screen(MDScreen):
+    """Clase Principal de la pantalla del mapa"""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "mapascreen"
@@ -33,6 +38,7 @@ class Mapa_Screen(MDScreen):
         self.map_view = None
 
     def on_pre_enter(self):
+        """Metodo que se ejecuta antes de entrar a la pantalla"""
         self.layout.clear_widgets()
 
         # Agregar barra superior
@@ -64,6 +70,8 @@ class Mapa_Screen(MDScreen):
             self.layout.add_widget(self.map_view)
 
     def recibir_servicio(self, datos_servicio):
+        """Metodo para recibir los datos del servicio a mostrar en el mapa"""
+
         self.datos_servicio = datos_servicio
 
     def volver(self, *args):

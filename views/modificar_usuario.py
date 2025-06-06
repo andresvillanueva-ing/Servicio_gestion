@@ -1,3 +1,7 @@
+"""Pantalla para modificar los datos del cliente"""
+
+import os
+
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -6,9 +10,11 @@ from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.label import MDLabel
 from kivy.uix.scrollview import ScrollView
 from kivy.metrics import dp
-from Database.Data_usuario import modificar_usuario
+
 from cryptography.fernet import Fernet
-import os
+
+from Database.Data_usuario import modificar_usuario
+
 
 # Generar clave si no existe
 if not os.path.exists("clave.key"):
@@ -21,7 +27,10 @@ with open("clave.key", "rb") as clave_archivo:
 
 fernet = Fernet(clave)
 
+
 class ModificarUsuario(MDScreen):
+    """Clase Principal de la pantalla para modificar los datos del usuario"""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "modificar_usuario"
@@ -38,35 +47,28 @@ class ModificarUsuario(MDScreen):
             elevation=5,
             size_hint_y=None,
             height="56dp",
-            md_bg_color="#015551"
+            md_bg_color="#015551",
         )
         layout.add_widget(top_bar)
 
         # ScrollView
         scroll = ScrollView()
         campos_container = MDBoxLayout(
-            orientation="vertical",
-            padding=dp(20),
-            spacing=dp(20),
-            size_hint_y=None
+            orientation="vertical", padding=dp(20), spacing=dp(20), size_hint_y=None
         )
         campos_container.bind(minimum_height=campos_container.setter("height"))
 
         self.txt_nombre = MDTextField(
-            hint_text="Nombre Completo",
-            mode="rectangle",
-            icon_right="account"
+            hint_text="Nombre Completo", mode="rectangle", icon_right="account"
         )
         self.txt_correo = MDTextField(
-            hint_text="Correo Electrónico",
-            mode="rectangle",
-            icon_right="email"
+            hint_text="Correo Electrónico", mode="rectangle", icon_right="email"
         )
         self.txt_telefono = MDTextField(
             hint_text="Teléfono",
             input_filter="int",
             mode="rectangle",
-            icon_right="phone"
+            icon_right="phone",
         )
         self.txt_telefono.bind(text=self.validar_longitud_telefono)
 
@@ -74,7 +76,7 @@ class ModificarUsuario(MDScreen):
             text="Modificar",
             pos_hint={"center_x": 0.5},
             md_bg_color="#FE4F2D",
-            on_release=self.registrar
+            on_release=self.registrar,
         )
 
         # Agregar campos al contenedor
@@ -87,15 +89,21 @@ class ModificarUsuario(MDScreen):
         layout.add_widget(scroll)
 
     def validar_longitud_telefono(self, instance, value):
+        """Metodo para validar la longitud del telefono"""
+
         if len(value) > 10:
             instance.text = value[:10]
 
     def registrar(self, instance):
-        if not all([
-            self.txt_nombre.text.strip(),
-            self.txt_correo.text.strip(),
-            self.txt_telefono.text.strip(),
-        ]):
+        """Metodo para registrar los datos del usuario modificado"""
+
+        if not all(
+            [
+                self.txt_nombre.text.strip(),
+                self.txt_correo.text.strip(),
+                self.txt_telefono.text.strip(),
+            ]
+        ):
             print("⚠️ Todos los campos son obligatorios.")
             return
 
@@ -105,13 +113,11 @@ class ModificarUsuario(MDScreen):
             correo = self.txt_correo.text
 
             modificar_usuario(
-                nombre=nombre,
-                correo=correo,
-                telefono=telefono,
-                id=self.id_usuario
+                nombre=nombre, correo=correo, telefono=telefono, id=self.id_usuario
             )
 
             from kivymd.uix.snackbar import Snackbar
+
             Snackbar(MDLabel(text="¡Datos modificados con éxito!")).open()
 
             # Limpiar campos
@@ -123,9 +129,12 @@ class ModificarUsuario(MDScreen):
 
         except Exception as e:
             import traceback
+
             traceback.print_exc()
 
     def set_datos_usuario(self, usuario):
+        """Metodo para recibir los datos del usuario a modificar"""
+
         self.id_usuario = usuario["id"]
         self.txt_nombre.text = usuario["nombre"]
         self.txt_correo.text = usuario["correo"]

@@ -1,3 +1,5 @@
+"""Pantalla de informacion de servicios"""
+
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel, MDIcon
@@ -8,10 +10,11 @@ from kivy.uix.image import Image
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.uix.scrollview import ScrollView
 from kivy.metrics import dp
-from kivy.uix.widget import Widget
 
 
 class informacion_servicios_screen(MDScreen):
+    """ "Clase Principal de la pantalla de informacion de servicios"""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "informacionservicios"
@@ -27,6 +30,8 @@ class informacion_servicios_screen(MDScreen):
             self.construir_ui(self.servicio_actual)
 
     def construir_ui(self, servicio):
+        """Metodo que recibe el servicio y construye la interfaz de usuario"""
+
         self.layout.clear_widgets()
         self.datos_servicio = servicio
 
@@ -41,11 +46,11 @@ class informacion_servicios_screen(MDScreen):
             md_bg_color="#015551",
         )
         top_bar = MDTopAppBar(
-            left_action_items=[["arrow-left", lambda x: self.volver()]],  
+            left_action_items=[["arrow-left", lambda x: self.volver()]],
             elevation=5,
-            size_hint_y=None,  
+            size_hint_y=None,
             height="40dp",
-            md_bg_color=("#FFFFFF00"), 
+            md_bg_color=("#FFFFFF00"),
         )
         encabezado.add_widget(top_bar)
         if servicio.get("imagen"):
@@ -84,7 +89,7 @@ class informacion_servicios_screen(MDScreen):
         self.layout.add_widget(encabezado)
 
         # ScrollView para el contenido
-        
+
         scroll_view = ScrollView()
         content_layout = MDBoxLayout(
             orientation="vertical", padding=10, spacing=10, size_hint_y=None
@@ -98,7 +103,7 @@ class informacion_servicios_screen(MDScreen):
             padding=dp(10),
             size_hint_y=None,
             height=dp(50),
-            pos_hint={'center_x': 0.5, 'center_y': 0.5} 
+            pos_hint={"center_x": 0.5, "center_y": 0.5},
         )
 
         reservar_btn = MDRectangleFlatIconButton(
@@ -138,14 +143,10 @@ class informacion_servicios_screen(MDScreen):
             elevation=2,
             radius=[15],
         )
-        
+
         descripcion = servicio.get("descripcion")
         descripcion_box = MDBoxLayout(orientation="horizontal", spacing=10)
-        descripcion_box.add_widget(
-            MDLabel(
-                text=descripcion, halign="center"
-            )
-        )
+        descripcion_box.add_widget(MDLabel(text=descripcion, halign="center"))
         # --- Informacion del servicio ---
         administrador_box = MDBoxLayout(orientation="horizontal", spacing=10)
         administrador_box.add_widget(
@@ -176,9 +177,13 @@ class informacion_servicios_screen(MDScreen):
                 text=servicio.get("horario", "Abierto de 7:00 a 22:00"), halign="left"
             )
         )
-        info_card.add_widget(MDLabel(text="Descripcion del servicio", halign="center", font_style="H6"))
+        info_card.add_widget(
+            MDLabel(text="Descripcion del servicio", halign="center", font_style="H6")
+        )
         info_card.add_widget(descripcion_box)
-        info_card.add_widget(MDLabel(text="Informacion de servicio", halign="center", font_style="H6"))
+        info_card.add_widget(
+            MDLabel(text="Informacion de servicio", halign="center", font_style="H6")
+        )
         info_card.add_widget(administrador_box)
         info_card.add_widget(ubicacion_box)
         info_card.add_widget(horario_box)
@@ -187,6 +192,8 @@ class informacion_servicios_screen(MDScreen):
         self.layout.add_widget(scroll_view)
 
     def confirmar_reserva(self, *args):
+        """Dialogo para confirmar que quiere dirigirse a registrar una reserva"""
+
         if not self.dialog:
             self.dialog = MDDialog(
                 title="¿Confirmar reserva?",
@@ -200,9 +207,10 @@ class informacion_servicios_screen(MDScreen):
 
     def cancelar_dialogo(self, *args):
         self.dialog.dismiss()
-    
-    
+
     def ir_reserva(self, *args):
+        """ "Metodo para ir al mapa que muestra la ubicacion del servicio"""
+
         from kivymd.app import MDApp
 
         app = MDApp.get_running_app()
@@ -211,6 +219,8 @@ class informacion_servicios_screen(MDScreen):
         app.root.current = "mapascreen"
 
     def realizar_reserva(self, *args):
+        """Metodo para dirigirse a la pantalla de reserva de servicio"""
+
         self.dialog.dismiss()
         from kivymd.app import MDApp
 
@@ -218,9 +228,6 @@ class informacion_servicios_screen(MDScreen):
         pantalla_reservas = app.root.get_screen("reservasscreen")
         pantalla_reservas.recibir_servicio(self.datos_servicio)
         app.root.current = "reservasscreen"
-
-    def abrir_mapa(self, *args):
-        print("Abrir mapa con ubicación:", self.datos_servicio.get("ubicacion"))
 
     def volver(self, *args):
         self.manager.current = "pantallaUsuario"
